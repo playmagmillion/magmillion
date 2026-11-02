@@ -102,6 +102,18 @@ form.ans input{flex:1;min-width:0;font:inherit;font-size:18px;padding:11px 12px;
 .big{font-family:var(--pixel);font-size:clamp(48px,10vw,72px);line-height:1;color:var(--gold);font-variant-numeric:tabular-nums}
 pre.share{white-space:pre-wrap;background:#0d0c18;border:2px solid #000;padding:10px;font-size:14px;margin:10px 0 0}
 .toast{font-family:var(--pixel);font-size:14px;color:var(--good)}
+.example{font-family:var(--pixel);font-size:17px;margin:4px 0 16px;padding:10px 12px;border:2px dashed var(--edge)}
+.example b{color:var(--gold)}
+button.big-btn{display:flex;flex-direction:column;align-items:center;width:100%;font-size:26px;padding:14px}
+button.big-btn small{font-size:13px;font-weight:400;opacity:.8}
+button.sm{font-size:13px;padding:5px 10px}
+ul.how{margin:0;padding-left:20px;display:grid;gap:4px;font-size:15px}
+.strike{display:flex;align-items:center;gap:14px;flex-wrap:wrap;padding:12px 14px;border:3px solid var(--t0);background:#0d0c18;margin-bottom:12px}
+.strike img{width:45px;height:35px;image-rendering:pixelated}
+.strike .what{flex:1;min-width:160px}
+.strike .what b{display:block;font-size:20px;font-family:var(--pixel)}
+.strike .spts{font-family:var(--pixel);font-size:32px;color:var(--gold);font-variant-numeric:tabular-nums}
+.list.arch li{grid-template-columns:48px 1fr auto auto}
 .hidden{display:none !important}
 .legal{font-size:12px;color:var(--dim);margin-top:16px}
 
@@ -126,74 +138,89 @@ pre.share{white-space:pre-wrap;background:#0d0c18;border:2px solid #000;padding:
 <div class="stage">
 <div class="panel">
 
-  <!-- Start -->
   <section id="startScreen">
-    <div class="eyebrow" id="digNo">Dig #1</div>
-    <h2>Think like the crowd. Then dig where nobody else goes.</h2>
-    <p>Every answer is drill power. Your points push the drill down through the crust, past the mantle, toward the center of the Earth, 6,371 km below.</p>
-    <ol class="how">
-      <li><b>Surface Survey.</b> Name 3 answers most people would give. 15 seconds each. The crowd's No. 1 answer is worth 100.</li>
-      <li><b>Deep Bore.</b> Same category. Name 3 real answers almost nobody gives. 30 seconds each, scored by rarity.</li>
-      <li>Then a second category, both rounds again.</li>
-      <li><b>Core Sampler.</b> The drill calls a rarity 4 times and you name an answer in exactly that tier. Dead on scores 100, one tier off 40, two off 15.</li>
-    </ol>
-    <p class="small dim">Wrong guesses cost nothing, so keep guessing until the timer runs out. Faster answers keep more of their points. A top-3 Survey answer, a Deep vein or rarer find, or a dead-on sample charges a x1.5 combo for your next answer. Misspell something and the drill asks what you meant.</p>
-    <h3>Rarity tiers</h3>
+    <div class="eyebrow">the daily dig</div>
+    <h2>Name the answer nobody else thinks of.</h2>
+    <p class="dim">7 prompts a day · 25 seconds each · the rarer your answer, the deeper you drill</p>
+    <div class="example">"Name a fruit" → Apple <b>+10</b> · Miracle fruit <b>+100</b></div>
+    <button class="go big-btn" id="btnDaily">Dig ▼ <small id="digBtnSub">Dig #1 · press Enter</small></button>
+    <h3>How it works</h3>
+    <ul class="how">
+      <li>Seven prompts, the same for everyone today, with new ones every day.</li>
+      <li>Type one thing that fits. Spelling is forgiven (the drill asks "Did you mean...?"), guessing is not.</li>
+      <li>Rarer answers drill deeper. Common ones barely scratch the surface.</li>
+      <li>Seven perfect answers reach the center of the Earth, 6,371 km down. That's 700 points.</li>
+      <li>One logged dig a day. Share your depth and keep the streak.</li>
+    </ul>
+    <h3>The ranks</h3>
     <div class="ranks" id="ranks"></div>
     <div class="row" style="margin-top:16px">
-      <button class="go" id="btnDaily">Start today's dig</button>
+      <button class="ghost" id="btnArch">Archive</button>
       <button class="ghost" id="btnFree">Unlimited</button>
     </div>
     <p class="small dim" id="streakLine" style="margin-top:12px"></p>
   </section>
 
-  <!-- Play -->
   <section id="playScreen" class="hidden">
-    <div class="top"><div class="eyebrow" id="roundLabel">Mission 1 · Surface Survey</div><div class="slots" id="slots"></div></div>
-    <div class="cat" id="catText"></div>
-    <div class="ask" id="askText"></div>
-    <div class="target hidden" id="targetBox"><img id="targetImg" alt=""><span id="targetName"></span></div>
+    <div class="top"><div class="eyebrow" id="qMode">Dig #1</div><div class="eyebrow" style="color:var(--dim)"><span id="qNum">1 / 7</span> · <span id="qTime">25s</span></div></div>
+    <div class="cat" id="qText"></div>
     <div class="timer" id="timer"><div id="timerBar"></div></div>
     <form class="ans" id="ansForm" autocomplete="off">
       <label for="ansInput" class="hidden">Your answer</label>
-      <input id="ansInput" type="text" placeholder="Type an answer" autocapitalize="off" autocorrect="off" spellcheck="false" maxlength="60">
+      <input id="ansInput" type="text" placeholder="Type one answer" autocapitalize="off" autocorrect="off" spellcheck="false" maxlength="60">
       <button class="go" type="submit">Drill</button>
     </form>
     <div class="confirm hidden" id="confirmBox" role="alertdialog" aria-labelledby="confirmQ">
       <div class="q" id="confirmQ">Did you mean <b id="confirmWord"></b>?</div>
       <button class="yes" id="btnYes" type="button">Yes</button>
-      <button class="ghost" id="btnNo" type="button">No, keep typing</button>
+      <button class="ghost" id="btnNo" type="button">No, let me fix it</button>
     </div>
     <div class="feedback" id="feedback" aria-live="polite"></div>
   </section>
 
-  <!-- Round reveal -->
   <section id="revealScreen" class="hidden">
-    <div class="eyebrow" id="revLabel"></div>
-    <h2 id="revCat"></h2>
-    <h3 style="margin-top:6px">Your answers</h3>
-    <ul class="list" id="revMine"></ul>
-    <h3 id="revOtherHead"></h3>
-    <ul class="list" id="revOther"></ul>
+    <div class="top"><div class="eyebrow">Core sample</div><div class="eyebrow" style="color:var(--dim)" id="rNum">1 / 7</div></div>
+    <div class="cat" id="rText" style="font-size:26px"></div>
+    <div class="strike" id="strike">
+      <img id="sBadge" alt="">
+      <div class="what"><b id="sWord"></b><span id="sTier" class="dim"></span></div>
+      <div class="spts" id="sPts">+0</div>
+    </div>
+    <p class="small dim" id="sNote"></p>
+    <p class="small" id="rCommon"></p>
+    <h3>Rarest finds in this seam</h3>
+    <ul class="list" id="finds"></ul>
     <div class="row" style="margin-top:16px"><button class="go" id="btnNext">Keep drilling</button></div>
   </section>
 
-  <!-- End -->
   <section id="endScreen" class="hidden">
     <div class="eyebrow" id="endLabel">Dig complete</div>
     <div class="big" id="endKm">0 km</div>
     <p style="margin-top:8px" id="endLine"></p>
+    <p class="small dim" id="endStreak"></p>
     <div class="row">
-      <button class="go" id="btnShare">Copy result</button>
-      <button class="ghost" id="btnAgain">Unlimited dig</button>
+      <button class="go" id="btnShare">Share depth</button>
+      <button class="ghost" id="btnAgain">Unlimited</button>
+      <button class="ghost" id="btnArch2">Archive</button>
       <span class="toast" id="toast"></span>
     </div>
     <pre class="share hidden" id="shareText"></pre>
+    <p class="small dim" id="endNext" style="margin-top:10px"></p>
+    <h3>Your dig</h3>
+    <ul class="list" id="endLog"></ul>
     <h3>Landmarks you passed</h3>
     <ul class="list" id="endMarks"></ul>
-    <h3>One in a Quarrillion finds from today's categories</h3>
+    <h3>One in a Quarrillion finds from today</h3>
     <ul class="list" id="endGems"></ul>
-    <p class="legal">Rarity and crowd rankings are our own estimates, not live player data. Depth: about 4 km per point, so a perfect run without combos lands at the center.</p>
+    <p class="legal">Rarity tiers are hand-made estimates, not live player data. Depth: 700 points equals Earth's radius, so each point is about 9.1 km.</p>
+  </section>
+
+  <section id="archiveScreen" class="hidden">
+    <div class="eyebrow">Archive</div>
+    <h2>Every daily dig so far</h2>
+    <p class="small dim">Play any past day you missed. Each day has its own seven prompts.</p>
+    <ul class="list arch" id="archList"></ul>
+    <div class="row" style="margin-top:16px"><button class="ghost" id="btnArchBack">Back</button></div>
   </section>
 
 </div>
@@ -2127,14 +2154,3548 @@ const PROMPTS = [
 `}
 ];
 
+const MORE = [
+{q:"Name a fruit", s:["fruit"], a:`
+1 Apple
+1 Banana
+1 Orange
+1 Strawberry
+1 Grape
+1 Watermelon
+1 Mango
+1 Pineapple
+2 Peach
+2 Pear
+2 Cherry
+2 Kiwi
+2 Blueberry
+2 Lemon
+2 Pomegranate
+2 Papaya
+2 Plum
+2 Cantaloupe
+2 Coconut
+3 Lychee
+3 Dragon fruit/pitaya
+3 Jackfruit
+3 Kumquat
+3 Persimmon
+3 Guava
+3 Passion fruit
+3 Star fruit/carambola
+3 Apricot
+3 Nectarine
+3 Fig
+3 Honeydew
+4 Rambutan
+4 Mangosteen
+4 Durian
+4 Soursop/guanabana
+4 Longan
+4 Quince
+4 Loquat
+4 Tamarind
+5 Cherimoya
+5 Salak/snake fruit | Southeast Asian fruit with reddish-brown skin that looks like snake scales.
+5 Feijoa
+5 Ackee | Jamaica's national fruit, poisonous unless fully ripe.
+5 Jabuticaba | Brazilian fruit that grows directly on the tree trunk.
+5 Medlar
+5 Tamarillo
+5 Kiwano/horned melon
+5 Marula
+5 Santol
+5 Cloudberry
+6 Miracle fruit/miracle berry | West African berry that makes sour foods taste sweet for about an hour.
+`},
+{q:"Name a vegetable", s:["vegetable"], a:`
+1 Carrot
+1 Broccoli
+1 Potato
+1 Lettuce
+1 Onion
+1 Corn
+1 Spinach
+1 Cucumber
+1 Tomato
+1 Pea/peas
+2 Celery
+2 Cauliflower
+2 Cabbage
+2 Zucchini/courgette
+2 Asparagus
+2 Eggplant/aubergine
+2 Bell pepper/pepper
+2 Kale
+2 Radish
+2 Beet/beetroot
+2 Sweet potato
+2 Squash
+2 Pumpkin
+2 Green bean/green beans
+3 Artichoke
+3 Brussels sprouts/brussel sprouts
+3 Leek
+3 Turnip
+3 Okra
+3 Bok choy
+3 Arugula/rocket
+3 Garlic
+4 Parsnip
+4 Rutabaga/swede
+4 Kohlrabi
+4 Fennel
+4 Jicama
+4 Chard/swiss chard
+4 Endive
+4 Watercress
+4 Daikon
+4 Collard greens/collards
+5 Celeriac
+5 Salsify
+5 Romanesco | Cauliflower relative whose florets spiral in a fractal pattern.
+5 Fiddlehead | Coiled tip of a young fern, picked in spring.
+5 Sunchoke/jerusalem artichoke
+5 Taro
+5 Cassava/yuca
+5 Chayote
+5 Bitter melon
+5 Lotus root
+6 Skirret | Sweet root vegetable popular in Tudor England, now almost forgotten.
+`},
+{q:"Name a spice", s:["spice"], a:`
+1 Pepper/black pepper
+1 Cinnamon
+1 Paprika
+1 Cumin
+1 Ginger
+1 Turmeric
+1 Nutmeg
+2 Chili powder/chili
+2 Cloves
+2 Cardamom
+2 Coriander
+2 Saffron
+2 Cayenne
+2 Garlic powder
+3 Allspice
+3 Star anise
+3 Fennel seed
+3 Mustard seed
+3 Curry powder
+4 Sumac
+4 Fenugreek
+4 Mace
+4 Caraway
+4 Garam masala
+4 Five spice
+4 Za'atar/zaatar
+4 Asafoetida/hing
+4 Annatto/achiote
+4 Sichuan pepper/szechuan pepper
+4 Juniper
+5 Galangal
+5 Long pepper
+5 Grains of paradise
+5 Ajwain
+5 Nigella/kalonji/black seed
+5 Amchur/amchoor | Powder of dried green mango, for sour flavor in Indian cooking.
+5 Black lime/loomi | Whole limes boiled in brine and sun-dried until black.
+5 Anardana | Dried pomegranate seeds.
+6 Mahleb/mahlab | Ground kernels of cherry pits, used in Middle Eastern and Greek baking.
+`},
+{q:"Name a bird", s:["bird"], a:`
+1 Eagle
+1 Robin
+1 Pigeon
+1 Crow
+1 Parrot
+1 Penguin
+1 Owl
+1 Sparrow
+1 Flamingo
+1 Hawk
+2 Ostrich
+2 Peacock
+2 Cardinal
+2 Blue jay
+2 Hummingbird
+2 Seagull/gull
+2 Swan
+2 Duck
+2 Goose
+2 Pelican
+2 Woodpecker
+2 Vulture
+2 Falcon
+2 Turkey
+2 Chicken
+3 Toucan
+3 Kiwi
+3 Emu
+3 Heron
+3 Crane
+3 Stork
+3 Magpie
+3 Raven
+3 Finch
+3 Canary
+3 Puffin
+3 Albatross
+3 Kingfisher
+4 Cassowary
+4 Hoopoe
+4 Roadrunner
+4 Kookaburra
+4 Lyrebird | Australian bird that can mimic chainsaws and camera shutters.
+4 Condor
+4 Osprey
+4 Egret
+4 Ibis
+4 Cormorant
+4 Nightingale
+4 Starling
+4 Wren
+4 Oriole
+5 Shoebill
+5 Kakapo | Flightless, nocturnal parrot of New Zealand.
+5 Frogmouth
+5 Potoo
+5 Quetzal
+5 Secretary bird
+5 Bowerbird
+5 Bee-eater
+5 Jacana
+5 Oilbird
+6 Hoatzin | South American bird whose chicks have claws on their wings.
+`},
+{q:"Name a fish", s:["fish"], a:`
+1 Salmon
+1 Tuna
+1 Goldfish
+1 Trout
+1 Cod
+1 Clownfish
+1 Shark
+2 Bass
+2 Catfish
+2 Tilapia
+2 Swordfish
+2 Piranha
+2 Halibut
+2 Mackerel
+2 Sardine
+2 Anchovy
+2 Carp
+2 Guppy
+2 Betta
+3 Barracuda
+3 Marlin
+3 Eel
+3 Flounder
+3 Perch
+3 Pike
+3 Sturgeon
+3 Grouper
+3 Snapper
+3 Mahi mahi
+3 Pufferfish/blowfish
+3 Angelfish
+3 Koi
+3 Herring
+4 Anglerfish
+4 Sunfish/mola
+4 Lionfish
+4 Wahoo
+4 Haddock
+4 Pollock
+4 Tarpon
+4 Arapaima
+4 Lamprey
+4 Hagfish
+4 Oarfish
+5 Coelacanth | Thought extinct for 66 million years until one was caught off South Africa in 1938.
+5 Blobfish
+5 Gar
+5 Mudskipper | Fish that spends much of its life out of water, hopping on mudflats.
+5 Wobbegong
+5 Hatchetfish
+6 Candiru | Tiny Amazon catfish with a notorious, mostly exaggerated reputation.
+`},
+{q:"Name an insect", s:["insect"], a:`
+1 Ant
+1 Bee
+1 Butterfly
+1 Fly
+1 Mosquito
+1 Beetle
+1 Ladybug/ladybird
+1 Grasshopper
+2 Cockroach
+2 Dragonfly
+2 Moth
+2 Wasp
+2 Cricket
+2 Firefly/lightning bug
+2 Termite
+2 Flea
+2 Hornet
+3 Praying mantis/mantis
+3 Stick insect/walking stick
+3 Weevil
+3 Cicada
+3 Earwig
+3 Aphid
+3 Louse/lice
+3 Silverfish
+4 Katydid
+4 Lacewing
+4 Damselfly
+4 Mayfly
+4 Water strider
+4 Stink bug
+4 Dung beetle
+4 Scarab
+4 Locust
+5 Scorpionfly
+5 Antlion | Its larvae dig cone-shaped pits in sand to trap ants.
+5 Thrips
+5 Treehopper | Tiny bug whose helmet-like outgrowth can mimic thorns or ants.
+5 Assassin bug
+5 Snakefly
+6 Caddisfly | Its larvae build portable cases out of sand grains and twigs.
+0 Spider/tarantula | Spiders are arachnids, with eight legs. Insects have six.
+0 Scorpion/tick/mite | An arachnid, not an insect.
+0 Centipede/millipede | A myriapod, not an insect.
+`},
+{q:"Name a mammal", s:["mammal"], a:`
+1 Dog
+1 Cat
+1 Elephant
+1 Lion
+1 Tiger
+1 Horse
+1 Cow
+1 Bear
+1 Monkey
+1 Whale
+1 Human
+2 Giraffe
+2 Zebra
+2 Kangaroo
+2 Panda
+2 Wolf
+2 Fox
+2 Deer
+2 Rabbit
+2 Mouse
+2 Bat
+2 Dolphin
+2 Gorilla
+2 Koala
+2 Hippo/hippopotamus
+3 Platypus
+3 Sloth
+3 Armadillo
+3 Otter
+3 Beaver
+3 Raccoon
+3 Skunk
+3 Hedgehog
+3 Porcupine
+3 Cheetah
+3 Leopard
+3 Moose
+3 Bison
+3 Camel
+3 Llama
+3 Alpaca
+3 Walrus
+3 Seal
+3 Chimpanzee
+4 Aardvark
+4 Okapi
+4 Tapir
+4 Pangolin
+4 Wombat
+4 Tasmanian devil
+4 Lemur
+4 Meerkat
+4 Capybara
+4 Narwhal
+4 Manatee
+4 Ocelot
+4 Wolverine
+4 Badger
+5 Aye-aye | Madagascan lemur that taps on wood and fishes out grubs with a long middle finger.
+5 Saiga
+5 Fossa
+5 Numbat
+5 Quokka
+5 Binturong
+5 Dik-dik
+5 Gerenuk
+5 Babirusa
+5 Colugo
+5 Echidna
+6 Solenodon | Venomous, shrew-like mammal of Cuba and Hispaniola.
+`},
+{q:"Name a sea creature that isn't a fish", s:[], a:`
+1 Octopus
+1 Jellyfish
+1 Crab
+1 Starfish/sea star
+1 Whale
+1 Dolphin
+1 Lobster
+1 Shrimp
+1 Squid
+2 Seal
+2 Sea turtle/turtle
+2 Sea urchin
+2 Clam
+2 Oyster
+2 Coral
+3 Sea cucumber
+3 Nautilus
+3 Sea anemone/anemone
+3 Krill
+3 Barnacle
+3 Cuttlefish
+3 Orca
+3 Narwhal
+3 Sea otter
+3 Sea lion
+4 Portuguese man o' war/man o war
+4 Sand dollar
+4 Horseshoe crab
+4 Sea slug/nudibranch
+4 Mantis shrimp
+4 Manatee
+4 Dugong
+5 Sea pen
+5 Sea spider
+5 Siphonophore
+5 Comb jelly/ctenophore
+5 Sea lily/crinoid
+5 Sea butterfly
+5 Pyrosome
+5 Vampire squid
+5 Sea angel
+6 Salp | Barrel-shaped, jelly-like animal that drifts in chains. It's closer to vertebrates than to jellyfish.
+0 Seahorse/stingray/manta ray/shark/eel | That one is actually a fish.
+`},
+{q:"Name a reptile", s:["reptile"], a:`
+1 Snake
+1 Lizard
+1 Turtle
+1 Crocodile
+1 Alligator
+2 Tortoise
+2 Iguana
+2 Gecko
+2 Chameleon
+2 Komodo dragon
+2 Python
+2 Cobra
+2 Rattlesnake
+3 Anaconda
+3 Boa/boa constrictor
+3 Monitor lizard
+3 Gila monster
+3 Skink
+3 Viper
+3 Mamba/black mamba
+3 Caiman
+3 Gharial
+3 Sea turtle
+3 Bearded dragon
+4 Horned lizard
+4 Frilled lizard
+4 Basilisk | Lizard that can sprint across water on its hind legs.
+4 Garter snake
+4 Copperhead
+4 Leatherback
+4 Kingsnake
+5 Thorny devil
+5 Slow worm | Legless lizard often mistaken for a snake.
+5 Worm lizard/amphisbaenian
+5 Taipan
+5 Sea krait
+5 Matamata
+6 Tuatara | New Zealand reptile, last survivor of an order that thrived alongside the dinosaurs.
+0 Frog/toad/salamander/newt/axolotl | An amphibian, not a reptile.
+`},
+{q:"Name a cat breed", s:["cat"], a:`
+1 Persian
+1 Siamese
+1 Maine coon
+2 Bengal
+2 Sphynx
+2 Ragdoll
+3 British shorthair
+3 Russian blue
+3 Scottish fold
+3 Abyssinian
+3 Birman
+3 Burmese
+3 Himalayan
+3 Exotic shorthair
+3 Norwegian forest
+3 Savannah
+3 Munchkin
+4 Devon rex
+4 Cornish rex
+4 Turkish van
+4 Turkish angora
+4 Manx | Breed known for having no tail.
+4 Bombay
+4 Oriental
+4 Tonkinese
+4 Chartreux
+4 Egyptian mau
+4 Ocicat
+4 Somali
+4 Balinese
+4 Havana brown
+5 LaPerm
+5 Korat
+5 Selkirk rex
+5 Singapura
+5 American wirehair
+5 Khao manee
+5 Sokoke
+5 Peterbald
+5 Toyger
+6 Lykoi | The "werewolf cat," with a patchy, partly hairless coat.
+`},
+{q:"Name a horse breed", s:["horse"], a:`
+1 Arabian
+1 Thoroughbred
+1 Clydesdale
+1 Mustang
+2 Quarter horse
+2 Shetland/shetland pony
+2 Appaloosa
+3 Paint
+3 Morgan
+3 Friesian
+3 Percheron
+3 Shire
+3 Andalusian
+3 Lipizzaner/lipizzan
+3 Tennessee walker/tennessee walking
+3 Belgian
+4 Haflinger
+4 Icelandic | Has two extra gaits, including the smooth four-beat tolt.
+4 Fjord
+4 Gypsy vanner
+4 Connemara
+4 Mule
+5 Akhal-Teke | Turkmen breed with a metallic sheen to its coat.
+5 Przewalski's/przewalski
+5 Falabella | Tiny Argentine breed, often under 80 cm tall.
+5 Hackney
+5 Trakehner
+5 Knabstrupper
+5 Exmoor
+5 Camargue
+6 Marwari | Indian breed whose ears curve inward until the tips touch.
+`},
+{q:"Name a nut", s:["nut","nuts"], a:`
+1 Peanut
+1 Almond
+1 Cashew
+1 Walnut
+1 Pecan
+1 Pistachio
+2 Hazelnut/filbert
+2 Macadamia
+2 Brazil nut/brazil
+2 Chestnut
+2 Pine nut
+2 Coconut
+3 Acorn
+3 Hickory
+4 Beechnut
+4 Butternut
+4 Kola
+4 Ginkgo
+5 Candlenut
+5 Tiger nut | Actually a small tuber, used for horchata in Spain.
+5 Pili
+5 Sacha inchi
+5 Marcona
+6 Mongongo | A staple food of the San people of the Kalahari.
+`},
+{q:"Name a berry", s:["berry","berries"], a:`
+1 Strawberry
+1 Blueberry
+1 Raspberry
+1 Blackberry
+1 Cranberry
+2 Gooseberry
+2 Elderberry
+2 Boysenberry
+2 Acai
+2 Goji
+3 Mulberry
+3 Huckleberry
+3 Currant/blackcurrant/redcurrant
+3 Grape
+4 Lingonberry
+4 Cloudberry
+4 Salmonberry
+4 Sea buckthorn
+4 Chokeberry/aronia
+4 Serviceberry/saskatoon
+4 Loganberry
+4 Dewberry
+4 Bilberry
+4 Barberry
+4 Juniper
+5 Thimbleberry
+5 Wineberry
+5 Marionberry | A blackberry developed in Oregon, named for Marion County.
+5 Honeyberry/haskap
+5 Tayberry
+6 Banana | Botanically a berry, while the strawberry isn't.
+`},
+{q:"Name a mushroom", s:["mushroom","mushrooms"], a:`
+1 Button/white
+1 Portobello/portabella
+1 Shiitake
+2 Oyster
+2 Morel
+2 Truffle
+2 Chanterelle
+3 Enoki
+3 Porcini
+3 Cremini/baby bella
+3 Maitake/hen of the woods
+3 Chicken of the woods
+3 Lion's mane/lions mane
+3 Reishi
+4 Puffball
+4 Death cap
+4 Fly agaric/amanita
+4 Chaga
+4 Cordyceps
+4 Matsutake
+4 Shaggy mane/shaggy ink cap/inky cap
+5 Hedgehog
+5 Black trumpet
+5 Lobster | Actually a fungus that infects another mushroom and turns it red-orange.
+5 Stinkhorn
+5 Ghost fungus
+6 Honey fungus/armillaria/humongous fungus | One in Oregon spreads across about 9 square km, among the largest organisms on Earth.
+`},
+{q:"Name a sauce or condiment", s:["sauce"], a:`
+1 Ketchup
+1 Mustard
+1 Mayonnaise/mayo
+1 Ranch
+1 BBQ/barbecue
+1 Soy
+1 Hot sauce
+2 Salsa
+2 Sriracha
+2 Pesto
+2 Hollandaise
+2 Alfredo
+2 Marinara
+2 Gravy
+2 Teriyaki
+2 Tartar
+2 Honey mustard
+2 Buffalo
+3 Tzatziki
+3 Hoisin
+3 Chimichurri
+3 Worcestershire
+3 Aioli
+3 Guacamole
+3 Tahini
+3 Harissa
+3 Gochujang
+3 Bearnaise
+3 Bechamel
+3 Relish
+4 Romesco
+4 Mole
+4 Fish sauce/nuoc mam/nuoc cham
+4 Ponzu
+4 Chutney
+4 Sambal
+4 Zhoug/zhug
+4 Piri piri/peri peri
+4 Remoulade
+4 Salsa verde
+5 Ajvar
+5 Mojo
+5 Gremolata
+5 XO
+5 Toum | Lebanese garlic sauce whipped as fluffy as mayonnaise.
+5 Tkemali
+5 Muhammara
+6 Garum | Fermented fish sauce of ancient Rome.
+`},
+{q:"Name a dessert", s:["dessert"], a:`
+1 Cake
+1 Ice cream
+1 Pie
+1 Cookie
+1 Brownie
+1 Cupcake
+1 Cheesecake
+1 Donut/doughnut
+1 Pudding
+2 Tiramisu
+2 Creme brulee
+2 Mousse
+2 Macaron
+2 Cannoli
+2 Baklava
+2 Churros
+2 Eclair
+2 Crepe
+2 Flan
+2 Gelato
+2 Sundae
+3 Cobbler
+3 Pavlova
+3 Panna cotta
+3 Profiterole/cream puff
+3 Souffle
+3 Trifle
+3 Tres leches
+3 Mochi
+3 Gulab jamun
+3 Strudel
+4 Baked Alaska
+4 Tarte tatin
+4 Sticky toffee pudding
+4 Bread pudding
+4 Knafeh/kunafa
+4 Halo-halo/halo halo
+4 Bingsu
+4 Kheer
+4 Pastel de nata
+5 Kouign-amann
+5 Sachertorte
+5 Clafoutis
+5 Mille-feuille
+5 Croquembouche
+5 Semifreddo
+5 Zabaglione
+5 Galaktoboureko
+6 Kransekake | Norwegian tower of stacked almond rings served at weddings and holidays.
+`},
+{q:"Name a type of bread", s:["bread"], a:`
+1 White
+1 Wheat/whole wheat
+1 Sourdough
+1 Rye
+1 Bagel
+1 Baguette
+1 Croissant
+2 Pita
+2 Brioche
+2 Ciabatta
+2 Focaccia
+2 Naan
+2 Tortilla
+2 Cornbread
+2 Challah
+2 Biscuit
+3 Pumpernickel
+3 English muffin
+3 Roti
+3 Chapati
+3 Injera
+3 Lavash
+3 Matzo/matzah
+3 Pretzel
+3 Soda bread
+3 Banana bread
+3 Babka
+3 Bao
+4 Paratha
+4 Arepa
+4 Pao de queijo
+4 Stollen
+4 Simit
+4 Bannock
+4 Fougasse
+4 Lefse
+4 Piadina
+5 Kulich
+5 Pandesal
+5 Bammy
+5 Pane carasau
+6 Barmbrack/barmbrak | Irish fruit loaf baked with a ring hidden inside for Halloween.
+`},
+{q:"Name a breakfast food", s:[], a:`
+1 Pancakes
+1 Waffles
+1 Eggs
+1 Bacon
+1 Cereal
+1 Toast
+1 Oatmeal
+1 French toast
+2 Hash browns
+2 Omelet/omelette
+2 Sausage
+2 Yogurt
+2 Granola
+2 Bagel
+2 Muffin
+2 Smoothie
+3 Eggs benedict
+3 Breakfast burrito
+3 Grits
+3 Biscuits and gravy
+3 Crepes
+3 Avocado toast
+3 Quiche
+4 Shakshuka
+4 Chilaquiles
+4 Huevos rancheros
+4 Congee
+4 Full English
+4 Porridge
+4 Dosa
+4 Idli
+4 Scrapple
+5 Kedgeree
+5 Menemen
+5 Gallo pinto
+5 Poha
+5 Natto
+5 Ful medames
+5 Black pudding
+6 Akara | Nigerian fried bean fritters, often eaten for breakfast.
+`},
+{q:"Name a soup", s:["soup"], a:`
+1 Tomato
+1 Chicken noodle
+1 Minestrone
+1 Clam chowder/chowder
+1 French onion
+2 Ramen
+2 Pho
+2 Miso
+2 Gazpacho
+2 Lentil
+2 Split pea
+2 Borscht
+2 Gumbo
+2 Tortilla
+2 Broccoli cheddar
+2 Potato leek
+2 Matzo ball
+3 Wonton
+3 Egg drop
+3 Hot and sour
+3 Bouillabaisse
+3 Tom yum
+3 Butternut squash
+4 Mulligatawny
+4 Pozole
+4 Menudo
+4 Avgolemono
+4 Vichyssoise
+4 Laksa
+4 Caldo verde
+4 Harira
+5 Cullen skink | Scottish soup of smoked haddock, potato, and onion.
+5 Sinigang
+5 Okroshka
+5 Solyanka
+5 Ajiaco
+5 Callaloo
+6 Bird's nest/birds nest | Chinese delicacy made from swiftlet nests built of the birds' hardened saliva.
+`},
+{q:"Name a sandwich", s:["sandwich"], a:`
+1 BLT
+1 Grilled cheese
+1 PB&J/peanut butter and jelly/pbj
+1 Club
+1 Ham and cheese
+1 Sub/hoagie/hero
+2 Reuben
+2 Philly cheesesteak/cheesesteak
+2 Cuban
+2 Panini
+2 Tuna melt/tuna
+2 Turkey
+3 Po'boy/po boy/poboy
+3 French dip
+3 Monte Cristo
+3 Sloppy Joe
+3 Gyro
+3 Banh mi
+3 Egg salad
+3 Patty melt
+4 Muffuletta
+4 Croque monsieur
+4 Torta
+4 Katsu sando
+4 Chip butty
+4 Bocadillo
+4 Hot brown
+4 Cemita
+5 Pambazo
+5 Elvis | Peanut butter, banana, and sometimes bacon, grilled.
+5 Chivito
+5 Smorrebrod
+6 Francesinha | Porto sandwich of layered meats smothered in melted cheese and a beer-tomato sauce.
+`},
+{q:"Name a candy", s:["candy"], a:`
+1 Chocolate
+1 Lollipop
+1 Gummy bears/gummies
+1 Jelly beans
+1 Licorice
+1 Cotton candy
+1 M&Ms/m and ms
+1 Skittles
+2 Caramel
+2 Toffee
+2 Taffy
+2 Fudge
+2 Gumdrops
+2 Jawbreaker
+2 Candy corn
+2 Peeps
+2 Nerds
+2 Sour Patch Kids
+3 Marshmallow
+3 Nougat
+3 Marzipan
+3 Brittle
+3 Butterscotch
+3 Rock candy
+3 Pop Rocks
+3 Smarties
+4 Halva/halvah
+4 Turkish delight/lokum
+4 Praline
+4 Divinity
+4 Nonpareils
+4 Necco wafers/necco
+4 Dragee
+5 Salmiak | Salty licorice flavored with ammonium chloride, loved in northern Europe.
+5 Hopjes
+5 Pastillas
+5 Barfi
+6 Konpeito/kompeito | Tiny star-shaped Japanese sugar candy, brought by Portuguese traders.
+`},
+{q:"Name a coffee drink", s:["coffee"], a:`
+1 Latte
+1 Cappuccino
+1 Espresso
+1 Mocha
+1 Americano
+1 Cold brew
+1 Iced coffee
+2 Frappuccino/frappe
+2 Macchiato
+2 Flat white
+3 Cortado
+3 Affogato
+3 Red eye
+3 Cafe au lait
+3 Dalgona
+3 Pumpkin spice latte
+4 Breve
+4 Ristretto
+4 Lungo
+4 Doppio
+4 Vietnamese iced coffee/ca phe sua da
+4 Turkish coffee
+5 Cafe de olla | Mexican coffee brewed in a clay pot with cinnamon and piloncillo sugar.
+5 Egg coffee | Hanoi coffee topped with whipped egg yolk and condensed milk.
+5 Piccolo
+5 Gibraltar
+5 Cafe bombon
+5 Kopi luwak
+6 Yuanyang/yuenyeung | Hong Kong drink of coffee mixed with milk tea.
+`},
+{q:"Name a kind of tea", s:["tea"], a:`
+1 Green
+1 Black
+1 Chamomile
+1 Peppermint/mint
+1 Earl Grey
+1 Chai
+1 Iced
+2 Oolong
+2 Matcha
+2 Jasmine
+2 White
+2 English breakfast
+2 Hibiscus
+2 Sweet
+2 Bubble/boba
+3 Rooibos
+3 Darjeeling
+3 Herbal
+3 Thai
+4 Assam
+4 Sencha
+4 Lapsang souchong
+4 Pu-erh/puer
+4 Genmaicha
+4 Hojicha
+4 Yerba mate/mate
+4 Butter
+4 Masala
+5 Gyokuro
+5 Kukicha
+5 Longjing/dragonwell/dragon well
+5 Tieguanyin
+5 Da hong pao
+5 Silver needle
+5 Bancha
+6 Lahpet | Fermented tea leaves eaten as a salad in Myanmar.
+`},
+{q:"Name a way to cook food", s:[], a:`
+1 Bake
+1 Fry
+1 Boil
+1 Grill
+1 Roast
+2 Steam
+2 Saute
+2 Broil
+2 Poach
+2 Simmer
+2 Sear
+2 Microwave
+2 Toast
+2 Barbecue
+2 Smoke
+2 Deep fry
+2 Stir fry
+3 Braise
+3 Blanch
+3 Stew
+3 Caramelize
+3 Flambe
+3 Sous vide
+3 Pan fry
+3 Air fry
+4 Confit
+4 Parboil
+4 Deglaze
+4 Baste
+4 Cure
+4 Pickle
+4 Ferment
+4 Brine
+4 Rotisserie
+5 En papillote | Baked sealed in parchment so the food steams in its own juices.
+5 Coddle
+5 Tandoor
+5 Spit-roast
+5 Salt-bake
+6 Hangi | Maori method of cooking food on heated stones buried in a pit.
+`},
+{q:"Name a kitchen tool", s:[], a:`
+1 Spatula
+1 Whisk
+1 Knife
+1 Ladle
+1 Tongs
+1 Pan/frying pan
+1 Pot
+2 Colander/strainer
+2 Grater
+2 Peeler
+2 Rolling pin
+2 Cutting board
+2 Can opener
+2 Measuring cup
+2 Blender
+2 Toaster
+2 Oven mitt
+3 Mandoline
+3 Zester/microplane
+3 Garlic press
+3 Sieve
+3 Mortar and pestle
+3 Salad spinner
+3 Pastry brush
+3 Baster
+3 Potato masher
+4 Dutch oven
+4 Wok
+4 Ramekin
+4 Cleaver
+4 Bench scraper
+4 Offset spatula
+4 Piping bag
+4 Ricer
+5 Mezzaluna
+5 Chinois
+5 Tamis | Drum-shaped sieve for silky-smooth purees.
+5 Spider
+5 Fish slice
+6 Spurtle | Scottish wooden stick for stirring porridge.
+`},
+{q:"Name a tool", s:["tool"], a:`
+1 Hammer
+1 Screwdriver
+1 Wrench
+1 Saw
+1 Pliers
+1 Drill
+1 Tape measure
+2 Level
+2 Chisel
+2 File
+2 Axe
+2 Crowbar
+2 Mallet
+2 Socket wrench
+2 Allen key/hex key
+2 Utility knife/box cutter
+2 Clamp
+2 Sander
+2 Shovel
+3 Vise
+3 Awl
+3 Plane
+3 Hacksaw
+3 Rasp
+3 Trowel
+3 Pickaxe
+3 Sledgehammer
+3 Staple gun
+3 Soldering iron
+3 Caulk gun
+4 Spokeshave
+4 Adze
+4 Drawknife
+4 Bradawl
+4 Coping saw
+4 Router
+4 Try square
+4 Plumb bob
+4 Chalk line
+5 Burnisher
+5 Scraper
+5 Swage
+5 Bevel gauge
+6 Froe | L-shaped blade struck with a mallet to split wood into shingles.
+`},
+{q:"Name a piece of furniture", s:[], a:`
+1 Chair
+1 Table
+1 Bed
+1 Couch/sofa
+1 Desk
+1 Dresser
+1 Bookshelf/bookcase
+1 Stool
+2 Cabinet
+2 Nightstand
+2 Armchair
+2 Recliner
+2 Ottoman
+2 Bench
+2 Futon
+2 Wardrobe
+2 Coffee table
+2 Bunk bed
+2 Rocking chair
+3 Chaise longue/chaise
+3 Loveseat
+3 Hutch
+3 Credenza
+3 Armoire
+3 Sideboard
+3 Vanity
+3 Chest of drawers
+3 Bean bag
+3 Hammock
+3 Crib
+4 Settee
+4 Davenport
+4 Divan
+4 Tallboy
+4 Highboy
+4 Daybed
+4 Fainting couch
+5 Chiffonier
+5 Etagere
+5 Secretary/secretaire
+5 Settle
+5 Bergere
+6 Whatnot | Victorian stand of open shelves for displaying knickknacks.
+`},
+{q:"Name an item of clothing", s:[], a:`
+1 Shirt/t-shirt
+1 Pants/trousers
+1 Jeans
+1 Dress
+1 Skirt
+1 Jacket
+1 Sweater
+1 Socks
+1 Hoodie
+1 Shorts
+2 Coat
+2 Blazer
+2 Vest
+2 Scarf
+2 Leggings
+2 Pajamas
+2 Tank top
+2 Cardigan
+2 Overalls
+2 Jumpsuit
+3 Poncho
+3 Kilt
+3 Tuxedo
+3 Kimono
+3 Sari
+3 Sarong
+3 Romper
+3 Parka
+3 Windbreaker
+3 Trench coat
+3 Tunic
+4 Dashiki
+4 Hanbok
+4 Cheongsam/qipao
+4 Dirndl
+4 Lederhosen
+4 Kaftan/caftan
+4 Jodhpurs
+4 Culottes
+4 Gilet
+4 Cummerbund
+4 Cravat/ascot
+5 Dhoti
+5 Hakama
+5 Kurta
+5 Salwar kameez
+5 Serape
+5 Anorak
+6 Sporran | Pouch worn at the front of a Scottish kilt, which has no pockets.
+`},
+{q:"Name a type of shoe", s:["shoe","shoes"], a:`
+1 Sneakers/trainers
+1 Boots
+1 Sandals
+1 Flip-flops/flip flops
+1 Heels/high heels
+1 Slippers
+1 Loafers
+2 Crocs
+2 Cleats
+2 Flats
+2 Oxfords
+2 Clogs
+2 Wedges
+2 Moccasins
+2 Rain boots
+3 Mules
+3 Espadrilles
+3 Brogues
+3 Chelsea boots
+3 Platforms
+3 Stilettos
+3 Slingbacks
+3 Boat shoes
+3 Mary Janes
+3 Combat boots
+4 Huaraches
+4 Geta
+4 Zori
+4 Monk strap
+4 Chukka
+4 Wellingtons/wellies
+4 Pointe shoes
+4 Galoshes
+5 Jutti/mojari
+5 Waders
+5 Sabot
+5 Opanak
+6 Chopine | Renaissance platform shoe, some around 50 cm tall, worn in Venice.
+`},
+{q:"Name a fabric", s:["fabric"], a:`
+1 Cotton
+1 Silk
+1 Wool
+1 Denim
+1 Polyester
+1 Leather
+1 Linen
+2 Velvet
+2 Satin
+2 Nylon
+2 Fleece
+2 Flannel
+2 Spandex/lycra
+2 Lace
+2 Cashmere
+2 Corduroy
+3 Chiffon
+3 Tweed
+3 Suede
+3 Jersey
+3 Rayon
+3 Canvas
+3 Tulle
+3 Felt
+3 Chenille
+3 Muslin
+3 Burlap
+4 Seersucker
+4 Gingham
+4 Taffeta
+4 Organza
+4 Chambray
+4 Gabardine
+4 Damask
+4 Brocade
+4 Poplin
+4 Mohair
+4 Viscose
+5 Bombazine
+5 Dimity
+5 Sateen
+5 Toile
+5 Voile
+5 Moleskin
+5 Cheesecloth
+5 Khadi | Hand-spun cloth that Gandhi promoted as a symbol of Indian independence.
+6 Sea silk/byssus | Golden fiber spun from the threads a Mediterranean clam uses to anchor itself.
+`},
+{q:"Name a hairstyle", s:["hairstyle","haircut"], a:`
+1 Ponytail
+1 Braid/braids
+1 Bun
+1 Bob
+1 Pixie
+1 Buzz cut
+1 Mohawk
+1 Mullet
+2 Afro
+2 Cornrows
+2 Dreadlocks/locs/dreads
+2 Fade
+2 Undercut
+2 Pompadour
+2 Bangs/fringe
+2 Pigtails
+2 Crew cut
+2 Top knot
+2 Man bun
+2 French braid
+2 Perm
+3 Beehive
+3 Bowl cut
+3 Quiff
+3 Chignon
+3 Faux hawk/fohawk
+3 Box braids
+3 Bantu knots
+3 Shag
+3 Wolf cut
+3 Lob
+4 Fishtail braid
+4 Dutch braid
+4 Finger waves
+4 Ducktail
+4 Flattop
+4 Hi-top fade/high top fade
+4 Liberty spikes
+5 Marcel wave
+5 Tonsure | Shaved crown worn by some monks.
+5 Victory rolls
+5 Chonmage
+6 Queue | Single long braid worn by men in Qing dynasty China.
+`},
+{q:"Name a job", s:[], a:`
+1 Doctor
+1 Teacher
+1 Nurse
+1 Firefighter
+1 Police officer/cop
+1 Lawyer
+1 Chef
+1 Engineer
+2 Pilot
+2 Dentist
+2 Scientist
+2 Accountant
+2 Plumber
+2 Electrician
+2 Farmer
+2 Artist
+2 Veterinarian/vet
+2 Architect
+2 Mechanic
+2 Programmer/software engineer/developer
+3 Pharmacist
+3 Librarian
+3 Journalist
+3 Carpenter
+3 Astronaut
+3 Surgeon
+3 Therapist
+3 Paramedic
+3 Judge
+3 Barber
+4 Actuary
+4 Cartographer
+4 Sommelier
+4 Archivist
+4 Paralegal
+4 Lineman
+4 Welder
+4 Glazier
+4 Mortician
+4 Auctioneer
+4 Stenographer
+4 Zookeeper
+5 Farrier | Trims and shoes horses' hooves.
+5 Cooper | Makes barrels.
+5 Chandler
+5 Fletcher | Makes arrows.
+5 Luthier | Builds and repairs stringed instruments.
+5 Milliner | Makes hats.
+5 Cobbler
+5 Foley artist
+5 Chimney sweep
+5 Lexicographer
+5 Horologist
+6 Knocker-up/knocker upper | Worker paid to tap on windows with a long pole to wake people, before alarm clocks.
+`},
+{q:"Name a car brand", s:[], a:`
+1 Toyota
+1 Ford
+1 Honda
+1 Chevrolet/chevy
+1 Tesla
+1 BMW
+1 Mercedes/mercedes-benz
+2 Nissan
+2 Jeep
+2 Audi
+2 Hyundai
+2 Kia
+2 Volkswagen/vw
+2 Subaru
+2 Mazda
+2 Lexus
+2 Dodge
+3 Porsche
+3 Ferrari
+3 Lamborghini
+3 Volvo
+3 Jaguar
+3 Land Rover
+3 Cadillac
+3 Buick
+3 GMC
+3 Chrysler
+3 Acura
+3 Infiniti
+3 Mini
+3 Fiat
+4 Maserati
+4 Bentley
+4 Rolls-Royce/rolls royce
+4 Aston Martin
+4 Bugatti
+4 McLaren
+4 Alfa Romeo
+4 Lotus
+4 Genesis
+4 Lincoln
+4 Mitsubishi
+4 Peugeot
+4 Renault
+4 Citroen
+5 Koenigsegg
+5 Pagani
+5 Rivian
+5 Lucid
+5 Polestar
+5 Saab
+5 Skoda
+5 Dacia
+5 Lada
+5 Tata
+5 BYD
+5 Pontiac
+5 Oldsmobile
+5 DeLorean
+6 Trabant | East German car with a body of Duroplast, a plastic reinforced with cotton waste.
+`},
+{q:"Name a vehicle", s:[], a:`
+1 Car
+1 Bus
+1 Truck
+1 Bicycle/bike
+1 Train
+1 Motorcycle
+1 Airplane/plane
+1 Boat
+2 Van
+2 Taxi
+2 Scooter
+2 Skateboard
+2 Tractor
+2 Ambulance
+2 Helicopter
+2 Subway
+2 Tram/streetcar
+3 Segway
+3 Unicycle
+3 Golf cart
+3 Forklift
+3 Snowmobile
+3 Monster truck
+3 Limousine/limo
+3 RV/camper
+3 Moped
+3 Trolley
+4 Rickshaw
+4 Tuk-tuk/tuk tuk
+4 Zamboni
+4 Hovercraft
+4 Cable car
+4 Funicular
+4 Dune buggy
+4 Hot air balloon
+5 Velomobile
+5 Penny-farthing/penny farthing
+5 Sidecar
+5 Trishaw
+6 Draisine/dandy horse | The 1817 two-wheeled "running machine" with no pedals, ancestor of the bicycle.
+`},
+{q:"Name a board game", s:[], a:`
+1 Monopoly
+1 Chess
+1 Checkers
+1 Scrabble
+1 Clue/cluedo
+1 Sorry
+1 Candy Land
+2 Connect Four
+2 Battleship
+2 Risk
+2 Life/game of life
+2 Catan/settlers of catan
+2 Ticket to Ride
+2 Trivial Pursuit
+2 Operation
+2 Guess Who
+2 Chutes and Ladders/snakes and ladders
+3 Backgammon
+3 Pandemic
+3 Carcassonne
+3 Codenames
+3 Go
+3 Mahjong
+3 Stratego
+3 Othello/reversi
+3 Mancala
+3 Parcheesi/ludo
+3 Mouse Trap
+3 Cranium
+4 Azul
+4 Wingspan
+4 Splendor
+4 Dominion
+4 Agricola
+4 Terraforming Mars
+4 Gloomhaven
+4 Power Grid
+4 Scythe
+4 Diplomacy
+5 Senet | Played in ancient Egypt, and found in Tutankhamun's tomb.
+5 Hnefatafl
+5 Nine men's morris
+5 Shogi
+5 Xiangqi
+5 Pachisi
+5 Fanorona
+5 Hex
+6 Royal Game of Ur/game of ur/ur | 4,500-year-old Mesopotamian race game whose rules were recovered from a cuneiform tablet.
+`},
+{q:"Name a martial art or combat sport", s:[], a:`
+1 Karate
+1 Kung fu
+1 Taekwondo
+1 Judo
+1 Boxing
+1 Jiu-jitsu/jiu jitsu/bjj
+1 MMA
+1 Wrestling
+2 Muay Thai
+2 Kickboxing
+2 Aikido
+2 Krav Maga
+2 Fencing
+2 Tai chi
+2 Sumo
+3 Capoeira
+3 Hapkido
+3 Wing Chun
+3 Kendo
+3 Sambo
+4 Savate
+4 Silat
+4 Eskrima/kali/arnis
+4 Jeet Kune Do
+4 Systema
+4 Sanda/sanshou
+5 Kalaripayattu | Martial art from Kerala, India, among the oldest still practiced.
+5 Glima
+5 Bokator
+5 Lethwei
+5 Pankration
+6 Bartitsu | Victorian mix of jujitsu, boxing, and cane fighting, mentioned in a Sherlock Holmes story.
+`},
+{q:"Name an Olympic sport or event", s:[], a:`
+1 Swimming
+1 Gymnastics
+1 Track/track and field/athletics/running
+1 Basketball
+1 Soccer/football
+1 Tennis
+1 Volleyball
+2 Diving
+2 Rowing
+2 Fencing
+2 Archery
+2 Boxing
+2 Wrestling
+2 Cycling
+2 Skiing
+2 Figure skating
+2 Snowboarding
+2 Ice hockey/hockey
+2 Surfing
+3 Equestrian
+3 Canoeing/kayaking
+3 Sailing
+3 Triathlon
+3 Weightlifting
+3 Judo
+3 Taekwondo
+3 Handball
+3 Water polo
+3 Badminton
+3 Table tennis
+3 Skateboarding
+3 Sport climbing/climbing
+3 Speed skating
+4 Modern pentathlon
+4 Biathlon
+4 Luge
+4 Skeleton
+4 Bobsled/bobsleigh
+4 Curling
+4 Nordic combined
+4 Trampoline
+4 Breaking/breakdancing
+5 Artistic swimming/synchronized swimming
+5 Ski jumping
+5 Keirin | Track cycling race that starts behind a pacing motorbike.
+5 Race walking
+5 Steeplechase
+6 Tug of war | Was an Olympic event from 1900 to 1920.
+`},
+{q:"Name a skateboard trick", s:["trick"], a:`
+1 Ollie
+1 Kickflip
+1 Heelflip
+1 Grind
+1 Manual
+2 Shove-it/shuvit/shove it
+2 360
+2 Nollie
+2 Boardslide
+2 50-50/fifty fifty
+3 Tre flip/360 flip/three flip
+3 Varial flip
+3 Pop shove-it
+3 Rock to fakie
+3 Nosegrind/nose grind
+3 5-0/five o
+3 Smith grind
+3 Feeble grind
+3 Crooked grind/crooks
+3 Hardflip
+4 Impossible
+4 Casper
+4 Caveman
+4 Boneless
+4 No comply
+4 Bigspin
+4 Hippie jump
+4 Kickturn
+5 Primo
+5 Christ air
+5 Benihana
+5 Madonna
+6 Darkslide | Sliding on the board's upside-down grip tape, popularized by Rodney Mullen.
+`},
+{q:"Name a yoga pose", s:["pose","asana"], a:`
+1 Downward dog/downward facing dog
+1 Child's pose/child
+1 Tree
+1 Warrior
+1 Cobra
+1 Plank
+2 Mountain
+2 Lotus
+2 Bridge
+2 Cat-cow/cat cow/cat
+2 Triangle
+2 Pigeon
+2 Crow
+2 Chair
+2 Boat
+3 Camel
+3 Corpse/savasana
+3 Happy baby
+3 Upward dog
+3 Headstand
+3 Shoulder stand
+4 Half moon
+4 Eagle
+4 Dancer
+4 Plow
+4 Fish
+4 Wheel
+4 Lizard
+4 Frog
+4 Garland
+4 Butterfly/bound angle
+5 Firefly
+5 Side crow
+5 Peacock | Arm balance with the whole body held level on the elbows.
+5 Scorpion
+5 Tortoise
+5 Compass
+5 Flying pigeon
+6 Eight-angle/astavakrasana | Named for the sage Ashtavakra, said to be born with eight bends in his body.
+`},
+{q:"Name a chess term", s:[], a:`
+1 Checkmate
+1 Check
+1 Castling
+1 Pawn
+1 King
+1 Queen
+2 Rook
+2 Bishop
+2 Knight
+2 Stalemate
+2 En passant
+2 Promotion
+2 Gambit
+2 Grandmaster
+3 Fork
+3 Pin
+3 Opening
+3 Endgame
+3 Skewer
+3 Sicilian
+3 Queen's gambit
+3 Blitz
+3 Elo
+3 Draw
+3 Resign
+4 Zugzwang | When any move you make will hurt your position.
+4 Fianchetto
+4 Discovered check
+4 Tempo
+4 Rank
+4 File
+4 Perpetual check
+4 Smothered mate
+5 Zwischenzug
+5 Windmill
+5 Desperado
+5 Prophylaxis
+5 Outpost
+5 Luft
+5 Opposition
+5 Triangulation
+5 Underpromotion
+6 J'adoube/jadoube | "I adjust," said before touching a piece you don't mean to move.
+`},
+{q:"Name a shape", s:["shape"], a:`
+1 Circle
+1 Square
+1 Triangle
+1 Rectangle
+1 Star
+1 Heart
+1 Oval
+1 Diamond
+2 Pentagon
+2 Hexagon
+2 Octagon
+2 Trapezoid
+2 Rhombus
+2 Parallelogram
+2 Cube
+2 Sphere
+2 Cylinder
+2 Cone
+2 Pyramid
+2 Crescent
+3 Heptagon
+3 Decagon
+3 Nonagon
+3 Ellipse
+3 Prism
+3 Kite
+3 Cross
+3 Spiral
+3 Torus
+4 Dodecahedron
+4 Icosahedron
+4 Octahedron
+4 Tetrahedron
+4 Annulus
+4 Frustum
+5 Lemniscate | The figure-eight curve of the infinity symbol.
+5 Hendecagon
+5 Trefoil
+5 Deltoid
+5 Rhombicuboctahedron
+6 Reuleaux triangle/reuleaux | Curved triangle with constant width, like a circle. Special drill bits use it to cut nearly square holes.
+`},
+{q:"Name a math term", s:[], a:`
+1 Addition/add
+1 Multiplication/multiply
+1 Fraction
+1 Equation
+1 Algebra
+1 Geometry
+1 Calculus
+1 Pi
+2 Integer
+2 Prime
+2 Decimal
+2 Exponent
+2 Variable
+2 Function
+2 Derivative
+2 Integral
+2 Percent
+2 Ratio
+2 Mean/average
+3 Logarithm
+3 Matrix
+3 Vector
+3 Polynomial
+3 Factorial
+3 Hypotenuse
+3 Tangent
+3 Sine
+3 Cosine
+3 Asymptote
+3 Limit
+3 Quadratic
+4 Eigenvalue
+4 Tensor
+4 Topology
+4 Manifold
+4 Axiom
+4 Lemma
+4 Theorem
+4 Conjecture
+4 Isomorphism
+4 Modulus
+4 Googolplex
+5 Totient
+5 Homeomorphism
+5 Abscissa | The x-coordinate of a point.
+5 Vinculum | The bar over repeating decimals or between the parts of a fraction.
+5 Ordinate
+6 Obelus | The ÷ division sign.
+`},
+{q:"Name a music genre", s:["music"], a:`
+1 Pop
+1 Rock
+1 Hip hop/rap
+1 Jazz
+1 Country
+1 Classical
+1 R&B/rnb
+1 EDM
+2 Blues
+2 Reggae
+2 Metal/heavy metal
+2 Punk
+2 Folk
+2 Soul
+2 Funk
+2 Disco
+2 Techno
+2 Gospel
+2 K-pop/kpop
+3 Indie
+3 Grunge
+3 Ska
+3 Salsa
+3 Bluegrass
+3 Reggaeton
+3 House
+3 Dubstep
+3 Opera
+3 Afrobeats
+3 Lo-fi/lofi
+4 Bossa nova
+4 Zydeco
+4 Shoegaze
+4 Trip hop
+4 Drum and bass/dnb
+4 Emo
+4 Synthwave
+4 Motown
+4 Cumbia
+4 Bachata
+5 Vaporwave
+5 Grime
+5 Highlife
+5 Fado | Portuguese song of longing, tied to the word saudade.
+5 Qawwali
+5 Gamelan
+5 Chiptune
+5 Krautrock
+5 Math rock
+5 Amapiano
+5 Enka
+6 Throat singing/khoomei/tuvan throat singing | Tuvan style in which one singer produces two or more pitches at once.
+`},
+{q:"Name a musical term", s:[], a:`
+1 Forte
+1 Piano
+1 Tempo
+1 Crescendo
+2 Allegro
+2 Staccato
+2 Adagio
+2 Andante
+2 Legato
+2 Fortissimo
+2 Pianissimo
+2 A cappella
+2 Encore
+3 Decrescendo/diminuendo
+3 Ritardando/ritard
+3 Fermata
+3 Presto
+3 Largo
+3 Vibrato
+3 Coda
+3 Arpeggio
+3 Pizzicato
+4 Accelerando
+4 Rubato
+4 Sforzando
+4 Glissando
+4 Tremolo
+4 Ostinato
+4 Cadenza
+4 Da capo
+4 Dal segno
+4 Sostenuto
+5 Morendo
+5 Smorzando
+5 Con brio
+5 Tenuto
+5 Sul ponticello
+5 Hemiola
+5 Melisma
+5 Appoggiatura
+5 Acciaccatura
+6 Col legno | String players strike the strings with the wood of the bow instead of the hair.
+`},
+{q:"Name a classical composer", s:[], a:`
+1 Mozart
+1 Beethoven
+1 Bach
+1 Chopin
+1 Tchaikovsky
+1 Vivaldi
+2 Handel
+2 Haydn
+2 Debussy
+2 Brahms
+2 Schubert
+2 Wagner
+2 Verdi
+2 Puccini
+2 Stravinsky
+2 Gershwin
+3 Liszt
+3 Mendelssohn
+3 Dvorak
+3 Mahler
+3 Rachmaninoff/rachmaninov
+3 Ravel
+3 Holst
+3 Grieg
+3 Copland
+3 Bernstein
+3 Satie
+3 Prokofiev
+3 Shostakovich
+4 Elgar
+4 Sibelius
+4 Saint-Saens/saint saens
+4 Bizet
+4 Rossini
+4 Strauss
+4 Schumann
+4 Berlioz
+4 Mussorgsky
+4 Rimsky-Korsakov
+4 Purcell
+4 Monteverdi
+4 Philip Glass/glass
+5 Hildegard of Bingen/hildegard | 12th-century abbess and one of the earliest composers known by name.
+5 Clara Schumann
+5 Scriabin
+5 Messiaen
+5 Gesualdo
+5 Josquin
+5 Ligeti
+5 Arvo Part/part
+5 John Cage/cage
+5 Florence Price/price
+6 Joseph Bologne/chevalier de saint-georges/saint-georges | 18th-century French violinist and composer who was also a champion fencer.
+`},
+{q:"Name a famous painter", s:[], a:`
+1 Picasso
+1 Van Gogh
+1 Leonardo da Vinci/da vinci/leonardo
+1 Monet
+1 Michelangelo
+1 Rembrandt
+2 Frida Kahlo/kahlo
+2 Dali
+2 Warhol
+2 Matisse
+2 Renoir
+2 Raphael
+2 Pollock
+2 Munch
+2 O'Keeffe/okeeffe
+3 Vermeer
+3 Klimt
+3 Cezanne
+3 Degas
+3 Goya
+3 Caravaggio
+3 Botticelli
+3 Magritte
+3 Hopper
+3 Basquiat
+3 Rothko
+3 Seurat
+3 Turner
+3 Kandinsky
+4 Bosch
+4 Bruegel/brueghel
+4 Titian
+4 El Greco
+4 Velazquez
+4 Gauguin
+4 Toulouse-Lautrec
+4 Manet
+4 Constable
+4 Whistler
+4 Sargent
+4 Hokusai
+4 Diego Rivera/rivera
+4 Mondrian
+4 Chagall
+4 Hockney
+5 Artemisia Gentileschi/gentileschi
+5 Sofonisba Anguissola/anguissola
+5 Ensor
+5 Schiele
+5 Vigee Le Brun
+5 Morisot
+5 Cassatt
+6 Hilma af Klint/af klint | Swedish painter whose abstract works from 1906 came before Kandinsky's.
+`},
+{q:"Name a Greek god or goddess", s:[], a:`
+1 Zeus
+1 Poseidon
+1 Hades
+1 Athena
+1 Apollo
+1 Aphrodite
+1 Ares
+1 Hermes
+2 Artemis
+2 Hera
+2 Dionysus
+2 Hephaestus
+2 Demeter
+2 Hestia
+2 Persephone
+2 Eros
+2 Nike
+3 Cronus/kronos
+3 Gaia
+3 Uranus
+3 Helios
+3 Selene
+3 Eos
+3 Hecate
+3 Pan
+3 Nemesis
+3 Iris
+4 Hypnos
+4 Thanatos
+4 Morpheus
+4 Tyche
+4 Asclepius
+4 Hebe
+4 Nyx
+4 Erebus
+4 Chaos
+5 Eris
+5 Phobos
+5 Harmonia
+5 Aeolus
+5 Triton
+5 Proteus
+5 Nereus
+5 Metis
+5 Themis
+5 Mnemosyne
+6 Momus | God of satire and mockery, thrown off Olympus in some tellings for criticizing the other gods.
+`},
+{q:"Name a mythical creature", s:[], a:`
+1 Dragon
+1 Unicorn
+1 Mermaid
+1 Phoenix
+1 Vampire
+1 Werewolf
+1 Centaur
+2 Griffin/gryphon
+2 Pegasus
+2 Minotaur
+2 Kraken
+2 Cyclops
+2 Medusa/gorgon
+2 Yeti/bigfoot/sasquatch
+2 Troll
+2 Goblin
+2 Fairy
+2 Elf
+3 Basilisk
+3 Chimera
+3 Hydra
+3 Banshee
+3 Leprechaun
+3 Sphinx
+3 Siren
+3 Harpy
+3 Golem
+3 Wendigo
+3 Chupacabra
+3 Gnome
+4 Kitsune
+4 Kappa
+4 Tengu
+4 Manticore
+4 Cockatrice
+4 Selkie
+4 Kelpie
+4 Satyr
+4 Djinn/genie/jinn
+4 Roc
+4 Thunderbird
+4 Naga
+4 Garuda
+5 Bunyip
+5 Qilin/kirin
+5 Nuckelavee
+5 Jorogumo
+5 Encantado
+5 Aswang
+5 Wyvern
+5 Amphisbaena
+5 Simurgh
+5 Tarasque
+5 Ammit
+6 Baku | Japanese creature that eats nightmares.
+`},
+{q:"Name a letter of the Greek alphabet", s:[], a:`
+1 Alpha
+1 Beta
+1 Gamma
+1 Delta
+1 Omega
+1 Pi
+2 Sigma
+2 Theta
+2 Lambda
+2 Epsilon
+2 Mu
+2 Phi
+3 Zeta
+3 Rho
+3 Tau
+3 Psi
+3 Chi
+3 Kappa
+4 Eta
+4 Iota
+4 Nu
+4 Xi
+4 Omicron
+4 Upsilon
+5 Koppa
+5 San
+5 Stigma
+5 Sampi
+6 Digamma | Archaic letter dropped from classical Greek but still used as the numeral 6.
+`},
+{q:"Name a punctuation mark or typographic symbol", s:["mark","sign","symbol"], a:`
+1 Period/full stop
+1 Comma
+1 Question mark/question
+1 Exclamation point/exclamation
+1 Apostrophe
+1 Quotation marks/quotes/quotation
+2 Colon
+2 Semicolon
+2 Hyphen
+2 Dash
+2 Parentheses/brackets
+2 Ellipsis
+2 Slash
+3 Braces/curly brackets
+3 Asterisk
+3 Ampersand
+3 At/at sign
+3 Hashtag/pound/hash
+3 Underscore
+3 Tilde
+4 Pilcrow | The paragraph mark.
+4 Interrobang | A question mark and exclamation point fused into one.
+4 Guillemets
+4 Section sign
+4 Caret
+4 Dagger/obelisk
+4 Backslash
+4 Bullet
+5 Double dagger
+5 Virgule
+5 Solidus
+5 Manicule | A pointing-hand symbol used in old books to flag important passages.
+5 Asterism
+6 Irony mark/percontation point | A reversed question mark proposed for rhetorical questions and sarcasm.
+`},
+{q:"Name a form of poetry", s:["poem","poetry"], a:`
+1 Haiku
+1 Sonnet
+1 Limerick
+1 Free verse
+2 Acrostic
+2 Ballad
+2 Ode
+2 Elegy
+2 Epic
+2 Couplet
+3 Cinquain
+3 Tanka
+3 Villanelle
+3 Blank verse
+3 Epigram
+3 Concrete/shape
+4 Sestina
+4 Ghazal
+4 Pantoum
+4 Rondeau
+4 Triolet
+4 Ballade
+4 Terza rima
+4 Prose poem
+5 Ottava rima
+5 Rubai
+5 Sijo
+5 Renga
+5 Kyrielle
+5 Rondel
+5 Double dactyl
+6 Clerihew | Four-line comic poem about a person, invented by Edmund Clerihew Bentley.
+`},
+{q:"Name a literary device", s:[], a:`
+1 Metaphor
+1 Simile
+1 Alliteration
+1 Onomatopoeia
+1 Personification
+1 Hyperbole
+1 Irony
+1 Foreshadowing
+2 Imagery
+2 Symbolism
+2 Flashback
+2 Oxymoron
+2 Allusion
+2 Rhyme
+2 Pun
+2 Satire
+3 Euphemism
+3 Juxtaposition
+3 Anaphora
+3 Motif
+3 Paradox
+3 Assonance
+3 Consonance
+3 Analogy
+3 Cliffhanger
+3 Allegory
+4 Litotes
+4 Synecdoche
+4 Metonymy
+4 Chiasmus
+4 Zeugma
+4 Epistrophe
+4 Enjambment
+4 In medias res
+4 Deus ex machina
+4 Red herring
+5 Tmesis
+5 Polysyndeton
+5 Asyndeton
+5 Apostrophe
+5 Anadiplosis
+6 Anthimeria | Using a word as a different part of speech, as in "let me google that."
+`},
+{q:"Name a language", s:["language"], a:`
+1 English
+1 Spanish
+1 French
+1 Chinese/mandarin
+1 German
+1 Japanese
+1 Arabic
+2 Italian
+2 Portuguese
+2 Russian
+2 Korean
+2 Hindi
+2 Latin
+2 Greek
+2 Hebrew
+2 Dutch
+3 Swahili
+3 Turkish
+3 Polish
+3 Vietnamese
+3 Thai
+3 Urdu
+3 Bengali
+3 Tagalog/filipino
+3 Persian/farsi
+3 Punjabi
+3 Cantonese
+3 Swedish
+3 Irish/gaelic
+4 Tamil
+4 Telugu
+4 Yoruba
+4 Zulu
+4 Amharic
+4 Hungarian
+4 Finnish
+4 Icelandic
+4 Welsh
+4 Basque
+4 Catalan
+4 Navajo
+4 Quechua
+4 Hawaiian
+4 Esperanto
+5 Ainu
+5 Sami
+5 Maori
+5 Inuktitut
+5 Xhosa | Uses click consonants as regular sounds.
+5 Khmer
+5 Tigrinya
+5 Faroese
+5 Manx
+5 Cornish
+5 Yiddish
+5 Klingon
+6 Silbo Gomero/silbo | Whistled form of Spanish used to talk across the ravines of La Gomera.
+`},
+{q:"Name a currency", s:["currency"], a:`
+1 Dollar
+1 Euro
+1 Pound
+1 Yen
+1 Peso
+2 Rupee
+2 Yuan/renminbi
+2 Franc
+2 Won
+2 Ruble/rouble
+2 Real
+2 Krona/krone
+2 Dinar
+2 Rand
+2 Bitcoin
+3 Baht
+3 Dirham
+3 Shekel
+3 Lira
+3 Rupiah
+3 Ringgit
+3 Zloty
+3 Forint
+3 Koruna
+4 Dong
+4 Naira
+4 Birr
+4 Kwacha
+4 Cedi
+4 Riyal/rial
+4 Taka
+4 Sol
+4 Quetzal
+4 Colon
+4 Lempira
+4 Bolivar
+4 Guarani
+5 Tugrik
+5 Ngultrum
+5 Kyat
+5 Lari
+5 Dram
+5 Manat
+5 Som
+5 Tenge
+5 Kip
+5 Riel
+5 Pula | Botswana's currency. The word means "rain" in Setswana.
+5 Loti
+5 Lilangeni
+6 Ouguiya | Mauritania's currency, one of the few divided into five smaller units instead of 100.
+`},
+{q:"Name a capital city", s:[], a:`
+1 London
+1 Paris
+1 Tokyo
+1 Washington/washington dc/dc
+1 Beijing
+1 Rome
+1 Moscow
+2 Berlin
+2 Madrid
+2 Ottawa
+2 Canberra
+2 Cairo
+2 New Delhi/delhi
+2 Mexico City
+2 Seoul
+2 Athens
+3 Buenos Aires
+3 Lima
+3 Bangkok
+3 Nairobi
+3 Oslo
+3 Stockholm
+3 Dublin
+3 Lisbon
+3 Vienna
+3 Prague
+3 Warsaw
+3 Havana
+3 Brasilia
+4 Reykjavik
+4 Wellington
+4 Ankara
+4 Kathmandu
+4 Hanoi
+4 Helsinki
+4 Budapest
+4 Bogota
+4 Santiago
+4 Manila
+4 Jakarta
+4 Canberra
+5 Ulaanbaatar/ulan bator
+5 Thimphu
+5 Tbilisi
+5 Baku
+5 Astana
+5 Tashkent
+5 Bishkek
+5 Dushanbe
+5 Ashgabat
+5 Windhoek
+5 Gaborone
+5 Maseru
+5 Lilongwe
+5 Ouagadougou
+5 Nouakchott
+5 Bamako
+5 Niamey
+5 N'Djamena/ndjamena
+6 Ngerulmud | Capital of Palau, home to only a few hundred people.
+`},
+{q:"Name a country in Africa", s:[], a:`
+1 Egypt
+1 Nigeria
+1 South Africa
+1 Kenya
+1 Morocco
+1 Ethiopia
+2 Ghana
+2 Algeria
+2 Tanzania
+2 Uganda
+2 Sudan
+2 Somalia
+2 Madagascar
+2 Libya
+2 Tunisia
+2 Senegal
+2 Zimbabwe
+2 Rwanda
+2 Congo/drc/democratic republic of the congo
+3 Cameroon
+3 Angola
+3 Mozambique
+3 Zambia
+3 Namibia
+3 Botswana
+3 Mali
+3 Niger
+3 Chad
+3 Ivory Coast/cote d'ivoire
+3 Liberia
+3 Sierra Leone
+4 Benin
+4 Togo
+4 Gabon
+4 Eritrea
+4 Djibouti
+4 Burkina Faso
+4 Burundi
+4 Malawi
+4 Lesotho
+4 Eswatini/swaziland
+4 Mauritania
+4 Gambia
+4 Guinea
+4 Guinea-Bissau
+4 South Sudan
+4 Central African Republic
+5 Cape Verde/cabo verde
+5 Comoros
+5 Mauritius
+5 Sao Tome and Principe/sao tome
+5 Equatorial Guinea
+6 Seychelles | Africa's least populous country, an archipelago of 115 islands.
+`},
+{q:"Name a country in Europe", s:[], a:`
+1 France
+1 Germany
+1 Italy
+1 Spain
+1 United Kingdom/uk/england/britain
+1 Russia
+1 Greece
+2 Portugal
+2 Netherlands/holland
+2 Sweden
+2 Norway
+2 Poland
+2 Ireland
+2 Switzerland
+2 Belgium
+2 Austria
+2 Denmark
+2 Finland
+2 Ukraine
+3 Czechia/czech republic
+3 Hungary
+3 Romania
+3 Iceland
+3 Croatia
+3 Scotland
+3 Serbia
+3 Bulgaria
+4 Slovakia
+4 Slovenia
+4 Estonia
+4 Latvia
+4 Lithuania
+4 Belarus
+4 Moldova
+4 Albania
+4 Bosnia/bosnia and herzegovina
+4 Montenegro
+4 North Macedonia/macedonia
+4 Luxembourg
+4 Malta
+4 Cyprus
+4 Monaco
+5 Andorra
+5 Liechtenstein
+5 Vatican City/vatican
+5 Kosovo
+6 San Marino | Claims to be the world's oldest surviving republic, founded in 301 AD.
+`},
+{q:"Name a river", s:["river"], a:`
+1 Nile
+1 Amazon
+1 Mississippi
+1 Thames
+1 Yangtze
+1 Ganges
+1 Danube
+2 Rhine
+2 Seine
+2 Colorado
+2 Hudson
+2 Missouri
+2 Ohio
+2 Mekong
+2 Volga
+2 Tigris
+2 Euphrates
+2 Zambezi
+2 Congo
+3 Rio Grande
+3 Columbia
+3 Niger
+3 Indus
+3 Yellow/huang he
+3 Jordan
+3 Tiber
+3 St Lawrence/saint lawrence
+3 Potomac
+3 Orinoco
+3 Murray
+3 Loire
+3 Shannon
+3 Yukon
+4 Ob
+4 Yenisei
+4 Lena
+4 Amur
+4 Irrawaddy
+4 Brahmaputra
+4 Parana
+4 Limpopo
+4 Elbe
+4 Oder
+4 Dnieper
+4 Vistula
+5 Okavango | Flows inland and spreads into a delta in the Kalahari instead of reaching the sea.
+5 Salween
+5 Mackenzie
+5 Sepik
+5 Fraser
+5 Ural
+5 Tagus/tajo
+6 Cano Cristales | Colombian river that turns red, yellow, and green from the plants growing in it.
+6 Onyx | Antarctica's longest river, which flows only in summer.
+`},
+{q:"Name a mountain", s:["mountain","mount","mt"], a:`
+1 Everest
+1 Kilimanjaro
+1 Fuji
+1 K2
+1 Matterhorn
+2 Denali/mckinley
+2 Mont Blanc
+2 Rushmore
+2 Olympus
+2 Rainier
+2 Whitney
+2 Aconcagua
+2 Elbrus
+2 Vesuvius
+2 Etna
+3 Kosciuszko
+3 Annapurna
+3 Kangchenjunga
+3 Ben Nevis
+3 Table Mountain/table
+3 Mauna Kea
+3 Mauna Loa
+3 St Helens/saint helens
+3 Shasta
+3 Hood
+3 Eiger
+4 Lhotse
+4 Makalu
+4 Cho Oyu
+4 Logan
+4 Jungfrau
+4 Vinson
+4 Nanga Parbat
+4 Ararat
+4 Sinai
+4 Kailash
+5 Puncak Jaya/carstensz
+5 Damavand
+5 Olympus Mons | On Mars, about two and a half times as tall as Everest.
+5 Roraima
+5 Erebus
+6 Chimborazo | Its summit is the farthest point from Earth's center, thanks to the bulge at the equator.
+`},
+{q:"Name an ocean or sea", s:["ocean","sea"], a:`
+1 Pacific
+1 Atlantic
+1 Indian
+1 Arctic
+2 Southern/antarctic
+2 Mediterranean
+2 Caribbean
+2 Red
+2 Dead
+2 Black
+2 Caspian
+2 North
+2 Baltic
+3 Arabian
+3 South China
+3 Bering
+3 Aegean
+3 Adriatic
+3 Coral
+3 Tasman
+3 Philippine
+3 Japan/east
+3 Yellow
+4 Ionian
+4 Tyrrhenian
+4 Ligurian
+4 White
+4 Barents
+4 Kara
+4 Laptev
+4 Beaufort
+4 Weddell
+4 Ross
+4 Andaman
+4 Java
+4 Marmara
+4 Irish
+5 Sargasso | The only sea with no land coastline, bounded by ocean currents.
+5 Celebes
+5 Sulu
+5 Banda
+5 Timor
+5 Arafura
+5 Salish
+5 Labrador
+6 Azov | The shallowest sea in the world, averaging about 7 meters deep.
+`},
+{q:"Name an island", s:["island"], a:`
+1 Hawaii
+1 Greenland
+1 Madagascar
+1 Iceland
+1 Japan
+1 Cuba
+1 Jamaica
+1 Ireland
+2 Bali
+2 Sicily
+2 Sardinia
+2 Crete
+2 Tasmania
+2 Borneo
+2 Sumatra
+2 Puerto Rico
+2 Manhattan
+2 Long Island
+2 New Guinea
+2 Sri Lanka
+2 Tahiti
+3 Corsica
+3 Cyprus
+3 Malta
+3 Java
+3 Mallorca/majorca
+3 Ibiza
+3 Santorini
+3 Bora Bora
+3 Galapagos
+3 Fiji
+3 Maui
+4 Easter Island/rapa nui
+4 Socotra
+4 Svalbard
+4 Sakhalin
+4 Hokkaido
+4 Honshu
+4 Baffin
+4 Ellesmere
+4 Zanzibar
+4 Mauritius
+4 Capri
+4 Skye
+5 Tristan da Cunha
+5 Pitcairn
+5 Kerguelen
+5 St Helena/saint helena
+5 Surtsey | Volcanic island that rose out of the sea off Iceland in 1963.
+5 Jan Mayen
+5 Nauru
+6 Bouvet | The most remote island on Earth, over 1,600 km from any other land.
+`},
+{q:"Name a moon in our solar system", s:["moon"], a:`
+1 The Moon/luna/earth's moon
+1 Europa
+1 Titan
+2 Io
+2 Ganymede
+2 Callisto
+2 Phobos
+2 Deimos
+3 Triton
+3 Enceladus
+3 Charon
+3 Oberon
+3 Titania
+3 Miranda
+4 Rhea
+4 Iapetus
+4 Dione
+4 Tethys
+4 Mimas
+4 Hyperion
+4 Ariel
+4 Umbriel
+4 Nereid
+4 Amalthea
+5 Pandora
+5 Prometheus
+5 Janus
+5 Epimetheus
+5 Metis
+5 Adrastea
+5 Thebe
+5 Himalia
+5 Proteus
+5 Puck
+5 Phoebe
+5 Dysnomia
+5 Nix
+5 Hydra
+5 Kerberos
+5 Styx
+6 Methone | Tiny moon of Saturn shaped like a smooth egg.
+`},
+{q:"Name a star (not the Sun)", s:["star"], a:`
+1 Polaris/north star
+1 Sirius
+1 Betelgeuse
+2 Rigel
+2 Vega
+2 Alpha Centauri
+2 Proxima Centauri
+3 Antares
+3 Arcturus
+3 Aldebaran
+3 Altair
+3 Deneb
+3 Canopus
+3 Spica
+4 Capella
+4 Pollux
+4 Castor
+4 Regulus
+4 Fomalhaut
+4 Bellatrix
+4 Mira
+4 Algol
+4 Achernar
+4 Mintaka
+4 Alnitak
+4 Alnilam
+5 Eta Carinae
+5 VY Canis Majoris
+5 UY Scuti
+5 Tabby's Star/tabbys star
+5 Barnard's Star/barnards star
+5 Thuban | Was the north star when the Egyptian pyramids were built.
+5 Mizar
+5 Alcor
+6 Zubenelgenubi | Star in Libra whose name means "the southern claw" of the scorpion.
+0 Sun | The Sun is a star, but this prompt asks for any other one.
+`},
+{q:"Name an organ in the human body", s:["organ"], a:`
+1 Heart
+1 Brain
+1 Lungs/lung
+1 Liver
+1 Stomach
+1 Kidneys/kidney
+1 Skin
+2 Intestines/intestine/gut
+2 Bladder
+2 Pancreas
+2 Spleen
+2 Gallbladder
+2 Appendix
+2 Esophagus
+2 Eyes/eye
+3 Thyroid
+3 Tonsils
+3 Uterus
+3 Prostate
+3 Larynx
+3 Trachea
+3 Colon
+3 Thymus
+3 Adrenal glands/adrenal
+4 Pituitary
+4 Pineal
+4 Hypothalamus
+4 Duodenum
+4 Jejunum
+4 Ileum
+4 Cecum
+4 Epiglottis
+4 Diaphragm
+5 Mesentery | Reclassified as a single continuous organ in 2016.
+5 Vermiform appendix
+6 Interstitium | Network of fluid-filled spaces in tissue that some scientists proposed as an organ in 2018.
+`},
+{q:"Name a muscle", s:["muscle"], a:`
+1 Biceps/bicep
+1 Triceps/tricep
+1 Abs/abdominals
+1 Quads/quadriceps
+1 Hamstrings/hamstring
+1 Glutes
+1 Calves/calf
+1 Pecs/pectorals
+2 Deltoids/delts
+2 Lats
+2 Traps
+2 Obliques
+2 Diaphragm
+2 Heart
+3 Gastrocnemius
+3 Soleus
+3 Sartorius | The longest muscle in the body.
+3 Gluteus maximus
+3 Rectus abdominis
+3 Latissimus dorsi
+3 Trapezius
+3 Rhomboids
+3 Rotator cuff
+3 Hip flexors
+4 Masseter
+4 Buccinator
+4 Orbicularis oculi
+4 Platysma
+4 Sternocleidomastoid
+4 Psoas
+4 Piriformis
+4 Tibialis anterior
+4 Serratus anterior
+4 Brachioradialis
+5 Levator scapulae
+5 Pronator teres
+5 Supinator
+5 Gracilis
+5 Popliteus
+6 Stapedius | The smallest skeletal muscle in the body, in the middle ear.
+`},
+{q:"Name an emotion", s:[], a:`
+1 Happy/happiness
+1 Sad/sadness
+1 Angry/anger
+1 Scared/afraid/fear
+1 Excited/excitement
+1 Nervous
+1 Love
+2 Jealous/jealousy
+2 Anxious/anxiety
+2 Bored/boredom
+2 Lonely/loneliness
+2 Proud/pride
+2 Embarrassed/embarrassment
+2 Surprised/surprise
+2 Grateful/gratitude
+2 Confused/confusion
+3 Nostalgic/nostalgia
+3 Hopeful/hope
+3 Frustrated/frustration
+3 Ashamed/shame
+3 Guilty/guilt
+3 Content/contentment
+3 Envious/envy
+3 Disgusted/disgust
+3 Relieved/relief
+3 Elated/elation
+4 Melancholy
+4 Euphoric/euphoria
+4 Wistful
+4 Apprehensive
+4 Ambivalent
+4 Exasperated
+4 Despondent
+4 Serene
+5 Schadenfreude
+5 Ennui
+5 Saudade | Portuguese word for a deep longing for something absent.
+5 Hygge
+5 Weltschmerz
+5 Frisson
+5 Compersion
+5 Sonder
+6 Kama muta | Being moved to tears by sudden closeness. Sanskrit for "moved by love."
+`},
+{q:"Name a word that means 'happy'", s:[], a:`
+1 Joyful
+1 Glad
+1 Cheerful
+1 Delighted
+1 Excited
+2 Content
+2 Thrilled
+2 Ecstatic
+2 Elated
+2 Jolly
+2 Merry
+2 Pleased
+3 Overjoyed
+3 Blissful
+3 Euphoric
+3 Gleeful
+3 Jubilant
+3 Chipper
+3 Upbeat
+3 Sunny
+4 Exuberant
+4 Buoyant
+4 Radiant
+4 Blithe
+4 Carefree
+4 Jovial
+4 Chuffed
+5 Rapturous
+5 Exultant
+5 Beatific
+5 Felicitous
+5 Gladsome
+5 Rhapsodic
+6 Eudaemonic/eudaimonic | Happy in the deep, well-lived sense, from Greek eudaimonia.
+`},
+{q:"Name a word that means 'small'", s:[], a:`
+1 Tiny
+1 Little
+1 Mini
+1 Short
+2 Wee
+2 Petite
+2 Miniature
+2 Compact
+2 Teeny
+3 Minuscule
+3 Microscopic
+3 Diminutive
+3 Minute
+3 Puny
+3 Pint-sized/pint sized
+3 Itsy-bitsy/itsy bitsy/itty bitty
+4 Infinitesimal
+4 Dinky
+4 Pocket-sized/pocket sized
+4 Bantam
+4 Elfin
+5 Lilliputian | From Lilliput, the land of tiny people in Gulliver's Travels.
+5 Homuncular
+5 Picayune
+5 Pygmy
+6 Exiguous | Scanty or meager, from Latin exiguus.
+`},
+{q:"Name a way of walking", s:[], a:`
+1 Run
+1 Jog
+1 Stroll
+1 March
+1 Skip
+1 Hop
+1 Stomp
+2 Tiptoe
+2 Saunter
+2 Wander
+2 Stride
+2 Shuffle
+2 Limp
+2 Sprint
+2 Trudge
+2 Waddle
+3 Amble
+3 Strut
+3 Prance
+3 Stagger
+3 Stumble
+3 Swagger
+3 Plod
+3 Trek
+3 Hike
+3 Sashay
+3 Lumber
+4 Meander
+4 Mosey
+4 Traipse
+4 Slog
+4 Totter
+4 Toddle
+4 Lope
+4 Mince
+4 Promenade
+4 Dawdle
+5 Perambulate
+5 Flounce
+5 Shamble
+5 Lurch
+5 Scuttle
+5 Sidle
+6 Galumph | To move clumsily and heavily. Coined by Lewis Carroll in "Jabberwocky" (1871).
+`},
+{q:"Name an English word borrowed from French", s:[], a:`
+1 Cafe
+1 Ballet
+1 Menu
+1 Deja vu
+2 Rendezvous
+2 Cliche
+2 Souvenir
+2 Bouquet
+2 Croissant
+2 Entrepreneur
+2 Genre
+2 Chic
+2 Buffet
+2 Encore
+2 Fiance/fiancee
+2 Resume
+2 Boutique
+3 Chauffeur
+3 Debut
+3 Faux pas
+3 Bourgeois
+3 Avant-garde/avant garde
+3 Femme fatale
+3 Carte blanche
+3 Coup d'etat/coup
+3 Hors d'oeuvre
+3 Cul-de-sac
+3 RSVP
+4 Laissez-faire/laissez faire
+4 Raison d'etre
+4 Je ne sais quoi
+4 Nouveau riche
+4 Joie de vivre
+4 Tete-a-tete
+5 Ennui
+5 Soupcon
+5 Sang-froid/sang froid
+5 Flaneur
+5 Frisson
+6 Esprit de l'escalier/l'esprit de l'escalier/staircase wit | Thinking of the perfect comeback only after you've left.
+`},
+{q:"Name an English word borrowed from Arabic", s:[], a:`
+2 Algebra
+2 Coffee
+2 Sugar
+2 Safari
+3 Algorithm
+3 Alcohol
+3 Zero
+3 Cotton
+3 Magazine
+3 Sofa
+3 Lemon
+3 Giraffe
+3 Candy
+3 Syrup
+3 Hummus
+3 Falafel
+4 Admiral
+4 Mattress
+4 Jar
+4 Tariff
+4 Cipher
+4 Alchemy
+4 Elixir
+4 Monsoon
+4 Hazard
+4 Carafe
+4 Sherbet
+4 Saffron
+4 Apricot
+4 Artichoke
+5 Zenith
+5 Talc
+5 Alkali
+5 Arsenal
+5 Alcove
+6 Nadir | The point directly below you, opposite the zenith, from Arabic nazir.
+`},
+{q:"Name an English word that comes from Hindi, Urdu, or Sanskrit", s:[], a:`
+1 Yoga
+1 Karma
+1 Guru
+1 Avatar
+2 Shampoo | From champo, "press" or "massage."
+2 Pajamas/pyjamas
+2 Jungle
+2 Bungalow
+2 Mantra
+2 Nirvana
+3 Thug
+3 Loot
+3 Bandana
+3 Khaki
+3 Cheetah
+3 Chutney
+3 Juggernaut
+3 Punch
+3 Pundit
+4 Cot
+4 Dinghy
+4 Veranda
+4 Cushy
+4 Pashmina
+4 Bangle
+5 Chit
+5 Pukka
+5 Blighty
+5 Dekko
+5 Calico
+6 Dungarees | Named for Dongri, a Mumbai neighborhood where the coarse cloth was made.
+`},
+{q:"Name an architectural style", s:["architecture","style"], a:`
+1 Gothic
+1 Modern
+1 Victorian
+2 Colonial
+2 Art deco
+2 Baroque
+2 Renaissance
+2 Neoclassical
+2 Brutalist/brutalism
+2 Craftsman
+2 Tudor
+2 Ranch
+2 Bauhaus
+2 Mid-century modern/mid century modern
+3 Romanesque
+3 Byzantine
+3 Rococo
+3 Georgian
+3 Art nouveau
+3 Postmodern
+3 Mission
+3 Greek Revival
+3 Spanish colonial
+4 Beaux-Arts/beaux arts
+4 Federal
+4 Prairie
+4 Deconstructivism
+4 Palladian
+4 Queen Anne
+4 Second Empire
+4 International
+5 Googie | Space-age 1950s style of diners and motels, all boomerangs and starbursts.
+5 Mudejar
+5 Churrigueresque
+5 Metabolism
+6 Manueline | Lavish Portuguese style of the 1500s, carved with ropes, shells, and sea motifs.
+`},
+{q:"Name a type of bridge", s:["bridge"], a:`
+1 Suspension
+1 Arch
+1 Drawbridge
+2 Beam
+2 Truss
+2 Cable-stayed/cable stayed
+2 Covered
+2 Footbridge
+2 Rope
+3 Cantilever
+3 Swing
+3 Pontoon/floating
+3 Viaduct
+3 Aqueduct
+3 Lift
+4 Bascule
+4 Box girder
+4 Tied-arch/tied arch
+4 Moon
+5 Clapper | Prehistoric-style bridge of flat stone slabs laid across stone piers.
+5 Transporter
+5 Rolling
+5 Tilt
+6 Living root | Bridges in Meghalaya, India, grown from the roots of rubber fig trees.
+`},
+{q:"Name a weather event (not a cloud)", s:[], a:`
+1 Rain
+1 Snow
+1 Hail
+1 Thunder
+1 Lightning
+1 Tornado
+1 Hurricane
+1 Wind
+2 Sleet
+2 Drizzle
+2 Blizzard
+2 Monsoon
+2 Drought
+2 Heat wave
+2 Rainbow
+2 Frost
+3 Typhoon
+3 Cyclone
+3 Dust storm
+3 Sandstorm
+3 Thunderstorm
+3 Freezing rain
+3 Dew
+3 Mist
+4 Haboob
+4 Derecho | Long-lived line of storms with straight-line winds as strong as a tornado's.
+4 Waterspout
+4 Heat lightning
+4 Microburst
+4 Sun dog
+4 Polar vortex
+4 Rime
+4 Hoar frost
+5 Graupel | Soft pellets of snow coated in frozen droplets, between hail and snow.
+5 Ball lightning
+5 Fire whirl
+5 Glory
+5 Gustnado
+5 Diamond dust
+6 Steam devil | Small whirlwind of fog that spins up over warm water in cold air.
+`},
+{q:"Name a type of rock", s:["rock","stone"], a:`
+1 Granite
+1 Marble
+1 Sandstone
+1 Limestone
+1 Lava
+2 Basalt
+2 Obsidian
+2 Slate
+2 Shale
+2 Pumice
+2 Coal
+2 Chalk
+2 Flint
+3 Quartzite
+3 Gneiss
+3 Schist
+3 Conglomerate
+3 Igneous
+3 Sedimentary
+3 Metamorphic
+4 Breccia
+4 Gabbro
+4 Diorite
+4 Andesite
+4 Rhyolite
+4 Tuff
+4 Scoria
+4 Travertine
+4 Dolomite
+4 Soapstone
+5 Peridotite
+5 Eclogite
+5 Kimberlite | Volcanic rock that carries diamonds up from the mantle.
+5 Mylonite
+5 Hornfels
+5 Migmatite
+5 Chert
+6 Komatiite | Rock from ultra-hot lava that erupted mostly over 2.5 billion years ago.
+`},
+{q:"Name a potato dish", s:["potato","potatoes"], a:`
+1 French fries/fries
+1 Mashed
+1 Baked
+1 Hash browns
+1 Tater tots
+1 Chips/potato chips
+2 Scalloped
+2 Au gratin
+2 Potato salad
+2 Home fries
+2 Wedges
+2 Latkes
+2 Gnocchi
+2 Potato skins
+2 Twice-baked/twice baked
+3 Rosti
+3 Poutine
+3 Colcannon
+3 Pierogi
+3 Aloo gobi
+3 Patatas bravas
+3 Hasselback
+3 Shepherd's pie/shepherds pie
+4 Boxty
+4 Duchess
+4 Samosa
+4 Tortilla espanola/spanish omelette
+4 Knish
+4 Croquettes
+5 Aligot | Stretchy French mashed potatoes beaten with melted cheese.
+5 Pommes Anna
+5 Champ
+5 Tartiflette
+5 Papa rellena
+5 Vada pav
+6 Rumbledethumps | Scottish bake of potato, cabbage, and onion.
+`},
+{q:"Name an egg dish", s:["egg","eggs"], a:`
+1 Scrambled
+1 Fried
+1 Omelet/omelette
+1 Boiled/hard boiled
+1 Poached
+1 Deviled
+1 Benedict
+2 Frittata
+2 Quiche
+2 Sunny side up
+2 Over easy
+2 Egg salad
+2 Souffle
+2 Huevos rancheros
+3 Shakshuka
+3 Egg drop soup
+3 Scotch
+3 Florentine
+3 Tamagoyaki
+3 Egg foo young
+3 Carbonara
+3 Custard
+4 Century egg/thousand-year egg/century
+4 Menemen
+4 Tortilla espanola
+4 Kuku
+4 Eggs in purgatory
+5 Balut
+5 Cilbir
+5 Oeufs en meurette
+5 Tea eggs
+6 Chawanmushi | Silky Japanese savory egg custard steamed in a cup.
+`},
+{q:"Name a salad", s:["salad"], a:`
+1 Caesar
+1 Garden
+1 Greek
+1 Cobb
+1 Potato
+1 Fruit
+1 Pasta
+2 Chef
+2 Waldorf
+2 Caprese
+2 Coleslaw
+2 Wedge
+2 Taco
+2 Chicken
+2 Egg
+2 Spinach
+3 Nicoise
+3 Tabbouleh
+3 Fattoush
+3 Panzanella
+3 Larb
+3 Som tam/papaya
+3 Kale
+3 Quinoa
+3 Macaroni
+4 Ambrosia
+4 Olivier
+4 Shopska
+4 Gado-gado/gado gado
+4 Kachumber
+4 Seaweed
+5 Rojak
+5 Jello
+5 Horiatiki
+5 Salade lyonnaise
+6 Watergate | Fluffy American mix of pistachio pudding, pineapple, marshmallows, and whipped topping.
+`},
+{q:"Name a citrus fruit", s:[], a:`
+1 Orange
+1 Lemon
+1 Lime
+1 Grapefruit
+1 Tangerine
+1 Clementine
+2 Mandarin
+2 Kumquat
+2 Blood orange
+2 Satsuma
+2 Pomelo
+2 Key lime
+3 Yuzu
+3 Bergamot
+3 Tangelo
+3 Citron
+3 Meyer lemon
+4 Calamansi
+4 Ugli fruit/ugli
+4 Finger lime
+4 Sudachi
+4 Buddha's hand/buddhas hand
+5 Makrut lime/kaffir lime
+5 Dekopon/sumo
+5 Kabosu
+5 Etrog
+5 Rangpur
+5 Oroblanco
+6 Chinotto | Bitter Italian citrus that flavors a dark soda of the same name.
+`}
+];
+
+PROMPTS.push(...MORE);
+
 /* ---------- Tiers and badges ---------- */
 const TIERS = [
   {name:"Dud", pts:0, color:"#4a3f37", sq:"⬛", line:"Not in the sample."},
-  {name:"Topsoil", pts:5, color:"#8a6a4f", sq:"🟫", line:"Everyone dug here first."},
-  {name:"Clay", pts:20, color:"#b07a52", sq:"🟤", line:"Solid and familiar."},
-  {name:"Bedrock", pts:40, color:"#9a948d", sq:"⬜", line:"Took a second thought."},
+  {name:"Topsoil", pts:10, color:"#8a6a4f", sq:"🟫", line:"Everyone dug here first."},
+  {name:"Clay", pts:15, color:"#b07a52", sq:"🟤", line:"Solid and familiar."},
+  {name:"Bedrock", pts:30, color:"#9a948d", sq:"⬜", line:"Took a second thought."},
   {name:"Ore seam", pts:60, color:"#e5b54a", sq:"🟨", line:"Uncommon. Worth refining."},
-  {name:"Deep vein", pts:80, color:"#ff7a3d", sq:"🟧", line:"Almost nobody drills this far."},
+  {name:"Deep vein", pts:85, color:"#ff7a3d", sq:"🟧", line:"Almost nobody drills this far."},
   {name:"One in a Quarrillion", pts:100, color:"#6fe3d2", sq:"💎", line:"The rarest find in the rock."}
 ];
 const SPRITES = [
@@ -2219,16 +5780,29 @@ const EPOCH=new Date(2026,10,2);
 const NOW=new Date(), MID=new Date(NOW.getFullYear(),NOW.getMonth(),NOW.getDate());
 const DAY=Math.round((MID-EPOCH)/86400000);
 const ISO=MID.getFullYear()+"-"+String(MID.getMonth()+1).padStart(2,"0")+"-"+String(MID.getDate()).padStart(2,"0");
+/* Daily schedule: every day gets 7 prompts, and no prompt comes back within 14 days.
+   Among the prompts that are allowed, the ones unused the longest are favored. */
+const SCHED=[], LASTUSE={};
 function dailyCats(day){
-  const N=PROMPTS.length,out=[],cache={}; let pos=Math.max(0,day)*3;
-  while(out.length<3){const c=Math.floor(pos/N); cache[c]=cache[c]||shuffled(N,7919*c+104729); const i=cache[c][pos%N]; if(!out.includes(i)) out.push(i); pos++;}
-  return out;
+  day=Math.max(0,day);
+  const N=PROMPTS.length, GAP=Math.min(14,Math.floor(N/7)-2);
+  while(SCHED.length<=day){
+    const d=SCHED.length, r=mulberry32(7919*d+104729);
+    const ok=[...Array(N).keys()].filter(i=>LASTUSE[i]===undefined||d-LASTUSE[i]>GAP);
+    const keyed=ok.map(i=>({i,k:(LASTUSE[i]===undefined?-1e6:LASTUSE[i])+r()*3}));
+    keyed.sort((x,y)=>x.k-y.k);
+    const pool=keyed.slice(0,Math.max(7,Math.ceil(keyed.length*.6))).map(x=>x.i);
+    const pick=[]; while(pick.length<7){const j=Math.floor(r()*pool.length); pick.push(pool.splice(j,1)[0]);}
+    pick.forEach(i=>LASTUSE[i]=d);
+    SCHED.push(pick);
+  }
+  return SCHED[day];
 }
 function load(k){try{return JSON.parse(localStorage.getItem(k));}catch(e){return null;}}
 function save(k,v){try{localStorage.setItem(k,JSON.stringify(v));}catch(e){}}
 
 /* ---------- Earth model ---------- */
-const R_EARTH=6371, KM_PER_PT=6371/1600;
+const R_EARTH=6371, KM_PER_PT=6371/700;
 const SEG_KM=[0,4,12.262,35,410,660,2891,5150,6371];
 const SEG_NAMES=["Crust","Crust","Crust","Upper mantle","Transition zone","Lower mantle","Outer core","Inner core"];
 const MARKS=[
@@ -2342,259 +5916,210 @@ const reduced=matchMedia("(prefers-reduced-motion: reduce)").matches;
 addEventListener("resize",()=>{resize();});
 resize(); requestAnimationFrame(frame);
 
-/* ---------- Game ---------- */
+/* ---------- Game (Cosmillion format: 7 prompts, 25 seconds, one answer each) ---------- */
 const $=id=>document.getElementById(id);
-const SCREENS=["startScreen","playScreen","revealScreen","endScreen"];
+const SCREENS=["startScreen","playScreen","revealScreen","endScreen","archiveScreen"];
 function show(id){SCREENS.forEach(s=>$(s).classList.toggle("hidden",s!==id)); scrollTo({top:0});}
-const KEY="quarrillion2:"+ISO;
-let G=null, slotTimer=0, pending=null, busy=false;
+const QTIME=25, NQ=7, SITE="huanghannah123.github.io/quarrillion";
+const KEY=d=>"quarrillion3:"+d;
+let G=null, raf=0, pending=null, locked=false;
 
-function crowdPts(rank){const t=[0,100,85,75,65,55,45,45,45,35,35,35,35]; return rank<=12?t[rank]:0;}
-function surveyPts(e){return e.rank<=12?crowdPts(e.rank):e.tier===2?20:e.tier===3?10:5;}
-function ladderPts(t,target){const d=Math.abs(t-target); return d===0?100:d===1?40:d===2?15:0;}
+function dayDate(d){return new Date(2026,10,2+d);}
+function dayLabel(d){return dayDate(d).toLocaleDateString(undefined,{weekday:"short",month:"short",day:"numeric"});}
 
-function newGame(mode){
-  const cats = mode==="daily" ? dailyCats(DAY) : shuffled(PROMPTS.length,(Math.random()*1e9)|0).slice(0,3);
-  const lr = mode==="daily" ? mulberry32(DAY*31+7) : Math.random;
-  const ladder = cats[2], lp = PROMPTS[ladder];
-  const tiersHave=[1,2,3,4,5,6].filter(t=>lp.answers.some(a=>a.tier===t));
-  const targets=[]; for(let i=0;i<4;i++) targets.push(tiersHave[Math.floor(lr()*tiersHave.length)]);
-  G={mode,cats,total:0,combo:false,used:{},rounds:[
-    {kind:"survey",cat:cats[0],slots:3,time:15,m:1},
-    {kind:"bore",cat:cats[0],slots:3,time:30,m:1},
-    {kind:"survey",cat:cats[1],slots:3,time:15,m:2},
-    {kind:"bore",cat:cats[1],slots:3,time:30,m:2},
-    {kind:"ladder",cat:ladder,slots:4,time:30,m:3,targets}
-  ],ri:0,si:0,log:[]};
-  G.rounds.forEach(r=>r.res=[]);
-  setDepth(0,true);
-  startRound();
+function newGame(mode, day){
+  const set = mode==="free" ? shuffled(PROMPTS.length,(Math.random()*1e9)|0).slice(0,NQ) : dailyCats(day);
+  G={mode, day, set, qi:0, total:0, res:[]};
+  setDepth(0,true); updateHud();
+  ask();
 }
-
-const LABELS={survey:"Surface Survey",bore:"Deep Bore",ladder:"Core Sampler"};
-const ASKS={
-  survey:"Name what most people would say. The crowd's No. 1 answer is worth 100.",
-  bore:"Now name real answers almost nobody gives. Rarer tiers score more.",
-  ladder:"Name an answer in exactly this tier:"
-};
-function startRound(){
-  const r=G.rounds[G.ri], p=PROMPTS[r.cat];
-  G.si=0;
-  $("roundLabel").textContent="Mission "+r.m+" · "+LABELS[r.kind];
-  $("catText").textContent=p.q;
-  $("askText").textContent=ASKS[r.kind];
-  show("playScreen");
-  startSlot();
-}
-function drawSlots(){
-  const r=G.rounds[G.ri];
-  $("slots").innerHTML=Array.from({length:r.slots},(_,i)=>{
-    const x=r.res[i];
-    if(!x) return `<div class="slot ${i===G.si?"now":""}"></div>`;
-    if(x.miss) return `<div class="slot miss"><img src="${BADGE[0]}" alt="Missed"></div>`;
-    return `<div class="slot"><img src="${BADGE[x.tier]}" alt="${TIERS[x.tier].name}"></div>`;
-  }).join("");
-}
-function startSlot(){
-  const r=G.rounds[G.ri];
-  busy=false; pending=null; $("confirmBox").classList.add("hidden");
+function ask(){
+  const p=PROMPTS[G.set[G.qi]];
+  pending=null; locked=false;
+  $("confirmBox").classList.add("hidden");
+  $("qNum").textContent=(G.qi+1)+" / "+NQ;
+  $("qMode").textContent=G.mode==="free"?"Unlimited":"Dig #"+(G.day+1);
+  $("qText").textContent=p.q;
   $("ansInput").value=""; $("ansInput").disabled=false;
-  fb("", "");
-  drawSlots();
-  if(r.kind==="ladder"){
-    const tgt=r.targets[G.si];
-    $("targetBox").classList.remove("hidden");
-    // short spin, then land on the target
-    let n=0; busy=true; $("ansInput").disabled=true;
-    const spin=setInterval(()=>{
-      const t=n<8?1+((n*5)%6):tgt;
-      $("targetImg").src=BADGE[t]; $("targetName").textContent=TIERS[t].name+" ("+TIERS[t].line.replace(/\.$/,"")+")";
-      if(n++>=8){clearInterval(spin); busy=false; $("ansInput").disabled=false; $("ansInput").focus(); runTimer();}
-    }, reduced?10:90);
-    return;
-  }
-  $("targetBox").classList.add("hidden");
-  $("ansInput").focus();
-  runTimer();
-}
-function runTimer(){
-  const r=G.rounds[G.ri];
-  G.t0=performance.now(); G.deadline=G.t0+r.time*1000;
-  cancelAnimationFrame(slotTimer);
+  fb("","");
+  show("playScreen"); $("ansInput").focus();
+  G.deadline=performance.now()+QTIME*1000;
+  cancelAnimationFrame(raf);
   const step=()=>{
-    const left=Math.max(0,G.deadline-performance.now()), frac=left/(r.time*1000);
+    const left=Math.max(0,G.deadline-performance.now()), frac=left/(QTIME*1000);
     $("timerBar").style.width=(frac*100)+"%";
     $("timer").classList.toggle("late",frac<.3);
+    $("qTime").textContent=Math.ceil(left/1000)+"s";
     if(left<=0){timeUp();return;}
-    slotTimer=requestAnimationFrame(step);
+    raf=requestAnimationFrame(step);
   };
-  slotTimer=requestAnimationFrame(step);
+  raf=requestAnimationFrame(step);
 }
 function fb(msg,cls){const f=$("feedback"); f.textContent=msg; f.className="feedback "+(cls||""); if(cls==="bad"){void f.offsetWidth; f.classList.add("shake");}}
 
-function guess(text){
-  if(busy) return;
-  text=text.trim(); if(!text) return;
-  const r=G.rounds[G.ri], p=PROMPTS[r.cat];
-  const hit=lookup(p,text);
-  if(!hit){fb("Not in the sample. Keep guessing, misses cost nothing.","bad"); $("ansInput").select(); return;}
-  if(!hit.exact){
+function submit(){
+  if(locked) return;
+  if(pending){score(pending, $("ansInput").value.trim()); return;}
+  const raw=$("ansInput").value.trim(); if(!raw) return;
+  const p=PROMPTS[G.set[G.qi]], hit=lookup(p,raw);
+  if(hit && !hit.exact){
     pending=hit.entry;
     $("confirmWord").textContent=hit.entry.name;
     $("confirmBox").classList.remove("hidden");
-    fb("","");
     $("btnYes").focus();
     return;
   }
-  take(hit.entry);
-}
-function take(e){
-  const r=G.rounds[G.ri], p=PROMPTS[r.cat];
-  pending=null; $("confirmBox").classList.add("hidden");
-  if(e.tier===0){fb(e.name+": "+e.def+" Try another.","bad"); $("ansInput").value=""; $("ansInput").focus(); return;}
-  const used=G.used[r.cat]||(G.used[r.cat]=new Set());
-  if(used.has(e.name)){fb("You already used "+e.name+" in this category. Try another.","bad"); $("ansInput").select(); return;}
-  used.add(e.name);
-  const frac=(performance.now()-G.t0)/(r.time*1000);
-  const speed=frac<=.5?1:Math.max(.6,1-(frac-.5)*.8);
-  let base = r.kind==="survey"?surveyPts(e) : r.kind==="bore"?TIERS[e.tier].pts : ladderPts(e.tier,r.targets[G.si]);
-  const comboUsed=G.combo && base>0;
-  let pts=Math.round(base*speed*(comboUsed?1.5:1));
-  const charge = (r.kind==="survey"&&e.rank<=3)||(r.kind==="bore"&&e.tier>=5)||(r.kind==="ladder"&&e.tier===r.targets[G.si]);
-  if(base>0) G.combo=charge;
-  G.total+=pts;
-  r.res[G.si]={name:e.name,tier:e.tier,rank:e.rank,pts,base,speed,combo:comboUsed,target:r.kind==="ladder"?r.targets[G.si]:null};
-  cancelAnimationFrame(slotTimer); busy=true; $("ansInput").disabled=true;
-  let msg;
-  if(r.kind==="survey") msg=e.rank<=12?e.name+" is the crowd's No. "+e.rank+".":e.name+" counts, but the crowd rarely says it.";
-  else if(r.kind==="bore") msg=e.name+" is "+TIERS[e.tier].name+". "+TIERS[e.tier].line;
-  else {const d=Math.abs(e.tier-r.targets[G.si]); msg=e.name+" is "+TIERS[e.tier].name+". "+(d===0?"Dead on.":d===1?"One tier off.":d===2?"Two tiers off.":"Too far off to count.");}
-  if(speed<1) msg+=" Speed x"+speed.toFixed(2)+".";
-  if(comboUsed) msg+=" Combo x1.5.";
-  fb(msg,"ok");
-  floatPts(pts);
-  updateHud(); setDepth(G.total*KM_PER_PT);
-  setTimeout(nextSlot,1300);
+  score(hit?hit.entry:null, raw);
 }
 function timeUp(){
-  const r=G.rounds[G.ri];
-  busy=true; $("ansInput").disabled=true; pending=null; $("confirmBox").classList.add("hidden");
-  r.res[G.si]={miss:true,pts:0,tier:0,target:r.kind==="ladder"?r.targets[G.si]:null};
-  G.combo=false; updateHud();
-  fb("Time's up. The drill stalls on this one.","bad");
-  setTimeout(nextSlot,1100);
+  if(locked) return;
+  const raw=$("ansInput").value.trim();
+  if(pending){score(pending,raw);return;}
+  if(!raw){score(null,"",true);return;}
+  const hit=lookup(PROMPTS[G.set[G.qi]],raw);
+  score(hit?hit.entry:null,raw);   // out of time, so a likely typo is accepted as is
 }
-function nextSlot(){
-  const r=G.rounds[G.ri];
-  G.si++;
-  if(G.si<r.slots){startSlot();return;}
-  drawSlots(); revealRound();
+function score(e, raw, timedOut){
+  locked=true; cancelAnimationFrame(raf);
+  $("ansInput").disabled=true; $("confirmBox").classList.add("hidden");
+  const tier = e && e.tier>0 ? e.tier : 0;
+  const pts = TIERS[tier].pts;
+  G.total+=pts;
+  G.res.push({p:G.set[G.qi], raw, name: e&&e.tier>0 ? e.name : raw, tier, pts, timedOut:!!timedOut, nope: e&&e.tier===0 ? e.name+": "+e.def : ""});
+  if(pts) floatPts(pts);
+  setDepth(G.total*KM_PER_PT); updateHud();
+  setTimeout(reveal, 650);
 }
 function floatPts(n){
   const b=$("ansInput").getBoundingClientRect(), d=document.createElement("div");
-  d.className="float"; d.textContent="+"+n; d.style.left=(b.left+b.width/2-20)+"px"; d.style.top=(b.top-30)+"px";
+  d.className="float"; d.textContent="+"+n; d.style.left=(b.left+b.width/2-24)+"px"; d.style.top=(b.top-34)+"px";
   document.body.appendChild(d); setTimeout(()=>d.remove(),1200);
 }
 function esc(s){return String(s).replace(/[&<>"]/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c]));}
 function li(t,name,right,def,cls){return `<li class="${cls||""}">${typeof t==="number"?badge(t):`<span class="rk">${t}</span>`}<span class="nm">${esc(name)}</span><span class="pts">${right}</span>${def?`<span class="def">${esc(def)}</span>`:""}</li>`;}
 
-function revealRound(){
-  const r=G.rounds[G.ri], p=PROMPTS[r.cat];
-  $("revLabel").textContent="Mission "+r.m+" · "+LABELS[r.kind]+" results";
-  $("revCat").textContent=p.q;
-  $("revMine").innerHTML=r.res.map((x,i)=>{
-    const tgt=r.kind==="ladder"?"Target "+TIERS[x.target].name+". ":"";
-    if(x.miss) return li(0,"Time ran out","+0",tgt,"miss");
-    const e=p.answers.find(a=>a.name===x.name);
-    let sub = r.kind==="survey" ? (x.rank<=12?"Crowd rank No. "+x.rank:"Rarely said by the crowd") : TIERS[x.tier].name;
-    if(r.kind==="ladder") sub=tgt+"You hit "+TIERS[x.tier].name+".";
-    if(e&&e.def) sub+=". "+e.def;
-    return li(x.tier,x.name,"+"+x.pts,sub.replace(/\.\./g,"."));
-  }).join("");
-  if(r.kind==="survey"){
-    $("revOtherHead").textContent="The crowd's top 5 (our estimate)";
-    $("revOther").innerHTML=p.crowd.slice(0,5).map(e=>li("#"+e.rank,e.name,crowdPts(e.rank))).join("");
-  } else {
-    $("revOtherHead").textContent=r.kind==="bore"?"Rarest finds in this seam":"Rare finds in this category";
-    const mine=new Set(r.res.map(x=>x.name));
-    const top=p.answers.filter(a=>a.tier===6&&!mine.has(a.name));
-    const deep=p.answers.filter(a=>a.tier===5&&a.def&&!mine.has(a.name));
-    const rr=mulberry32(r.cat*131+DAY); deep.sort(()=>rr()-.5);
-    $("revOther").innerHTML=[...top,...deep].slice(0,4).map(e=>li(e.tier,e.name,TIERS[e.tier].pts,e.def)).join("");
-  }
-  $("btnNext").textContent=G.ri<G.rounds.length-1?(G.rounds[G.ri+1].m!==r.m?"Next mission":"Dig deeper"):"See how deep you got";
+function rareFinds(p, exclude, seed){
+  const top=p.answers.filter(a=>a.tier===6&&a.name!==exclude);
+  const deep=p.answers.filter(a=>a.tier===5&&a.def&&a.name!==exclude);
+  const r=mulberry32(p.id*131+seed); deep.sort(()=>r()-.5);
+  const more=p.answers.filter(a=>a.tier===5&&!a.def&&a.name!==exclude);
+  return [...top,...deep,...more].slice(0,3);
+}
+function reveal(){
+  const r=G.res[G.qi], p=PROMPTS[r.p], t=TIERS[r.tier];
+  $("rNum").textContent=(G.qi+1)+" / "+NQ;
+  $("rText").textContent=p.q;
+  $("sBadge").src=BADGE[r.tier];
+  $("strike").style.borderColor=t.color;
+  $("sWord").textContent=r.raw? r.name : "No answer";
+  $("sTier").textContent=t.name+(r.tier?". "+t.line:"");
+  $("sPts").textContent="+"+t.pts;
+  let note="";
+  if(r.nope) note=r.nope;
+  else if(!r.raw) note="The clock ran out before you typed anything.";
+  else if(!r.tier) note="That isn't in the core sample for this prompt, so the drill didn't move.";
+  else {const e=p.answers.find(a=>a.name===r.name); if(e&&e.def) note=e.def;}
+  $("sNote").textContent=note;
+  $("rCommon").innerHTML="Most people said "+p.crowd.slice(0,3).map(e=>"<b>"+esc(e.name)+"</b>").join(", ")+".";
+  $("finds").innerHTML=rareFinds(p,r.name,G.day||0).map(e=>li(e.tier,e.name,"+"+TIERS[e.tier].pts,e.def)).join("");
+  $("btnNext").textContent=G.qi<NQ-1?"Keep drilling":"See how deep you got";
   show("revealScreen"); $("btnNext").focus();
 }
-function nextRound(){G.ri++; if(G.ri<G.rounds.length) startRound(); else finish();}
+function next(){G.qi++; if(G.qi<NQ) ask(); else finish();}
 
 function finish(){
-  if(G.mode==="daily"){
-    save(KEY,{cats:G.cats,total:G.total,rounds:G.rounds.map(r=>({kind:r.kind,res:r.res}))});
-    const st=load("quarrillion2:streak")||{last:-9,n:0};
-    if(st.last!==DAY){st.n = st.last===DAY-1 ? st.n+1 : 1; st.last=DAY; save("quarrillion2:streak",st);}
+  if(G.mode!=="free"){
+    save(KEY(G.day),{set:G.set,res:G.res,total:G.total});
+    if(G.mode==="daily"){
+      const st=load("quarrillion3:streak")||{last:-9,n:0,best:0};
+      if(st.last!==DAY){st.n = st.last===DAY-1 ? st.n+1 : 1; st.last=DAY; st.best=Math.max(st.best||0,st.n); save("quarrillion3:streak",st);}
+    }
   }
-  renderEnd(G.mode, G.total, G.cats, G.rounds);
+  renderEnd(G);
 }
-function renderEnd(mode,total,cats,rounds){
-  const km=total*KM_PER_PT; setDepth(km);
-  $("ptsOut").textContent=total+" pts";
-  $("endLabel").textContent=mode==="daily"?"Dig #"+(DAY+1)+" complete":"Unlimited dig complete";
+function renderEnd(g){
+  const km=g.total*KM_PER_PT; setDepth(km); updateHud(g.total);
+  $("endLabel").textContent = g.mode==="free" ? "Unlimited dig complete" : "Dig #"+(g.day+1)+" complete · "+dayLabel(g.day);
   $("endKm").textContent=fmtKm(km);
-  $("endLine").textContent = km>R_EARTH ? total+" points. You drilled straight through the center and are heading for the other side."
-    : total+" points. Your drill stopped in the "+layerAt(km).toLowerCase()+".";
+  $("endLine").textContent = g.total>=700 ? "A perfect 700. You broke through to the center of the Earth."
+    : g.total+" of 700 points. Your drill stopped in the "+layerAt(km).toLowerCase()+".";
+  $("endLog").innerHTML=g.res.map(r=>li(r.tier, PROMPTS[r.p].q, "+"+r.pts, (r.raw?r.name:"No answer")+" · "+TIERS[r.tier].name)).join("");
   const passed=MARKS.filter(m=>km>=m.km);
-  $("endMarks").innerHTML=passed.length?passed.map(m=>li("▸",m.label,"")).join(""):li("▸","Nothing yet. Even one point gets you past the deepest mine on Earth.","");
-  const gems=[]; cats.forEach(c=>PROMPTS[c].answers.forEach(a=>{if(a.tier===6) gems.push(a);}));
+  $("endMarks").innerHTML=passed.length?passed.map(m=>li("▸",m.label,"")).join(""):li("▸","Nothing yet. Even 10 points carries you past the deepest hole ever drilled.","");
+  const gems=[]; g.res.forEach(r=>PROMPTS[r.p].answers.forEach(a=>{if(a.tier===6) gems.push(a);}));
   $("endGems").innerHTML=gems.map(e=>li(6,e.name,"",e.def)).join("");
-  $("comboOut").classList.add("hidden");
-  G=G||{}; G.share=shareString(mode,total,rounds);
+  const st=load("quarrillion3:streak");
+  $("endStreak").textContent = g.mode==="daily"&&st ? "Streak: "+st.n+" day"+(st.n===1?"":"s")+". Best: "+st.best+"." : "";
+  $("endNext").textContent = g.mode==="daily" ? "New prompts at midnight. "+untilMidnight()+" to go." : "";
+  G=g; G.share=shareString(g);
   $("shareText").classList.add("hidden"); $("toast").textContent="";
   show("endScreen");
 }
-function shareString(mode,total,rounds){
-  const km=total*KM_PER_PT;
-  const lines=rounds.map(r=>({survey:"Survey ",bore:"Bore   ",ladder:"Sampler"}[r.kind])+" "+r.res.map(x=>x.miss?"⬛":TIERS[x.tier].sq).join(""));
-  return (mode==="daily"?"Quarrillion #"+(DAY+1):"Quarrillion unlimited")+"\n"+lines.join("\n")+"\n"+fmtKm(km)+" down, "+total+" pts ("+(km>R_EARTH?"through the center":layerAt(km).toLowerCase())+")";
+function untilMidnight(){const n=new Date(), m=new Date(n.getFullYear(),n.getMonth(),n.getDate()+1), s=Math.max(0,(m-n)/1000); return Math.floor(s/3600)+"h "+Math.floor(s%3600/60)+"m";}
+function shareString(g){
+  const km=g.total*KM_PER_PT;
+  const head = g.mode==="free" ? "Quarrillion unlimited" : "Quarrillion #"+(g.day+1);
+  return head+"\n"+g.res.map(r=>TIERS[r.tier].sq).join("")+"\n"+fmtKm(km)+" down ("+g.total+"/700), "+(g.total>=700?"center reached":layerAt(km).toLowerCase())+"\n"+SITE;
 }
-let lastKm=0;
 function setDepth(km,instant){
-  lastKm=km; targetY=kmToY(km); if(instant) drillY=targetY;
+  targetY=kmToY(km); if(instant) drillY=targetY;
   $("kmOut").textContent=fmtKm(km);
   $("layerOut").textContent=layerAt(km);
 }
-function updateHud(){
-  $("ptsOut").textContent=G.total+" pts";
-  $("comboOut").classList.toggle("hidden",!G.combo);
+function updateHud(t){$("ptsOut").textContent=(t!==undefined?t:(G?G.total:0))+" / 700 pts";}
+
+function openArchive(){
+  const rows=[];
+  for(let d=DAY; d>=0; d--){
+    const rec=load(KEY(d));
+    rows.push(`<li><span class="rk">#${d+1}</span><span class="nm">${esc(dayLabel(d))}${d===DAY?" · today":""}</span><span class="pts">${rec?rec.total+" pts":""}</span><button class="ghost sm" data-day="${d}">${rec?"Results":"Play"}</button></li>`);
+  }
+  $("archList").innerHTML=rows.join("");
+  $("archList").querySelectorAll("button").forEach(b=>b.onclick=()=>{
+    const d=+b.dataset.day, rec=load(KEY(d));
+    if(rec) renderEnd({mode:d===DAY?"daily":"archive",day:d,set:rec.set,res:rec.res,total:rec.total});
+    else newGame(d===DAY?"daily":"archive", d);
+  });
+  show("archiveScreen");
+}
+function startDaily(){
+  const rec=load(KEY(DAY));
+  if(rec){renderEnd({mode:"daily",day:DAY,set:rec.set,res:rec.res,total:rec.total});return;}
+  newGame("daily",DAY);
 }
 
 /* ---------- Wiring ---------- */
 $("dateLine").textContent="THE DAILY DIG · #"+(DAY+1);
-$("digNo").textContent="Dig #"+(DAY+1)+" · "+MID.toLocaleDateString(undefined,{weekday:"long",month:"long",day:"numeric"});
+$("digBtnSub").textContent="Dig #"+(DAY+1)+" · press Enter";
 $("ranks").innerHTML=TIERS.slice(1).map((t,i)=>`<div class="rank">${badge(i+1)}<span><b>${t.name}.</b> <span class="dim">${t.line}</span></span><span class="pts">+${t.pts}</span></div>`).join("");
-$("ansForm").addEventListener("submit",e=>{e.preventDefault(); if(pending) take(pending); else guess($("ansInput").value);});
-$("btnYes").onclick=()=>{if(pending) take(pending);};
-$("btnNo").onclick=()=>{pending=null; $("confirmBox").classList.add("hidden"); fb("Okay. Fix the spelling or try something else.",""); $("ansInput").focus(); $("ansInput").select();};
+$("ansForm").addEventListener("submit",e=>{e.preventDefault(); submit();});
+$("btnYes").onclick=()=>{if(pending&&!locked) score(pending,$("ansInput").value.trim());};
+$("btnNo").onclick=()=>{pending=null; $("confirmBox").classList.add("hidden"); fb("Okay. Fix the spelling, then press Enter.",""); $("ansInput").focus(); $("ansInput").select();};
 $("ansInput").addEventListener("input",()=>{if(pending){pending=null;$("confirmBox").classList.add("hidden");}});
-addEventListener("keydown",e=>{if(e.key==="Escape"&&pending) $("btnNo").click();});
-$("btnNext").onclick=nextRound;
-$("btnDaily").onclick=()=>{
-  const prev=load(KEY);
-  if(prev){G={share:""}; renderEnd("daily",prev.total,prev.cats,prev.rounds); return;}
-  newGame("daily");
-};
+addEventListener("keydown",e=>{
+  if(e.key==="Escape"&&pending) $("btnNo").click();
+  if(e.key==="Enter"&&!$("startScreen").classList.contains("hidden")&&document.activeElement.tagName!=="BUTTON"){e.preventDefault(); startDaily();}
+  if(e.key==="Enter"&&!$("revealScreen").classList.contains("hidden")&&document.activeElement!==$("btnNext")){e.preventDefault(); next();}
+});
+$("btnNext").onclick=next;
+$("btnDaily").onclick=startDaily;
 $("btnFree").onclick=()=>newGame("free");
+$("btnArch").onclick=openArchive;
 $("btnAgain").onclick=()=>newGame("free");
+$("btnArch2").onclick=openArchive;
+$("btnArchBack").onclick=()=>show("startScreen");
 $("btnShare").onclick=async()=>{
-  const s=G.share;
-  try{await navigator.clipboard.writeText(s); $("toast").textContent="Copied";}catch(e){$("toast").textContent="Copy blocked here. Select the text below.";}
-  $("shareText").textContent=s; $("shareText").classList.remove("hidden");
+  try{await navigator.clipboard.writeText(G.share); $("toast").textContent="Copied";}catch(e){$("toast").textContent="Copy blocked here. Select the text below.";}
+  $("shareText").textContent=G.share; $("shareText").classList.remove("hidden");
 };
 (function(){
-  const st=load("quarrillion2:streak");
-  if(load(KEY)){$("btnDaily").textContent="See today's result";}
+  const st=load("quarrillion3:streak");
+  if(load(KEY(DAY))) $("btnDaily").firstChild.textContent="See today's dig ";
   if(st&&st.n&&(st.last===DAY||st.last===DAY-1)) $("streakLine").textContent="Streak: "+st.n+" day"+(st.n===1?"":"s")+".";
+  updateHud(0);
 })();
 window.__q={PROMPTS,lookup,dailyCats};
+
 </script>
 </body>
 </html>

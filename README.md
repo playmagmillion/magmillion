@@ -1,47 +1,42 @@
 # Quarrillion
 
-A daily word game where rare answers drill toward the center of the Earth.
+The daily word game where the rarest answer drills deepest.
 
 Play it here: https://huanghannah123.github.io/quarrillion/
 
 ## How it works
 
-Every day brings three categories, the same for everyone.
+- Seven prompts a day, like "Name a fruit," the same for everyone, with 25 seconds each.
+- Type one thing that fits. Spelling is forgiven (the game asks "Did you mean...?"), but guessing is not.
+- Rarer answers drill deeper. "Name a fruit": Apple is +10, Miracle fruit is +100.
+- Seven perfect answers (700 points) reach the center of the Earth, 6,371 km down, past real landmarks like the Kola Superdeep Borehole and the Moho.
+- One logged dig a day. Share your depth and keep your streak. Missed a day? Play it from the Archive. Want more? Try Unlimited.
 
-1. Surface Survey. Name 3 answers most people would give, 15 seconds each. The crowd's No. 1 answer is worth 100 points.
-2. Deep Bore. Same category. Name 3 real answers almost nobody gives, 30 seconds each, scored by rarity tier.
-3. Both rounds repeat with a second category.
-4. Core Sampler. The drill calls a rarity tier 4 times and you name an answer in exactly that tier. Dead on scores 100, one tier off 40, two off 15.
+## The ranks
 
-Wrong guesses cost nothing. Faster answers keep more points. A top-3 Survey answer, a Deep vein or rarer find, or a dead-on sample gives your next answer a x1.5 combo. Misspelled answers get a "Did you mean...?" check.
-
-Points become depth, about 4 km per point. A perfect run without combos reaches the center of the Earth, 6,371 km down, passing real landmarks like the Kola Superdeep Borehole and the Moho on the way.
-
-## Rarity tiers
-
-| Tier | Points in Deep Bore |
+| Rank | Points |
 | --- | --- |
-| Topsoil | 5 |
-| Clay | 20 |
-| Bedrock | 40 |
-| Ore seam | 60 |
-| Deep vein | 80 |
-| One in a Quarrillion | 100 |
+| Topsoil | +10 |
+| Clay | +15 |
+| Bedrock | +30 |
+| Ore seam | +60 |
+| Deep vein | +85 |
+| One in a Quarrillion | +100 |
 
-Rarity and crowd rankings are hand-made estimates, not live player data.
+Rarity tiers are hand-made estimates, not live player data.
 
-## Running it
+## New prompts every day
 
-The whole game is one file, `index.html`, with no build step. Open it in a browser, or serve the folder with any static host.
+There are 116 categories. The daily schedule never repeats a prompt within 14 days, and no two days share the same set of seven. Add more categories and the gap grows on its own.
 
 ## Adding categories
 
-Categories live in the `PROMPTS` array near the top of the script. Each answer is one line:
+The whole game is one file, `index.html`, with no build step. Categories live in the `PROMPTS` and `MORE` arrays near the top of the script. Each answer is one line:
 
 ```
-TIER Name/alias/alias | optional one-line definition
+TIER Name/alias/alias | optional one-line fact shown after the round
 ```
 
-Tier 1 is the most common answer and tier 6 is the rarest. Within tier 1, list answers from most to least common, since that order sets the Survey ranking. Tier 0 lines are near misses that score nothing but explain why (for example, a pterodactyl is not a dinosaur).
+Tier 1 is the most common answer and tier 6 is the rarest. List tier 1 answers from most to least common, since the reveal screen shows the top three as "most people said." Tier 0 lines are near misses that score nothing but explain why, like a spider for "Name an insect."
 
-Inspired by Krillion, Cosmillion, and Moonshot.
+Inspired by Cosmillion, Krillion, and Moonshot.
