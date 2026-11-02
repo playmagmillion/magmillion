@@ -224,7 +224,8 @@ img.badge.sm{width:20px;height:14px}
 .big{font-family:var(--pixel);font-weight:400;font-size:clamp(64px,12vw,96px);color:var(--gold);text-shadow:4px 4px 0 #5a2a12}
 pre.share{border:2px solid var(--edge);border-radius:0;background:var(--night);font-family:var(--pixel);font-size:20px;color:var(--soft)}
 .dist{border:2px solid #14243e;border-radius:0;background:#070d19}
-.dist-head{font-family:var(--pixel);font-weight:400;font-size:22px;text-transform:uppercase;color:var(--text)}
+.dist-head{font-family:var(--pixel);font-weight:400;font-size:22px;text-transform:uppercase;color:var(--text);flex-wrap:wrap}
+#distPct{font-size:26px;color:var(--gold);letter-spacing:.06em}
 .dist svg{font-family:var(--pixel)}
 .price{font-family:var(--pixel);font-size:20px}
 .price b{font-family:var(--pixel);font-weight:400}
@@ -339,7 +340,7 @@ body.urgent .heat{animation:kheat 1s step-end infinite}
     <p class="small dim" id="endStreak"></p>
     <div class="dist" id="distWrap">
       <div class="dist-head"><span id="distTitle">Where you landed</span><span class="dim small" id="distPct"></span></div>
-      <svg id="distSvg" viewBox="0 0 560 170" role="img" aria-label="Score distribution"></svg>
+      <svg id="distSvg" viewBox="0 0 560 200" shape-rendering="crispEdges" role="img" aria-label="Score distribution"></svg>
       <p class="small dim" id="distNote"></p>
     </div>
     <div class="row">
@@ -6598,26 +6599,35 @@ function simulateScores(seed){
 }
 function drawDistribution(g){
   const sims=simulateScores(g.mode==="free"?12345:(g.day+1)*7777), BIN=25, NB=Math.ceil(700/BIN)+1;
-  const bins=new Array(NB).fill(0); let below=0, eq=0, sum=0;
-  for(const v of sims){bins[Math.min(NB-1,Math.floor(v/BIN))]++; sum+=v; if(v<g.total) below++; else if(v===g.total) eq++;}
-  const pct=Math.round((below+eq/2)/sims.length*100), avg=Math.round(sum/sims.length);
-  const max=Math.max(...bins), W=560, H=170, L=8, R=8, T=22, B=26, bw=(W-L-R)/NB;
-  const mine=Math.min(NB-1,Math.floor(g.total/BIN));
+  const bins=new Array(NB).fill(0); let below=0, eq=0, sum=0, sq=0;
+  for(const v of sims){bins[Math.min(NB-1,Math.floor(v/BIN))]++; sum+=v; sq+=v*v; if(v<g.total) below++; else if(v===g.total) eq++;}
+  const n=sims.length, pct=Math.round((below+eq/2)/n*100), mean=sum/n, sd=Math.sqrt(sq/n-mean*mean);
+  const max=Math.max(...bins), W=560, H=200, L=8, R=8, T=30, B=30, bw=(W-L-R)/NB, ph=H-T-B;
+  const mine=Math.min(NB-1,Math.floor(g.total/BIN)), xOf=v=>L+(v/BIN)*bw;
+  const peak=n*BIN/(sd*Math.sqrt(2*Math.PI));          // normal curve scaled to the bars
   let svg="";
+  for(let y=T;y<=H-B;y+=ph/4) svg+=`<line x1="${L}" y1="${y}" x2="${W-R}" y2="${y}" stroke="#14243e" stroke-width="1"/>`;
   bins.forEach((c,i)=>{
-    const h=Math.max(c?2:0,Math.round((H-T-B)*c/max)), x=L+i*bw, y=H-B-h;
-    svg+=`<rect x="${(x+1).toFixed(1)}" y="${y}" width="${(bw-2).toFixed(1)}" height="${h}" fill="${i===mine?"#ffd166":"#3b3560"}"/>`;
+    const h=Math.round(ph*c/Math.max(max,peak)), x=L+i*bw, y=H-B-h;
+    const fill=i===mine?"#fbd367":(i<mine?"#2a4470":"#1b3050");
+    if(h) svg+=`<rect x="${(x+1).toFixed(1)}" y="${y}" width="${(bw-2).toFixed(1)}" height="${h}" fill="${fill}"/>`;
   });
+  // stepped bell curve on top of the bars
+  let d=""; for(let i=0;i<NB;i++){const mid=(i+.5)*BIN, v=peak*Math.exp(-((mid-mean)**2)/(2*sd*sd)), y=Math.round(H-B-ph*v/Math.max(max,peak)), x0=L+i*bw, x1=x0+bw; d+=(i?"L":"M")+x0.toFixed(1)+" "+y+"H"+x1.toFixed(1);}
+  svg+=`<path d="${d}" fill="none" stroke="#ff7a3d" stroke-width="3" shape-rendering="crispEdges"/>`;
+  const ax=xOf(mean);
+  svg+=`<line x1="${ax.toFixed(1)}" y1="${T}" x2="${ax.toFixed(1)}" y2="${H-B}" stroke="#7d93b8" stroke-width="2" stroke-dasharray="3 3"/>`;
+  svg+=`<text x="${ax.toFixed(1)}" y="${T-8}" text-anchor="middle" fill="#7d93b8" font-size="16">AVG ${Math.round(mean)}</text>`;
   const mx=L+(mine+.5)*bw;
-  svg+=`<line x1="${mx.toFixed(1)}" y1="${T-4}" x2="${mx.toFixed(1)}" y2="${H-B}" stroke="#ffd166" stroke-width="2" stroke-dasharray="4 3"/>`;
-  svg+=`<text x="${Math.min(W-30,Math.max(30,mx)).toFixed(1)}" y="${T-8}" text-anchor="middle" fill="#ffd166" font-size="14">You · ${g.total}</text>`;
-  const ax=L+(Math.floor(avg/BIN)+.5)*bw;
-  svg+=`<line x1="${ax.toFixed(1)}" y1="${H-B}" x2="${ax.toFixed(1)}" y2="${H-B+6}" stroke="#a39fb8" stroke-width="2"/>`;
-  svg+=`<line x1="${L}" y1="${H-B}" x2="${W-R}" y2="${H-B}" stroke="#2b2747" stroke-width="2"/>`;
-  [0,175,350,525,700].forEach(v=>{const x=L+(v/BIN+.5)*bw; svg+=`<text x="${Math.min(W-R-10,x).toFixed(1)}" y="${H-6}" text-anchor="middle" fill="#a39fb8" font-size="12">${v}</text>`;});
+  svg+=`<line x1="${mx.toFixed(1)}" y1="${T-2}" x2="${mx.toFixed(1)}" y2="${H-B}" stroke="#fbd367" stroke-width="3"/>`;
+  svg+=`<rect x="${(Math.min(W-78,Math.max(2,mx-38))).toFixed(1)}" y="2" width="76" height="20" fill="#fbd367"/>`;
+  svg+=`<text x="${(Math.min(W-40,Math.max(40,mx))).toFixed(1)}" y="17" text-anchor="middle" fill="#050a14" font-size="17">YOU ${g.total}</text>`;
+  svg+=`<line x1="${L}" y1="${H-B}" x2="${W-R}" y2="${H-B}" stroke="#3a5a88" stroke-width="2"/>`;
+  [0,100,200,300,400,500,600,700].forEach(v=>{const x=xOf(v)+bw/2; svg+=`<text x="${Math.min(W-R-12,x).toFixed(1)}" y="${H-8}" text-anchor="middle" fill="#7d93b8" font-size="15">${v}</text>`;});
+  $("distSvg").setAttribute("viewBox","0 0 "+W+" "+H);
   $("distSvg").innerHTML=svg;
-  $("distPct").textContent="Better than about "+pct+"% of players";
-  $("distNote").textContent="Estimated from a simulation of 20,000 players on these prompts, since the game doesn't collect real scores yet. The typical score is about "+avg+" points (tick on the axis). Your bar is gold.";
+  $("distPct").textContent = pct>=50 ? "TOP "+Math.max(1,100-pct)+"% OF PLAYERS" : "BETTER THAN "+pct+"% OF PLAYERS";
+  $("distNote").textContent="Each bar is a score range, and the orange line is the bell curve. The game doesn't collect real scores yet, so this is estimated from 20,000 simulated players on these prompts.";
 }
 function countUp(el, km){
   if(reduced){el.textContent=fmtKm(km); return;}
