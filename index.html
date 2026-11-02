@@ -161,7 +161,7 @@ a.btnlink.off{opacity:.45;pointer-events:none}
     <div class="ranks" id="ranks"></div>
     <div class="row" style="margin-top:16px">
       <button class="ghost" id="btnArch">Archive</button>
-      <button class="ghost" id="btnFree">Unlimited</button>
+      <button class="ghost" id="btnFree">Play again</button>
       <span class="small dim" id="freeLeft"></span>
     </div>
     <p class="small dim" id="streakLine" style="margin-top:12px"></p>
@@ -206,7 +206,7 @@ a.btnlink.off{opacity:.45;pointer-events:none}
     <p class="small dim" id="endStreak"></p>
     <div class="row">
       <button class="go" id="btnShare">Share depth</button>
-      <button class="ghost" id="btnAgain">Unlimited</button>
+      <button class="ghost" id="btnAgain">Play again</button>
       <button class="ghost" id="btnArch2">Archive</button>
       <span class="toast" id="toast"></span>
     </div>
@@ -222,12 +222,12 @@ a.btnlink.off{opacity:.45;pointer-events:none}
   </section>
 
   <section id="payScreen" class="hidden">
-    <div class="eyebrow">Unlimited</div>
-    <h2>You've used your 2 free Unlimited digs.</h2>
-    <p>Today's daily dig stays free forever. To keep drilling with random prompts as many times as you want, unlock Unlimited.</p>
+    <div class="eyebrow">Play again</div>
+    <h2>You've used your 2 free extra games.</h2>
+    <p>Today's daily dig stays free forever. Pay once to play again with 7 random prompts as many times as you want.</p>
     <div class="price"><b>$5</b> <span class="dim">one-time · no account · works on this device</span></div>
     <ul class="how">
-      <li>Unlimited digs with 7 random prompts each</li>
+      <li>Play again as often as you like, 7 random prompts each time</li>
       <li>All 116 categories, shuffled every time</li>
       <li>No daily limit</li>
     </ul>
@@ -5976,7 +5976,7 @@ function ask(){
   pending=null; locked=false;
   $("confirmBox").classList.add("hidden");
   $("qNum").textContent=(G.qi+1)+" / "+NQ;
-  $("qMode").textContent=G.mode==="free"?"Unlimited":"Dig #"+(G.day+1);
+  $("qMode").textContent=G.mode==="free"?"Extra game":"Dig #"+(G.day+1);
   $("qText").textContent=p.q;
   $("ansInput").value=""; $("ansInput").disabled=false;
   fb("","");
@@ -6077,7 +6077,7 @@ function finish(){
 }
 function renderEnd(g){
   const km=g.total*KM_PER_PT; setDepth(km); updateHud(g.total);
-  $("endLabel").textContent = g.mode==="free" ? "Unlimited dig complete" : "Dig #"+(g.day+1)+" complete · "+dayLabel(g.day);
+  $("endLabel").textContent = g.mode==="free" ? "Extra game complete" : "Dig #"+(g.day+1)+" complete · "+dayLabel(g.day);
   $("endKm").textContent=fmtKm(km);
   $("endLine").textContent = g.total>=700 ? "A perfect 700. You broke through to the center of the Earth."
     : g.total+" of 700 points. Your drill stopped in the "+layerAt(km).toLowerCase()+".";
@@ -6096,7 +6096,7 @@ function renderEnd(g){
 function untilMidnight(){const n=new Date(), m=new Date(n.getFullYear(),n.getMonth(),n.getDate()+1), s=Math.max(0,(m-n)/1000); return Math.floor(s/3600)+"h "+Math.floor(s%3600/60)+"m";}
 function shareString(g){
   const km=g.total*KM_PER_PT;
-  const head = g.mode==="free" ? "Magmillion unlimited" : "Magmillion #"+(g.day+1);
+  const head = g.mode==="free" ? "Magmillion extra game" : "Magmillion #"+(g.day+1);
   return head+"\n"+g.res.map(r=>TIERS[r.tier].sq).join("")+"\n"+fmtKm(km)+" down ("+g.total+"/700), "+(g.total>=700?"center reached":layerAt(km).toLowerCase())+"\n"+SITE;
 }
 function setDepth(km,instant){
@@ -6132,8 +6132,8 @@ function isUnlocked(){return !!load("quarrillion3:unlocked");}
 function freeUsed(){return load("quarrillion3:freeUsed")||0;}
 function refreshFree(){
   const el=$("freeLeft"); if(!el) return;
-  if(isUnlocked()) el.textContent="Unlimited unlocked";
-  else {const left=Math.max(0,FREE_UNLIMITED-freeUsed()); el.textContent=left?left+" free Unlimited dig"+(left===1?"":"s")+" left":"Unlimited: $5 to unlock";}
+  if(isUnlocked()) el.textContent="Play again as often as you like";
+  else {const left=Math.max(0,FREE_UNLIMITED-freeUsed()); el.textContent=left?left+" free extra game"+(left===1?"":"s")+" left":"Extra games: $5";}
 }
 function playUnlimited(){
   if(isUnlocked()){newGame("free");return;}
@@ -6181,12 +6181,12 @@ $("btnArch2").onclick=openArchive;
 $("btnArchBack").onclick=()=>show("startScreen");
 $("btnPayBack").onclick=()=>show("startScreen");
 $("codeForm").addEventListener("submit",e=>{e.preventDefault();
-  if(tryUnlock($("codeInput").value)){$("codeMsg").textContent="Unlocked. Enjoy unlimited digging."; $("codeMsg").className="feedback ok"; setTimeout(()=>newGame("free"),900);}
+  if(tryUnlock($("codeInput").value)){$("codeMsg").textContent="Done. You can play again as often as you like."; $("codeMsg").className="feedback ok"; setTimeout(()=>newGame("free"),900);}
   else {$("codeMsg").textContent="That code didn't work. Check the code on your receipt and try again."; $("codeMsg").className="feedback bad";}
 });
 (function(){
   const m=location.hash.match(/^#unlock-([A-Za-z0-9]+)$/);
-  if(m){ if(tryUnlock(m[1])) $("streakLine").textContent="Thanks for your purchase. Unlimited is unlocked."; history.replaceState(null,"",location.pathname+location.search); }
+  if(m){ if(tryUnlock(m[1])) $("streakLine").textContent="Thanks for your purchase. You can play again as often as you like."; history.replaceState(null,"",location.pathname+location.search); }
   refreshFree();
 })();
 $("btnShare").onclick=async()=>{
