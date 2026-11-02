@@ -119,6 +119,9 @@ ul.how{margin:0;padding-left:20px;display:grid;gap:4px;font-size:15px}
 a.btnlink{display:inline-block;font-family:var(--pixel);font-size:17px;text-decoration:none;border:2px solid #000;padding:10px 16px;box-shadow:inset -3px -3px 0 rgba(0,0,0,.35), inset 3px 3px 0 rgba(255,255,255,.12)}
 a.btnlink.go{background:var(--magma);color:#1d0b02}
 a.btnlink.off{opacity:.45;pointer-events:none}
+.dist{margin:6px 0 16px;padding:12px;border:2px solid #000;background:#0d0c18}
+.dist-head{display:flex;justify-content:space-between;align-items:baseline;gap:10px;font-family:var(--pixel);font-size:17px;margin-bottom:6px}
+.dist svg{display:block;width:100%;height:auto;font-family:var(--pixel)}
 .hidden{display:none !important}
 .legal{font-size:12px;color:var(--dim);margin-top:16px}
 
@@ -204,6 +207,11 @@ a.btnlink.off{opacity:.45;pointer-events:none}
     <div class="big" id="endKm">0 km</div>
     <p style="margin-top:8px" id="endLine"></p>
     <p class="small dim" id="endStreak"></p>
+    <div class="dist" id="distWrap">
+      <div class="dist-head"><span id="distTitle">Where you landed</span><span class="dim small" id="distPct"></span></div>
+      <svg id="distSvg" viewBox="0 0 560 170" role="img" aria-label="Score distribution"></svg>
+      <p class="small dim" id="distNote"></p>
+    </div>
     <div class="row">
       <button class="go" id="btnShare">Share depth</button>
       <button class="ghost" id="btnAgain">Play again</button>
@@ -6291,12 +6299,51 @@ function renderEnd(g){
   $("endMarks").innerHTML=passed.length?passed.map(m=>li("▸",m.label,"")).join(""):li("▸","Nothing yet. Even 10 points carries you past the deepest hole ever drilled.","");
   const gems=[]; g.res.forEach(r=>PROMPTS[r.p].answers.forEach(a=>{if(a.tier===6) gems.push(a);}));
   $("endGems").innerHTML=gems.map(e=>li(6,e.name,"",e.def)).join("");
+  drawDistribution(g);
   const st=load("quarrillion3:streak");
   $("endStreak").textContent = g.mode==="daily"&&st ? "Streak: "+st.n+" day"+(st.n===1?"":"s")+". Best: "+st.best+"." : "";
   $("endNext").textContent = g.mode==="daily" ? "New prompts at midnight. "+untilMidnight()+" to go." : "";
   G=g; G.share=shareString(g);
   $("shareText").classList.add("hidden"); $("toast").textContent="";
   show("endScreen");
+}
+/* Score distribution. There is no server collecting real scores, so this simulates
+   20,000 players on the same day's prompts with a simple model of how often people
+   reach each tier, and how skill shifts those odds. It is labeled as an estimate. */
+const BASE_ODDS=[0.05,0.30,0.22,0.19,0.13,0.08,0.03];
+function simulateScores(seed){
+  const r=mulberry32(seed), out=new Uint16Array(20000);
+  for(let i=0;i<out.length;i++){
+    const u=Math.max(1e-9,r()), v=r(), skill=Math.sqrt(-2*Math.log(u))*Math.cos(2*Math.PI*v);
+    const w=BASE_ODDS.map((b,t)=>b*Math.exp(skill*0.28*t)), sum=w.reduce((a,b)=>a+b,0);
+    let total=0;
+    for(let q=0;q<7;q++){let x=r()*sum,t=0; while(t<6&&x>w[t]){x-=w[t];t++;} total+=TIERS[t].pts;}
+    out[i]=total;
+  }
+  return out;
+}
+function drawDistribution(g){
+  const sims=simulateScores(g.mode==="free"?12345:(g.day+1)*7777), BIN=25, NB=Math.ceil(700/BIN)+1;
+  const bins=new Array(NB).fill(0); let below=0, eq=0, sum=0;
+  for(const v of sims){bins[Math.min(NB-1,Math.floor(v/BIN))]++; sum+=v; if(v<g.total) below++; else if(v===g.total) eq++;}
+  const pct=Math.round((below+eq/2)/sims.length*100), avg=Math.round(sum/sims.length);
+  const max=Math.max(...bins), W=560, H=170, L=8, R=8, T=22, B=26, bw=(W-L-R)/NB;
+  const mine=Math.min(NB-1,Math.floor(g.total/BIN));
+  let svg="";
+  bins.forEach((c,i)=>{
+    const h=Math.max(c?2:0,Math.round((H-T-B)*c/max)), x=L+i*bw, y=H-B-h;
+    svg+=`<rect x="${(x+1).toFixed(1)}" y="${y}" width="${(bw-2).toFixed(1)}" height="${h}" fill="${i===mine?"#ffd166":"#3b3560"}"/>`;
+  });
+  const mx=L+(mine+.5)*bw;
+  svg+=`<line x1="${mx.toFixed(1)}" y1="${T-4}" x2="${mx.toFixed(1)}" y2="${H-B}" stroke="#ffd166" stroke-width="2" stroke-dasharray="4 3"/>`;
+  svg+=`<text x="${Math.min(W-30,Math.max(30,mx)).toFixed(1)}" y="${T-8}" text-anchor="middle" fill="#ffd166" font-size="14">You · ${g.total}</text>`;
+  const ax=L+(Math.floor(avg/BIN)+.5)*bw;
+  svg+=`<line x1="${ax.toFixed(1)}" y1="${H-B}" x2="${ax.toFixed(1)}" y2="${H-B+6}" stroke="#a39fb8" stroke-width="2"/>`;
+  svg+=`<line x1="${L}" y1="${H-B}" x2="${W-R}" y2="${H-B}" stroke="#2b2747" stroke-width="2"/>`;
+  [0,175,350,525,700].forEach(v=>{const x=L+(v/BIN+.5)*bw; svg+=`<text x="${Math.min(W-R-10,x).toFixed(1)}" y="${H-6}" text-anchor="middle" fill="#a39fb8" font-size="12">${v}</text>`;});
+  $("distSvg").innerHTML=svg;
+  $("distPct").textContent="Better than about "+pct+"% of players";
+  $("distNote").textContent="Estimated from a simulation of 20,000 players on these prompts, since the game doesn't collect real scores yet. The typical score is about "+avg+" points (tick on the axis). Your bar is gold.";
 }
 function untilMidnight(){const n=new Date(), m=new Date(n.getFullYear(),n.getMonth(),n.getDate()+1), s=Math.max(0,(m-n)/1000); return Math.floor(s/3600)+"h "+Math.floor(s%3600/60)+"m";}
 function shareString(g){

@@ -13,6 +13,10 @@ Play it on this repo's GitHub Pages site.
 - Seven perfect answers (700 points) reach the center of the Earth, 6,371 km down, past real landmarks like the Kola Superdeep Borehole and the Moho.
 - One logged dig a day. Share your depth and keep your streak. Missed a day? Play it from the Archive. After the daily dig, Play again gives everyone 2 free extra games with random prompts. More after that costs $5.
 
+## Where you landed
+
+After all 7 prompts, the results screen shows a score distribution with your score marked and the share of players you beat. There's no server collecting real scores yet, so the chart comes from a simulation of 20,000 players on that day's prompts, and the game says so on screen.
+
 ## The ranks
 
 | Rank | Points |
