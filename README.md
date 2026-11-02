@@ -2,7 +2,9 @@
 
 The daily word game where the rarest answer drills deepest, down past the magma to the center of the Earth.
 
-Play it on this repo's GitHub Pages site.
+Play it at https://playmagmillion.github.io/magmillion/
+
+Looking for more games like Krillion? See [games like Krillion](https://playmagmillion.github.io/magmillion/games-like-krillion.html).
 
 ## How it works
 
@@ -53,4 +55,4 @@ TIER Name/alias/alias | optional one-line fact shown after the round
 
 Tier 1 is the most common answer and tier 6 is the rarest. List tier 1 answers from most to least common, since the reveal screen shows the top three as "most people said." Tier 0 lines are near misses that score nothing but explain why, like a spider for "Name an insect."
 
-Inspired by Cosmillion, Krillion, and Moonshot.
+A free daily word game like Krillion, Cosmillion, and Moonshot, with a volcano and a drill. Not affiliated with those games.
