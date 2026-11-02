@@ -32,7 +32,7 @@ There are 116 categories. The daily schedule never repeats a prompt within 14 da
 ## Setting up the $5 Play again unlock
 
 1. Create a $5 payment link with a provider like Stripe Payment Links (you need to be 18, or have a parent or guardian set up the account).
-2. In the payment link settings, send buyers to `https://huanghannah123.github.io/quarrillion/#unlock-DEEPCORE5` after they pay. That lets them play again as often as they like on that device.
+2. In the payment link settings, send buyers to `https://huanghannah123.github.io/magmillion/#unlock-DEEPCORE5` after they pay. That lets them play again as often as they like on that device.
 3. Paste the payment link into `PAY_URL` near the "Unlimited" section of the script (the Play again unlock) in `index.html`.
 4. Buyers on another device can type the code DEEPCORE5 in the "Already paid?" box. To change the code, update `UNLOCK_HASH` to the djb2 hash of the new code.
 
