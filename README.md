@@ -7,7 +7,8 @@ Play it on this repo's GitHub Pages site.
 ## How it works
 
 - Seven prompts a day, like "Name a fruit," the same for everyone, with 25 seconds each.
-- Type one thing that fits. Spelling is forgiven (the game asks "Did you mean...?"), but guessing is not.
+- Type any real thing that fits. Spelling is forgiven: the game asks "Did you mean...?" for typos, swapped letters, sound-alike spellings, and words cut short.
+- Answers aren't limited to a fixed list. If an answer isn't on the hand-made list, the game searches Wikipedia to check that it fits the category and uses the article's views over the last 30 days to rate how common it is. For "word that means..." prompts it asks the free Datamuse dictionary instead. Web finds top out at Deep vein (+85).
 - Rarer answers drill deeper. "Name a fruit": Apple is +10, Miracle fruit is +100.
 - Seven perfect answers (700 points) reach the center of the Earth, 6,371 km down, past real landmarks like the Kola Superdeep Borehole and the Moho.
 - One logged dig a day. Share your depth and keep your streak. Missed a day? Play it from the Archive. After the daily dig, Play again gives everyone 2 free extra games with random prompts. More after that costs $5.

@@ -152,7 +152,7 @@ a.btnlink.off{opacity:.45;pointer-events:none}
     <h3>How it works</h3>
     <ul class="how">
       <li>Seven prompts, the same for everyone today, with new ones every day.</li>
-      <li>Type one thing that fits. Spelling is forgiven (the drill asks "Did you mean...?"), guessing is not.</li>
+      <li>Type any real thing that fits. If it isn't on our list, the game checks Wikipedia to see if it counts and how well known it is. Spelling is forgiven: the drill asks "Did you mean...?"</li>
       <li>Rarer answers drill deeper. Common ones barely scratch the surface.</li>
       <li>Seven perfect answers reach the center of the Earth, 6,371 km down. That's 700 points.</li>
       <li>One logged dig a day. Share your depth and keep the streak.</li>
@@ -218,7 +218,7 @@ a.btnlink.off{opacity:.45;pointer-events:none}
     <ul class="list" id="endMarks"></ul>
     <h3>One in a Magmillion finds from today</h3>
     <ul class="list" id="endGems"></ul>
-    <p class="legal">Rarity tiers are hand-made estimates, not live player data. Depth: 700 points equals Earth's radius, so each point is about 9.1 km.</p>
+    <p class="legal">Listed answers use hand-made rarity tiers. Other answers are checked on Wikipedia (rarity from article views in the last 30 days) or the Datamuse dictionary (word frequency), and top out at Deep vein. Depth: 700 points equals Earth's radius, so each point is about 9.1 km.</p>
   </section>
 
   <section id="payScreen" class="hidden">
@@ -5772,18 +5772,21 @@ PROMPTS.forEach((p,pi)=>{
 });
 function lev(a,b,cap){
   if(Math.abs(a.length-b.length)>cap) return 99;
-  let prev=[...Array(b.length+1).keys()];
+  let prev=[...Array(b.length+1).keys()], pp=null;
   for(let i=1;i<=a.length;i++){
     const cur=[i];
-    for(let j=1;j<=b.length;j++) cur[j]=Math.min(prev[j]+1,cur[j-1]+1,prev[j-1]+(a[i-1]===b[j-1]?0:1));
-    prev=cur;
+    for(let j=1;j<=b.length;j++){
+      cur[j]=Math.min(prev[j]+1,cur[j-1]+1,prev[j-1]+(a[i-1]===b[j-1]?0:1));
+      if(i>1&&j>1&&a[i-1]===b[j-2]&&a[i-2]===b[j-1]&&pp) cur[j]=Math.min(cur[j],pp[j-2]+1);
+    }
+    pp=prev; prev=cur;
   }
   return prev[b.length];
 }
 function variants(k){const v=[k]; if(k.length>4&&k.endsWith("es")) v.push(k.slice(0,-2)); if(k.length>3&&k.endsWith("s")) v.push(k.slice(0,-1)); return v;}
 function squash(k){return k.replace(/(.)\1+/g,"$1");}
 function sound(k){return squash(k.replace(/ph/g,"f").replace(/hu(?=a)/g,"w").replace(/wh/g,"w").replace(/ck|q/g,"k").replace(/c(?=[eiy])/g,"s").replace(/c/g,"k").replace(/z/g,"s").replace(/y/g,"i").replace(/h/g,""));}
-function allow(n){return n<=3?0:n<=6?1:n<=10?2:3;}
+function allow(n){return n<=2?0:n<=4?1:n<=7?2:n<=11?3:4;}
 /* Returns {entry, exact:true} for a clean match, {entry, exact:false} for a likely typo, or null. */
 function lookup(p, input){
   const k=key(input,p.s); if(!k) return null;
@@ -5799,6 +5802,10 @@ function lookup(p, input){
       if(d>lim && lim>1 && lev(sound(v),sound(ek),lim)<=lim-1) d=lim;
       if(d<=lim && (d<bd||(d===bd&&best&&e.tier<best.tier))){best=e;bd=d;}
     }
+  }
+  if(!best && k.length>=4){ // a word cut short, like "pistach" for pistachio
+    const hits=all.filter(e=>e.tier>0&&e.keys.some(ek=>ek.startsWith(k)&&ek.length-k.length<=4));
+    if(hits.length===1) best=hits[0];
   }
   return best?{entry:best,exact:false}:null;
 }
@@ -5995,35 +6002,232 @@ function ask(){
 }
 function fb(msg,cls){const f=$("feedback"); f.textContent=msg; f.className="feedback "+(cls||""); if(cls==="bad"){void f.offsetWidth; f.classList.add("shake");}}
 
-function submit(){
-  if(locked) return;
+/* ---------- Open answers: check the web when an answer isn't on the list ----------
+   Thing prompts search Wikipedia. The article must mention the category (the "any" words,
+   plus every "all" word), and its views over the last 30 days set the rarity.
+   "Word that means..." prompts ask the Datamuse dictionary for words with that meaning,
+   and word frequency sets the rarity. Web finds max out at Deep vein (85). */
+const WEB={
+"Name a type of cloud":{h:"cloud",any:["cloud"]},
+"Name a bone in the human body":{h:"bone",any:["bone","skeleton","skeletal"]},
+"Name a programming language":{h:"programming language",any:["programming language"]},
+"Name a knot":{h:"knot",any:["knot","hitch","bend"]},
+"Name a phobia":{h:"phobia",any:["phobia","fear of"]},
+"Name a geologic period, era, epoch, or eon":{h:"geologic",any:["geologic","million years ago"]},
+"Name a mineral or gemstone":{h:"mineral",any:["mineral","gemstone","gem "]},
+"Name a type of pasta":{h:"pasta",any:["pasta"]},
+"Name a word that means 'very large'":{syn:"huge"},
+"Name a dog breed":{h:"dog breed",any:["dog breed","breed of dog","breed of domestic dog"]},
+"Name a musical instrument":{h:"musical instrument",any:["musical instrument","instrument"]},
+"Name a part of a castle":{h:"castle",any:["castle","fortification","fortified","fortress"]},
+"Name a type of cheese":{h:"cheese",any:["cheese"]},
+"Name an element on the periodic table":{h:"chemical element",any:["chemical element"]},
+"Name a constellation":{h:"constellation",any:["constellation"]},
+"Name a type of boat or ship":{h:"boat",any:["boat","ship","vessel","watercraft"]},
+"Name a dance":{h:"dance",any:["dance"]},
+"Name a part of a flower":{h:"flower botany",any:["flower","floral","botany","plant"]},
+"Name a word that means 'nonsense'":{syn:"nonsense"},
+"Name a unit of measurement":{h:"unit of measurement",any:["unit of","measurement"]},
+"Name a landlocked country":{h:"landlocked country",any:["landlocked"]},
+"Name a part of a ship":{h:"ship",any:["ship","boat","nautical","sailing","vessel"]},
+"Name a scale named after a person":{h:"scale",any:["scale"]},
+"Name a famous scientist":{h:"scientist",any:["physicist","chemist","biologist","scientist","mathematician","astronomer","geologist","naturalist","inventor","geneticist","seismologist","engineer"]},
+"Name a type of tree":{h:"tree",any:["tree","conifer"]},
+"Name a field of study ending in '-ology'":{h:"study",any:["study of","science","branch of"],suffix:"ology"},
+"Name a type of hat":{h:"hat",any:["hat","headgear","headwear","cap "]},
+"Name a dinosaur":{h:"dinosaur",any:["dinosaur","theropod","sauropod","ornithischian"]},
+"Name a landform":{h:"landform",any:["landform","geomorpholog","geological formation","landscape","terrain"]},
+"Name a font or typeface":{h:"typeface",any:["typeface","font"]},
+"Name a card game":{h:"card game",any:["card game"]},
+"Name a color":{h:"color",any:["color","colour","shade of"]},
+"Name a sport played with a ball":{h:"ball sport",any:["ball"],all:["sport"]},
+"Name a fruit":{h:"fruit",any:["fruit"]},
+"Name a vegetable":{h:"vegetable",any:["vegetable"]},
+"Name a spice":{h:"spice",any:["spice"]},
+"Name a bird":{h:"bird",any:["bird"]},
+"Name a fish":{h:"fish",any:["fish"]},
+"Name an insect":{h:"insect",any:["insect"]},
+"Name a mammal":{h:"mammal",any:["mammal"]},
+"Name a sea creature that isn't a fish":{h:"marine animal",any:["marine","ocean","sea "]},
+"Name a reptile":{h:"reptile",any:["reptile","lizard","snake","turtle","tortoise","crocodil"]},
+"Name a cat breed":{h:"cat breed",any:["cat breed","breed of cat","breed of domestic cat"]},
+"Name a horse breed":{h:"horse breed",any:["horse breed","breed of horse","pony"]},
+"Name a nut":{h:"nut",any:["nut","seed"]},
+"Name a berry":{h:"berry",any:["berry","berries"]},
+"Name a mushroom":{h:"mushroom",any:["mushroom","fungus","fungi"]},
+"Name a sauce or condiment":{h:"sauce",any:["sauce","condiment","dip","relish"]},
+"Name a dessert":{h:"dessert",any:["dessert","cake","pastry","pudding","confection"]},
+"Name a type of bread":{h:"bread",any:["bread"]},
+"Name a breakfast food":{h:"breakfast",any:["breakfast"]},
+"Name a soup":{h:"soup",any:["soup","stew","broth"]},
+"Name a sandwich":{h:"sandwich",any:["sandwich"]},
+"Name a candy":{h:"candy",any:["candy","confection","chocolate","sweets"]},
+"Name a coffee drink":{h:"coffee drink",any:["coffee","espresso"]},
+"Name a kind of tea":{h:"tea",any:["tea"]},
+"Name a way to cook food":{h:"cooking technique",any:["cooking","culinary","cook "]},
+"Name a kitchen tool":{h:"kitchen utensil",any:["kitchen","utensil","cookware"]},
+"Name a tool":{h:"tool",any:["tool"]},
+"Name a piece of furniture":{h:"furniture",any:["furniture"]},
+"Name an item of clothing":{h:"garment",any:["garment","clothing","worn by","worn on"]},
+"Name a type of shoe":{h:"shoe",any:["shoe","footwear"]},
+"Name a fabric":{h:"fabric",any:["fabric","textile","cloth"]},
+"Name a hairstyle":{h:"hairstyle",any:["hairstyle","haircut"]},
+"Name a job":{h:"occupation",any:["occupation","profession","job","worker","person who"]},
+"Name a car brand":{h:"car manufacturer",any:["automobile","automaker","car manufacturer","vehicle manufacturer","cars"]},
+"Name a vehicle":{h:"vehicle",any:["vehicle"]},
+"Name a board game":{h:"board game",any:["board game"]},
+"Name a martial art or combat sport":{h:"martial art",any:["martial art","combat sport"]},
+"Name an Olympic sport or event":{h:"olympic sport",any:["olympic"]},
+"Name a skateboard trick":{h:"skateboarding trick",any:["skateboard"]},
+"Name a yoga pose":{h:"yoga asana",any:["asana","yoga"]},
+"Name a chess term":{h:"chess",any:["chess"]},
+"Name a shape":{h:"geometric shape",any:["shape","polygon","polyhedron","geometry","curve"]},
+"Name a math term":{h:"mathematics",any:["mathematic"]},
+"Name a music genre":{h:"music genre",any:["genre","style of music","music"]},
+"Name a musical term":{h:"musical term",any:["music","tempo","notation"]},
+"Name a classical composer":{h:"composer",any:["composer"]},
+"Name a famous painter":{h:"painter",any:["painter"]},
+"Name a Greek god or goddess":{h:"greek mythology",any:["greek mythology","greek god","deity","god of","goddess of"]},
+"Name a mythical creature":{h:"mythical creature",any:["mytholog","legendary creature","folklore","mythical"]},
+"Name a punctuation mark or typographic symbol":{h:"punctuation",any:["punctuation","typographic","symbol","glyph"]},
+"Name a form of poetry":{h:"poetry",any:["poetry","poem","verse"]},
+"Name a literary device":{h:"figure of speech",any:["rhetoric","literary","figure of speech"]},
+"Name a language":{h:"language",any:["language"]},
+"Name a currency":{h:"currency",any:["currency"]},
+"Name a capital city":{h:"capital city",any:["capital"]},
+"Name a country in Africa":{h:"country Africa",any:["africa"],all:["country"]},
+"Name a country in Europe":{h:"country Europe",any:["europe"],all:["country"]},
+"Name a river":{h:"river",any:["river"]},
+"Name a mountain":{h:"mountain",any:["mountain","peak","volcano","summit"]},
+"Name an ocean or sea":{h:"sea",any:["sea","ocean","gulf"]},
+"Name an island":{h:"island",any:["island","archipelago"]},
+"Name a moon in our solar system":{h:"moon",any:["moon","natural satellite"]},
+"Name a star (not the Sun)":{h:"star",any:["star"]},
+"Name an organ in the human body":{h:"organ anatomy",any:["organ","gland"]},
+"Name a muscle":{h:"muscle",any:["muscle"]},
+"Name an emotion":{h:"emotion",any:["emotion","feeling"]},
+"Name a word that means 'happy'":{syn:"happy"},
+"Name a word that means 'small'":{syn:"small"},
+"Name a way of walking":{syn:"walk"},
+"Name an architectural style":{h:"architectural style",any:["architect"]},
+"Name a type of bridge":{h:"bridge",any:["bridge"]},
+"Name a weather event (not a cloud)":{h:"weather",any:["weather","meteorolog","atmospheric","precipitation","storm"]},
+"Name a type of rock":{h:"rock",any:["rock","igneous","sedimentary","metamorphic"]},
+"Name a potato dish":{h:"potato dish",any:["potato"]},
+"Name an egg dish":{h:"egg dish",any:["egg"]},
+"Name a salad":{h:"salad",any:["salad"]},
+"Name a citrus fruit":{h:"citrus",any:["citrus"]}
+};
+const WEB_CACHE={};
+function withTimeout(ms){const c=new AbortController(); setTimeout(()=>c.abort(),ms); return c.signal;}
+function viewsTier(v){return v>=150000?1:v>=50000?2:v>=15000?3:v>=4000?4:5;}
+function freqTier(f){return f>=30?1:f>=8?2:f>=2?3:f>=0.5?4:5;}
+function close(a,b){ // lenient: same word, one contains the other, or a small typo apart
+  if(!a||!b) return false;
+  if(a===b||a.includes(b)||b.includes(a)) return true;
+  const lim=Math.max(1,allow(Math.max(a.length,b.length)));
+  return lev(a,b,lim)<=lim||sound(a)===sound(b);
+}
+/* Returns {entry} (an answer object with tier, name, def, web:true), {reject:"reason"}, or {offline:true}. */
+async function webCheck(p, raw){
+  const spec=WEB[p.q]; if(!spec) return {reject:""};
+  const ck=p.id+"|"+key(raw,p.s); if(WEB_CACHE[ck]) return WEB_CACHE[ck];
+  let out;
+  try{
+    if(spec.syn){
+      const r=await fetch("https://api.datamuse.com/words?ml="+encodeURIComponent(spec.syn)+"&max=1000&md=f",{signal:withTimeout(6000)});
+      const list=await r.json(), k=key(raw,[]);
+      let best=null,bd=99;
+      for(const w of list){const wk=key(w.word,[]); if(wk.length<3) continue; const d=wk===k?0:lev(wk,k,3); const lim=allow(wk.length)||(wk.length>=3?1:0); if(d<=lim&&d<bd){best=w;bd=d;}}
+      if(!best){out={reject:"The dictionary we check doesn't list "+raw+" as meaning \""+spec.syn+".\""};}
+      else{
+        const f=parseFloat(((best.tags||[]).find(t=>t.startsWith("f:"))||"f:0").slice(2));
+        out={entry:{tier:freqTier(f),name:best.word,def:"",web:true,src:"Datamuse dictionary: about "+(f>=1?f.toFixed(0):f.toFixed(2))+" uses per million words"}};
+      }
+    } else {
+      if(spec.suffix && !key(raw,[]).endsWith(spec.suffix)) return {reject:"That doesn't end in -"+spec.suffix+"."};
+      const q=raw+" "+spec.h;
+      const url="https://en.wikipedia.org/w/api.php?action=query&format=json&origin=*&redirects=1"+
+        "&generator=search&gsrlimit=4&gsrsearch="+encodeURIComponent(q)+
+        "&prop=description|extracts|categories|pageprops|pageviews&exintro=1&explaintext=1&exsentences=3&exlimit=4"+
+        "&cllimit=100&clshow=!hidden&ppprop=disambiguation&pvipdays=30";
+      const r=await fetch(url,{signal:withTimeout(7000)});
+      const data=await r.json();
+      const pages=Object.values((data.query&&data.query.pages)||{}).sort((a,b)=>a.index-b.index);
+      const k=key(raw,p.s), noun=key(spec.h,[]);
+      let found=null;
+      for(const pg of pages){
+        if(pg.pageprops&&("disambiguation" in pg.pageprops)) continue;
+        const title=pg.title.replace(/\s*\(.*?\)\s*/g," ").trim(), tk=key(title,p.s);
+        if(!close(tk,k)) continue;
+        if(tk===noun||k===noun) continue;
+        const text=((pg.description||"")+" "+(pg.extract||"")+" "+(pg.categories||[]).map(c=>c.title).join(" ")).toLowerCase();
+        const anyOk=spec.any.some(w=>text.includes(w)), allOk=(spec.all||[]).every(w=>text.includes(w));
+        if(anyOk&&allOk){found={pg,title};break;}
+      }
+      if(!found){out={reject:"We searched Wikipedia but couldn't match "+raw+" to this category."};}
+      else{
+        const v=Object.values(found.pg.pageviews||{}).reduce((s,x)=>s+(x||0),0);
+        const desc=found.pg.description?found.pg.description.replace(/^./,c=>c.toUpperCase())+".":"";
+        out={entry:{tier:viewsTier(v),name:found.title,def:desc,web:true,src:"Wikipedia: about "+v.toLocaleString("en-US")+" views in the last 30 days"}};
+      }
+    }
+  }catch(e){out={offline:true};}
+  if(!out.offline) WEB_CACHE[ck]=out;
+  return out;
+}
+
+let paused=0;
+function pauseTimer(){cancelAnimationFrame(raf); paused=Math.max(0,G.deadline-performance.now());}
+function resumeTimer(){G.deadline=performance.now()+paused; const step=()=>{const left=Math.max(0,G.deadline-performance.now()),frac=left/(QTIME*1000); $("timerBar").style.width=(frac*100)+"%"; $("timer").classList.toggle("late",frac<.3); $("qTime").textContent=Math.ceil(left/1000)+"s"; if(left<=0){timeUp();return;} raf=requestAnimationFrame(step);}; raf=requestAnimationFrame(step);}
+function askConfirm(entry){
+  pending=entry;
+  $("confirmWord").textContent=entry.name;
+  $("confirmBox").classList.remove("hidden");
+  $("btnYes").focus();
+}
+let checking=false;
+async function submit(){
+  if(locked||checking) return;
   if(pending){score(pending, $("ansInput").value.trim()); return;}
   const raw=$("ansInput").value.trim(); if(!raw) return;
   const p=PROMPTS[G.set[G.qi]], hit=lookup(p,raw);
-  if(hit && !hit.exact){
-    pending=hit.entry;
-    $("confirmWord").textContent=hit.entry.name;
-    $("confirmBox").classList.remove("hidden");
-    $("btnYes").focus();
+  if(hit && hit.exact){score(hit.entry, raw); return;}
+  if(hit && hit.entry.tier===0){askConfirm(hit.entry); return;}
+  if(WEB[p.q]){
+    checking=true; pauseTimer(); $("ansInput").disabled=true; fb("Checking the web for "+raw+"...","");
+    const res=await webCheck(p,raw);
+    checking=false; if(locked) return;
+    $("ansInput").disabled=false; fb("","");
+    if(res.entry){
+      // a listed typo match beats a web match, since the list's rarity is hand-checked
+      const pick = hit ? hit.entry : res.entry;
+      if(key(pick.name,p.s)===key(raw,p.s)){score(pick,raw);return;}
+      askConfirm(pick); resumeTimer(); return;
+    }
+    if(hit){askConfirm(hit.entry); resumeTimer(); return;}
+    if(res.offline){fb("Couldn't reach the web to check that. Try another answer.","bad"); resumeTimer(); $("ansInput").select(); return;}
+    score(null, raw, false, res.reject);
     return;
   }
-  score(hit?hit.entry:null, raw);
+  if(hit){askConfirm(hit.entry); return;}
+  score(null, raw);
 }
 function timeUp(){
-  if(locked) return;
+  if(locked||checking) return;
   const raw=$("ansInput").value.trim();
   if(pending){score(pending,raw);return;}
   if(!raw){score(null,"",true);return;}
   const hit=lookup(PROMPTS[G.set[G.qi]],raw);
   score(hit?hit.entry:null,raw);   // out of time, so a likely typo is accepted as is
 }
-function score(e, raw, timedOut){
+function score(e, raw, timedOut, why){
   locked=true; cancelAnimationFrame(raf);
   $("ansInput").disabled=true; $("confirmBox").classList.add("hidden");
   const tier = e && e.tier>0 ? e.tier : 0;
   const pts = TIERS[tier].pts;
   G.total+=pts;
-  G.res.push({p:G.set[G.qi], raw, name: e&&e.tier>0 ? e.name : raw, tier, pts, timedOut:!!timedOut, nope: e&&e.tier===0 ? e.name+": "+e.def : ""});
+  G.res.push({p:G.set[G.qi], raw, name: e&&e.tier>0 ? e.name : raw, tier, pts, timedOut:!!timedOut, nope: e&&e.tier===0 ? e.name+": "+e.def : "", web: e&&e.web ? {def:e.def,src:e.src} : null, why: why||""});
   if(pts) floatPts(pts);
   setDepth(G.total*KM_PER_PT); updateHud();
   setTimeout(reveal, 650);
@@ -6055,7 +6259,8 @@ function reveal(){
   let note="";
   if(r.nope) note=r.nope;
   else if(!r.raw) note="The clock ran out before you typed anything.";
-  else if(!r.tier) note="That isn't in the core sample for this prompt, so the drill didn't move.";
+  else if(!r.tier) note=(r.why?r.why+" ":"That isn't in the core sample for this prompt. ")+"The drill didn't move.";
+  else if(r.web) note=(r.web.def?r.web.def+" ":"")+"Checked on the web ("+r.web.src+").";
   else {const e=p.answers.find(a=>a.name===r.name); if(e&&e.def) note=e.def;}
   $("sNote").textContent=note;
   $("rCommon").innerHTML="Most people said "+p.crowd.slice(0,3).map(e=>"<b>"+esc(e.name)+"</b>").join(", ")+".";
