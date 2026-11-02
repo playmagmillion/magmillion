@@ -1,6 +1,6 @@
-# Quarrillion
+# Magmillion
 
-The daily word game where the rarest answer drills deepest.
+The daily word game where the rarest answer drills deepest, down past the magma to the center of the Earth.
 
 Play it here: https://huanghannah123.github.io/quarrillion/
 
@@ -10,7 +10,7 @@ Play it here: https://huanghannah123.github.io/quarrillion/
 - Type one thing that fits. Spelling is forgiven (the game asks "Did you mean...?"), but guessing is not.
 - Rarer answers drill deeper. "Name a fruit": Apple is +10, Miracle fruit is +100.
 - Seven perfect answers (700 points) reach the center of the Earth, 6,371 km down, past real landmarks like the Kola Superdeep Borehole and the Moho.
-- One logged dig a day. Share your depth and keep your streak. Missed a day? Play it from the Archive. Unlimited mode gives everyone 3 free digs with random prompts, then costs $5 to unlock.
+- One logged dig a day. Share your depth and keep your streak. Missed a day? Play it from the Archive. Unlimited mode gives everyone 2 free digs with random prompts, then costs $5 to unlock.
 
 ## The ranks
 
@@ -21,7 +21,7 @@ Play it here: https://huanghannah123.github.io/quarrillion/
 | Bedrock | +30 |
 | Ore seam | +60 |
 | Deep vein | +85 |
-| One in a Quarrillion | +100 |
+| One in a Magmillion | +100 |
 
 Rarity tiers are hand-made estimates, not live player data.
 
