@@ -2,7 +2,7 @@
 
 The daily word game where the rarest answer drills deepest, down past the magma to the center of the Earth.
 
-Play it here: https://huanghannah123.github.io/quarrillion/
+Play it here: https://huanghannah123.github.io/magmillion/
 
 ## How it works
 
