@@ -114,6 +114,11 @@ ul.how{margin:0;padding-left:20px;display:grid;gap:4px;font-size:15px}
 .strike .what b{display:block;font-size:20px;font-family:var(--pixel)}
 .strike .spts{font-family:var(--pixel);font-size:32px;color:var(--gold);font-variant-numeric:tabular-nums}
 .list.arch li{grid-template-columns:48px 1fr auto auto}
+.price{font-family:var(--pixel);font-size:18px;margin:6px 0 12px}
+.price b{font-size:40px;color:var(--gold)}
+a.btnlink{display:inline-block;font-family:var(--pixel);font-size:17px;text-decoration:none;border:2px solid #000;padding:10px 16px;box-shadow:inset -3px -3px 0 rgba(0,0,0,.35), inset 3px 3px 0 rgba(255,255,255,.12)}
+a.btnlink.go{background:var(--magma);color:#1d0b02}
+a.btnlink.off{opacity:.45;pointer-events:none}
 .hidden{display:none !important}
 .legal{font-size:12px;color:var(--dim);margin-top:16px}
 
@@ -157,6 +162,7 @@ ul.how{margin:0;padding-left:20px;display:grid;gap:4px;font-size:15px}
     <div class="row" style="margin-top:16px">
       <button class="ghost" id="btnArch">Archive</button>
       <button class="ghost" id="btnFree">Unlimited</button>
+      <span class="small dim" id="freeLeft"></span>
     </div>
     <p class="small dim" id="streakLine" style="margin-top:12px"></p>
   </section>
@@ -213,6 +219,30 @@ ul.how{margin:0;padding-left:20px;display:grid;gap:4px;font-size:15px}
     <h3>One in a Quarrillion finds from today</h3>
     <ul class="list" id="endGems"></ul>
     <p class="legal">Rarity tiers are hand-made estimates, not live player data. Depth: 700 points equals Earth's radius, so each point is about 9.1 km.</p>
+  </section>
+
+  <section id="payScreen" class="hidden">
+    <div class="eyebrow">Unlimited</div>
+    <h2>You've used your 3 free Unlimited digs.</h2>
+    <p>Today's daily dig stays free forever. To keep drilling with random prompts as many times as you want, unlock Unlimited.</p>
+    <div class="price"><b>$5</b> <span class="dim">one-time · no account · works on this device</span></div>
+    <ul class="how">
+      <li>Unlimited digs with 7 random prompts each</li>
+      <li>All 116 categories, shuffled every time</li>
+      <li>No daily limit</li>
+    </ul>
+    <div class="row" style="margin-top:16px">
+      <a class="btnlink go" id="payLink" href="#" target="_blank" rel="noopener">Unlock for $5</a>
+      <button class="ghost" id="btnPayBack" type="button">Back</button>
+    </div>
+    <p class="small dim" id="payNote" style="margin-top:10px"></p>
+    <h3>Already paid?</h3>
+    <form class="ans" id="codeForm" autocomplete="off">
+      <label for="codeInput" class="hidden">Unlock code</label>
+      <input id="codeInput" type="text" placeholder="Enter your unlock code" autocapitalize="characters" spellcheck="false" maxlength="40">
+      <button class="ghost" type="submit">Unlock</button>
+    </form>
+    <div class="feedback" id="codeMsg"></div>
   </section>
 
   <section id="archiveScreen" class="hidden">
@@ -5918,7 +5948,7 @@ resize(); requestAnimationFrame(frame);
 
 /* ---------- Game (Cosmillion format: 7 prompts, 25 seconds, one answer each) ---------- */
 const $=id=>document.getElementById(id);
-const SCREENS=["startScreen","playScreen","revealScreen","endScreen","archiveScreen"];
+const SCREENS=["startScreen","playScreen","revealScreen","endScreen","archiveScreen","payScreen"];
 function show(id){SCREENS.forEach(s=>$(s).classList.toggle("hidden",s!==id)); scrollTo({top:0});}
 const QTIME=25, NQ=7, SITE="huanghannah123.github.io/quarrillion";
 const KEY=d=>"quarrillion3:"+d;
@@ -6082,6 +6112,39 @@ function openArchive(){
   });
   show("archiveScreen");
 }
+/* ---------- Unlimited: 3 free digs, then a $5 unlock ----------
+   PAY_URL: paste your payment link here (for example a Stripe Payment Link).
+   Set the payment page to redirect buyers to .../quarrillion/#unlock-DEEPCORE5
+   so their game unlocks right away. Change UNLOCK_HASH if you change the code. */
+const PAY_URL = "";
+const FREE_UNLIMITED = 3;
+const UNLOCK_HASH = 266412929; // djb2 hash of the code DEEPCORE5
+function djb2(t){let h=5381; for(const c of t) h=((h<<5)+h+c.charCodeAt(0))>>>0; return h;}
+function isUnlocked(){return !!load("quarrillion3:unlocked");}
+function freeUsed(){return load("quarrillion3:freeUsed")||0;}
+function refreshFree(){
+  const el=$("freeLeft"); if(!el) return;
+  if(isUnlocked()) el.textContent="Unlimited unlocked";
+  else {const left=Math.max(0,FREE_UNLIMITED-freeUsed()); el.textContent=left?left+" free Unlimited dig"+(left===1?"":"s")+" left":"Unlimited: $5 to unlock";}
+}
+function playUnlimited(){
+  if(isUnlocked()){newGame("free");return;}
+  const used=freeUsed();
+  if(used<FREE_UNLIMITED){save("quarrillion3:freeUsed",used+1); refreshFree(); newGame("free"); return;}
+  openPay();
+}
+function openPay(){
+  const a=$("payLink");
+  if(PAY_URL){a.href=PAY_URL; a.classList.remove("off"); $("payNote").textContent="Checkout opens in a new tab. Payments are handled by the payment provider.";}
+  else {a.href="#"; a.classList.add("off"); $("payNote").textContent="Payments aren't set up yet. Check back soon.";}
+  $("codeMsg").textContent="";
+  show("payScreen");
+}
+function tryUnlock(code){
+  code=String(code||"").trim().toUpperCase();
+  if(code && djb2(code)===UNLOCK_HASH){save("quarrillion3:unlocked",true); refreshFree(); return true;}
+  return false;
+}
 function startDaily(){
   const rec=load(KEY(DAY));
   if(rec){renderEnd({mode:"daily",day:DAY,set:rec.set,res:rec.res,total:rec.total});return;}
@@ -6103,11 +6166,21 @@ addEventListener("keydown",e=>{
 });
 $("btnNext").onclick=next;
 $("btnDaily").onclick=startDaily;
-$("btnFree").onclick=()=>newGame("free");
+$("btnFree").onclick=playUnlimited;
 $("btnArch").onclick=openArchive;
-$("btnAgain").onclick=()=>newGame("free");
+$("btnAgain").onclick=playUnlimited;
 $("btnArch2").onclick=openArchive;
 $("btnArchBack").onclick=()=>show("startScreen");
+$("btnPayBack").onclick=()=>show("startScreen");
+$("codeForm").addEventListener("submit",e=>{e.preventDefault();
+  if(tryUnlock($("codeInput").value)){$("codeMsg").textContent="Unlocked. Enjoy unlimited digging."; $("codeMsg").className="feedback ok"; setTimeout(()=>newGame("free"),900);}
+  else {$("codeMsg").textContent="That code didn't work. Check the code on your receipt and try again."; $("codeMsg").className="feedback bad";}
+});
+(function(){
+  const m=location.hash.match(/^#unlock-([A-Za-z0-9]+)$/);
+  if(m){ if(tryUnlock(m[1])) $("streakLine").textContent="Thanks for your purchase. Unlimited is unlocked."; history.replaceState(null,"",location.pathname+location.search); }
+  refreshFree();
+})();
 $("btnShare").onclick=async()=>{
   try{await navigator.clipboard.writeText(G.share); $("toast").textContent="Copied";}catch(e){$("toast").textContent="Copy blocked here. Select the text below.";}
   $("shareText").textContent=G.share; $("shareText").classList.remove("hidden");

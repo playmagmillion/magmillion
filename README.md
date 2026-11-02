@@ -10,7 +10,7 @@ Play it here: https://huanghannah123.github.io/quarrillion/
 - Type one thing that fits. Spelling is forgiven (the game asks "Did you mean...?"), but guessing is not.
 - Rarer answers drill deeper. "Name a fruit": Apple is +10, Miracle fruit is +100.
 - Seven perfect answers (700 points) reach the center of the Earth, 6,371 km down, past real landmarks like the Kola Superdeep Borehole and the Moho.
-- One logged dig a day. Share your depth and keep your streak. Missed a day? Play it from the Archive. Want more? Try Unlimited.
+- One logged dig a day. Share your depth and keep your streak. Missed a day? Play it from the Archive. Unlimited mode gives everyone 3 free digs with random prompts, then costs $5 to unlock.
 
 ## The ranks
 
@@ -28,6 +28,15 @@ Rarity tiers are hand-made estimates, not live player data.
 ## New prompts every day
 
 There are 116 categories. The daily schedule never repeats a prompt within 14 days, and no two days share the same set of seven. Add more categories and the gap grows on its own.
+
+## Setting up the $5 Unlimited unlock
+
+1. Create a $5 payment link with a provider like Stripe Payment Links (you need to be 18, or have a parent or guardian set up the account).
+2. In the payment link settings, send buyers to `https://huanghannah123.github.io/quarrillion/#unlock-DEEPCORE5` after they pay. That unlocks Unlimited on their device.
+3. Paste the payment link into `PAY_URL` near the "Unlimited" section of the script in `index.html`.
+4. Buyers on another device can type the code DEEPCORE5 in the "Already paid?" box. To change the code, update `UNLOCK_HASH` to the djb2 hash of the new code.
+
+The unlock is stored in the browser, so a determined player could get around it. For real enforcement you'd need a server that checks purchases.
 
 ## Adding categories
 
