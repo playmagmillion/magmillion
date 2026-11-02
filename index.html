@@ -1,0 +1,2600 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Quarrillion</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Pixelify+Sans:wght@400;600;700&family=IBM+Plex+Sans:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+:root{
+  /* Pixel night sky over a cut-away Earth. The scene fills the window, the dig log floats over it. */
+  --night:#070b1f;
+  --panel:rgba(10,9,20,.90);
+  --edge:#2b2747;
+  --text:#f1ece4;
+  --dim:#a39fb8;
+  --magma:#ff7a3d;
+  --gold:#ffd166;
+  --good:#7ee2a8;
+  --t0:#4a3f37; --t1:#8a6a4f; --t2:#b07a52; --t3:#9a948d; --t4:#e5b54a; --t5:#ff7a3d; --t6:#6fe3d2;
+  --pixel:"Pixelify Sans", "Courier New", monospace;
+  --body:"IBM Plex Sans", system-ui, -apple-system, "Segoe UI", sans-serif;
+  color-scheme:dark;
+}
+*{box-sizing:border-box}
+html,body{height:100%;margin:0}
+body{background:var(--night);color:var(--text);font-family:var(--body);font-size:16px;line-height:1.5}
+canvas#world{position:fixed;inset:0;width:100vw;height:100vh;image-rendering:pixelated;image-rendering:crisp-edges;z-index:0}
+.hud{position:fixed;top:0;left:0;right:0;z-index:3;display:flex;justify-content:space-between;align-items:flex-start;gap:12px;padding:12px 16px;pointer-events:none;
+  background:linear-gradient(rgba(7,11,31,.85),rgba(7,11,31,0))}
+.brand{font-family:var(--pixel);font-weight:700;font-size:22px;letter-spacing:.32em;line-height:1}
+.brand small{display:block;font-weight:400;font-size:11px;letter-spacing:.14em;color:var(--dim);margin-top:6px}
+.meter{font-family:var(--pixel);text-align:right;line-height:1.1}
+.meter b{display:block;font-size:26px;color:var(--gold);font-variant-numeric:tabular-nums}
+.meter span{font-size:13px;color:var(--dim)}
+.combo{display:inline-block;margin-top:6px;padding:2px 8px;border:2px solid var(--magma);color:var(--magma);font-family:var(--pixel);font-size:13px}
+
+.stage{position:relative;z-index:2;min-height:100%;display:flex;justify-content:flex-end;padding:118px 6vw 40px 16px}
+.panel{width:100%;max-width:560px;align-self:flex-start;background:var(--panel);border:2px solid var(--edge);
+  box-shadow:0 0 0 2px #000, 6px 6px 0 0 rgba(0,0,0,.45);padding:22px}
+h1,h2,h3{font-family:var(--pixel);font-weight:700;margin:0;text-wrap:balance}
+h2{font-size:28px;line-height:1.1;margin-bottom:10px}
+h3{font-size:18px;margin:18px 0 8px;color:var(--gold)}
+p{margin:0 0 12px}
+.dim{color:var(--dim)}
+.small{font-size:13px}
+.eyebrow{font-family:var(--pixel);font-size:13px;letter-spacing:.12em;text-transform:uppercase;color:var(--magma);margin-bottom:8px}
+ol.how{margin:0 0 6px;padding-left:22px;display:grid;gap:6px}
+.ranks{display:grid;gap:6px;margin:6px 0 4px}
+.rank{display:grid;grid-template-columns:28px 1fr auto;gap:10px;align-items:center;font-size:14px}
+.rank b{font-weight:600}
+.rank .pts{font-family:var(--pixel);color:var(--gold);font-variant-numeric:tabular-nums}
+img.badge{width:27px;height:21px;image-rendering:pixelated;display:block}
+img.badge.sm{width:18px;height:14px;display:inline-block;vertical-align:-2px}
+.row{display:flex;gap:10px;flex-wrap:wrap;align-items:center}
+button{font:inherit;font-family:var(--pixel);font-size:17px;cursor:pointer;border:2px solid #000;padding:10px 16px;color:var(--text);background:#2b2747;
+  box-shadow:inset -3px -3px 0 rgba(0,0,0,.35), inset 3px 3px 0 rgba(255,255,255,.12)}
+button:active{transform:translate(1px,1px)}
+button.go{background:var(--magma);color:#1d0b02}
+button.yes{background:var(--good);color:#06210f}
+button.ghost{background:transparent;border-color:var(--edge);box-shadow:none}
+button:focus-visible,input:focus-visible{outline:3px solid var(--gold);outline-offset:2px}
+button[disabled]{opacity:.45;cursor:default}
+
+/* Play */
+.top{display:flex;justify-content:space-between;align-items:baseline;gap:10px}
+.slots{display:flex;gap:6px}
+.slot{width:30px;height:24px;border:2px solid var(--edge);display:grid;place-items:center;background:#0d0c18}
+.slot.now{border-color:var(--gold)}
+.slot img{width:24px;height:18px;image-rendering:pixelated}
+.slot.miss{background:#2a0f0f}
+.cat{font-family:var(--pixel);font-size:clamp(28px,5vw,38px);line-height:1.05;margin:4px 0 6px}
+.ask{font-size:15px;color:var(--dim);margin-bottom:14px}
+.target{display:flex;align-items:center;gap:10px;padding:10px 12px;border:2px dashed var(--gold);margin-bottom:14px;font-family:var(--pixel);font-size:20px}
+.target img{width:36px;height:28px;image-rendering:pixelated}
+.timer{height:10px;background:#0d0c18;border:2px solid #000;margin-bottom:12px}
+.timer div{height:100%;width:100%;background:repeating-linear-gradient(90deg,var(--gold) 0 8px,#e8b23c 8px 10px)}
+.timer.late div{background:repeating-linear-gradient(90deg,var(--magma) 0 8px,#d65a22 8px 10px)}
+form.ans{display:flex;gap:8px}
+form.ans input{flex:1;min-width:0;font:inherit;font-size:18px;padding:11px 12px;border:2px solid #000;background:#14122a;color:var(--text);box-shadow:inset 3px 3px 0 rgba(0,0,0,.4)}
+.feedback{min-height:26px;margin-top:10px;font-size:15px}
+.feedback.bad{color:#ff9b8a}
+.feedback.ok{color:var(--good)}
+.feedback.shake{animation:shake .3s}
+@keyframes shake{25%{transform:translateX(-5px)}75%{transform:translateX(5px)}}
+.confirm{display:flex;align-items:center;gap:10px;flex-wrap:wrap;margin-top:10px;padding:10px 12px;border:2px solid var(--gold);background:#1d1a10}
+.confirm .q{flex:1;min-width:160px;font-size:16px}
+.confirm .q b{font-family:var(--pixel);font-size:20px;color:var(--gold)}
+.confirm button{padding:7px 12px;font-size:15px}
+.float{position:fixed;z-index:5;font-family:var(--pixel);font-size:30px;color:var(--gold);pointer-events:none;text-shadow:3px 3px 0 #000;animation:rise 1.1s ease-out forwards}
+@keyframes rise{from{opacity:1;transform:translateY(0)}to{opacity:0;transform:translateY(-60px)}}
+
+/* Reveal lists */
+.list{list-style:none;margin:0;padding:0;display:grid;gap:6px}
+.list li{display:grid;grid-template-columns:28px 1fr auto;gap:4px 10px;align-items:center;padding:8px 10px;background:#0d0c18;border:2px solid #000}
+.list li .nm{font-weight:600}
+.list li .def{grid-column:2 / 4;font-size:13px;color:var(--dim)}
+.list li .pts{font-family:var(--pixel);color:var(--gold);font-variant-numeric:tabular-nums;text-align:right}
+.list li.miss .nm{color:var(--dim)}
+.list .rk{font-family:var(--pixel);color:var(--dim);text-align:center}
+.big{font-family:var(--pixel);font-size:clamp(48px,10vw,72px);line-height:1;color:var(--gold);font-variant-numeric:tabular-nums}
+pre.share{white-space:pre-wrap;background:#0d0c18;border:2px solid #000;padding:10px;font-size:14px;margin:10px 0 0}
+.toast{font-family:var(--pixel);font-size:14px;color:var(--good)}
+.hidden{display:none !important}
+.legal{font-size:12px;color:var(--dim);margin-top:16px}
+
+@media (max-width:760px){
+  .stage{justify-content:center;padding:34vh 12px 28px}
+  .panel{padding:16px}
+  .brand{font-size:17px;letter-spacing:.24em}
+  .meter b{font-size:20px}
+  h2{font-size:24px}
+}
+@media (prefers-reduced-motion:reduce){.float,.feedback.shake{animation:none}}
+</style>
+</head>
+<body>
+<canvas id="world" aria-hidden="true"></canvas>
+
+<div class="hud">
+  <div class="brand">QUARRILLION<small id="dateLine">THE DAILY DIG</small></div>
+  <div class="meter" aria-live="polite"><b id="kmOut">0 km</b><span id="layerOut">Surface</span><br><span id="ptsOut">0 pts</span><br><span id="comboOut" class="combo hidden">COMBO x1.5</span></div>
+</div>
+
+<div class="stage">
+<div class="panel">
+
+  <!-- Start -->
+  <section id="startScreen">
+    <div class="eyebrow" id="digNo">Dig #1</div>
+    <h2>Think like the crowd. Then dig where nobody else goes.</h2>
+    <p>Every answer is drill power. Your points push the drill down through the crust, past the mantle, toward the center of the Earth, 6,371 km below.</p>
+    <ol class="how">
+      <li><b>Surface Survey.</b> Name 3 answers most people would give. 15 seconds each. The crowd's No. 1 answer is worth 100.</li>
+      <li><b>Deep Bore.</b> Same category. Name 3 real answers almost nobody gives. 30 seconds each, scored by rarity.</li>
+      <li>Then a second category, both rounds again.</li>
+      <li><b>Core Sampler.</b> The drill calls a rarity 4 times and you name an answer in exactly that tier. Dead on scores 100, one tier off 40, two off 15.</li>
+    </ol>
+    <p class="small dim">Wrong guesses cost nothing, so keep guessing until the timer runs out. Faster answers keep more of their points. A top-3 Survey answer, a Deep vein or rarer find, or a dead-on sample charges a x1.5 combo for your next answer. Misspell something and the drill asks what you meant.</p>
+    <h3>Rarity tiers</h3>
+    <div class="ranks" id="ranks"></div>
+    <div class="row" style="margin-top:16px">
+      <button class="go" id="btnDaily">Start today's dig</button>
+      <button class="ghost" id="btnFree">Unlimited</button>
+    </div>
+    <p class="small dim" id="streakLine" style="margin-top:12px"></p>
+  </section>
+
+  <!-- Play -->
+  <section id="playScreen" class="hidden">
+    <div class="top"><div class="eyebrow" id="roundLabel">Mission 1 · Surface Survey</div><div class="slots" id="slots"></div></div>
+    <div class="cat" id="catText"></div>
+    <div class="ask" id="askText"></div>
+    <div class="target hidden" id="targetBox"><img id="targetImg" alt=""><span id="targetName"></span></div>
+    <div class="timer" id="timer"><div id="timerBar"></div></div>
+    <form class="ans" id="ansForm" autocomplete="off">
+      <label for="ansInput" class="hidden">Your answer</label>
+      <input id="ansInput" type="text" placeholder="Type an answer" autocapitalize="off" autocorrect="off" spellcheck="false" maxlength="60">
+      <button class="go" type="submit">Drill</button>
+    </form>
+    <div class="confirm hidden" id="confirmBox" role="alertdialog" aria-labelledby="confirmQ">
+      <div class="q" id="confirmQ">Did you mean <b id="confirmWord"></b>?</div>
+      <button class="yes" id="btnYes" type="button">Yes</button>
+      <button class="ghost" id="btnNo" type="button">No, keep typing</button>
+    </div>
+    <div class="feedback" id="feedback" aria-live="polite"></div>
+  </section>
+
+  <!-- Round reveal -->
+  <section id="revealScreen" class="hidden">
+    <div class="eyebrow" id="revLabel"></div>
+    <h2 id="revCat"></h2>
+    <h3 style="margin-top:6px">Your answers</h3>
+    <ul class="list" id="revMine"></ul>
+    <h3 id="revOtherHead"></h3>
+    <ul class="list" id="revOther"></ul>
+    <div class="row" style="margin-top:16px"><button class="go" id="btnNext">Keep drilling</button></div>
+  </section>
+
+  <!-- End -->
+  <section id="endScreen" class="hidden">
+    <div class="eyebrow" id="endLabel">Dig complete</div>
+    <div class="big" id="endKm">0 km</div>
+    <p style="margin-top:8px" id="endLine"></p>
+    <div class="row">
+      <button class="go" id="btnShare">Copy result</button>
+      <button class="ghost" id="btnAgain">Unlimited dig</button>
+      <span class="toast" id="toast"></span>
+    </div>
+    <pre class="share hidden" id="shareText"></pre>
+    <h3>Landmarks you passed</h3>
+    <ul class="list" id="endMarks"></ul>
+    <h3>One in a Quarrillion finds from today's categories</h3>
+    <ul class="list" id="endGems"></ul>
+    <p class="legal">Rarity and crowd rankings are our own estimates, not live player data. Depth: about 4 km per point, so a perfect run without combos lands at the center.</p>
+  </section>
+
+</div>
+</div>
+
+<script>
+const PROMPTS = [
+{q:"Name a type of cloud", s:["cloud","clouds"], a:`
+1 Cumulus
+1 Cirrus
+1 Stratus
+2 Cumulonimbus/thunderhead
+2 Fog
+2 Nimbus/rain cloud
+3 Nimbostratus
+3 Altocumulus
+3 Altostratus
+3 Stratocumulus
+3 Funnel
+3 Contrail
+4 Cirrostratus
+4 Cirrocumulus
+4 Lenticular | Lens-shaped cloud that parks over mountains, often mistaken for a UFO.
+4 Shelf cloud/arcus
+4 Wall cloud
+5 Mammatus | Pouch-shaped lobes hanging under a cloud, often beneath a storm's anvil.
+5 Pileus | Small smooth cap cloud that forms above a rising cumulus tower.
+5 Noctilucent | The highest clouds on Earth, about 80 km up, glowing after sunset.
+5 Fluctus/Kelvin-Helmholtz/Kelvin Helmholtz | Cloud rolled into breaking-wave curls by wind shear.
+5 Pyrocumulus/flammagenitus | Cloud built by the heat of a wildfire or eruption.
+5 Virga | Rain streaks that evaporate before they reach the ground.
+5 Nacreous/polar stratospheric | Iridescent clouds 15 to 25 km up, seen in polar winter.
+6 Asperitas | Choppy, rough-sea-looking cloud base, added to the WMO International Cloud Atlas in 2017.
+`},
+{q:"Name a bone in the human body", s:["bone","bones"], a:`
+1 Femur/thigh bone
+1 Skull/cranium
+1 Rib/ribs
+1 Kneecap/patella
+1 Spine/vertebra/vertebrae/backbone
+2 Tibia/shinbone/shin bone
+2 Fibula
+2 Humerus
+2 Radius
+2 Ulna
+2 Clavicle/collarbone/collar bone
+2 Sternum/breastbone
+2 Scapula/shoulder blade
+2 Pelvis/hip/hipbone
+2 Jaw/jawbone/mandible
+2 Coccyx/tailbone
+3 Maxilla
+3 Phalanges/phalanx
+3 Metacarpal/metacarpals
+3 Metatarsal/metatarsals
+3 Carpal/carpals
+3 Tarsal/tarsals
+3 Sacrum
+3 Frontal
+4 Ilium
+4 Ischium
+4 Pubis
+4 Calcaneus/heel bone
+4 Talus
+4 Stapes/stirrup | The smallest bone in the body, in the middle ear.
+4 Incus/anvil
+4 Malleus/hammer
+4 Zygomatic/cheekbone
+4 Temporal
+4 Parietal
+4 Occipital
+4 Nasal
+5 Hyoid | The only bone that doesn't form a joint with another bone. It anchors the tongue.
+5 Atlas | The top vertebra (C1), named for the Titan who held up the heavens.
+5 Axis
+5 Scaphoid
+5 Lunate
+5 Triquetrum
+5 Pisiform | Pea-shaped wrist bone you can feel at the base of your palm, pinky side.
+5 Trapezium
+5 Trapezoid
+5 Capitate
+5 Hamate
+5 Cuboid
+5 Navicular
+5 Cuneiform
+5 Sphenoid
+5 Ethmoid
+5 Vomer
+5 Lacrimal
+5 Palatine
+6 Fabella | Tiny bone behind the knee. A 2019 study found it's over three times more common in people now than a century ago.
+`},
+{q:"Name a collective noun for a group of animals", s:["of"], a:`
+1 Pack
+1 Herd
+1 Flock
+1 School
+1 Swarm
+1 Pride
+2 Colony
+2 Pod
+2 Gaggle
+2 Murder
+2 Litter
+2 Nest
+3 Troop
+3 Shoal
+3 Parliament | Owls.
+3 Army
+3 Gang
+4 Crash | Rhinos.
+4 Tower | Giraffes.
+4 Dazzle | Zebras.
+4 Murmuration | Starlings, moving as one shape-shifting cloud.
+4 Parade | Elephants.
+4 Band | Gorillas.
+5 Smack | Jellyfish.
+5 Business | Ferrets.
+5 Cauldron/kettle | Hawks circling on a thermal.
+5 Bloat | Hippos.
+5 Unkindness | Ravens.
+5 Conspiracy | Lemurs, or ravens.
+5 Prickle | Porcupines.
+5 Sleuth/sloth | Bears.
+5 Skulk | Foxes.
+5 Mischief | Rats.
+5 Charm | Finches.
+5 Clowder | Cats.
+5 Kindle | Kittens.
+5 Flamboyance | Flamingos.
+5 Rhumba | Rattlesnakes.
+6 Exaltation | Larks. It appears in the Book of St Albans, printed in 1486.
+`},
+{q:"Name a programming language", s:["language","programming"], a:`
+1 Python
+1 Java
+1 JavaScript/JS
+1 C
+1 C++/cpp
+1 C#/csharp/c sharp
+2 Ruby
+2 Go/golang
+2 Rust
+2 Swift
+2 PHP
+2 TypeScript
+2 SQL
+2 Scratch
+3 Kotlin
+3 R
+3 MATLAB
+3 Perl
+3 Scala
+3 Haskell
+3 Lua
+3 Dart
+3 Assembly/asm
+3 BASIC/visual basic
+4 Julia
+4 Fortran
+4 COBOL
+4 Lisp/common lisp
+4 Pascal
+4 Erlang
+4 Elixir
+4 Clojure
+4 Logo
+4 Scheme
+5 OCaml
+5 F#/fsharp
+5 Prolog
+5 Smalltalk
+5 Ada
+5 APL | A 1960s language written in its own special symbols, like ⍴ and ⍳.
+5 Zig
+5 Nim
+5 Forth
+5 Befunge | Esoteric language whose code runs across a two-dimensional grid.
+5 Malbolge | Created in 1998 to be close to impossible to write programs in.
+5 Racket
+5 Elm
+6 Simula | 1960s Norwegian language that introduced classes and objects.
+`},
+{q:"Name a knot", s:["knot","knots"], a:`
+1 Square/reef
+1 Slip
+1 Overhand
+2 Bowline
+2 Granny
+2 Figure eight/figure-eight/figure 8/figure of eight
+2 Windsor
+3 Clove hitch
+3 Half hitch/two half hitches
+3 Sheet bend
+3 Cleat hitch
+3 Half Windsor
+3 Four in hand/four-in-hand
+4 Sheepshank
+4 Taut-line hitch/tautline/taut line
+4 Trucker's hitch/truckers hitch
+4 Prusik
+4 Timber hitch
+4 Double fisherman's/double fisherman/fisherman's
+4 Alpine butterfly/butterfly
+4 Constrictor
+4 Rolling hitch
+4 Palomar
+4 Clinch/improved clinch
+4 Surgeon's/surgeons
+5 Monkey's fist/monkey fist | Ball-shaped knot that weights the end of a heaving line.
+5 Carrick bend | Flat, handsome bend for joining two heavy ropes.
+5 Munter hitch/Italian hitch/munter | Climbers' belay hitch, named for Swiss guide Werner Munter.
+5 Turk's head/turks head
+5 Highwayman's hitch/highwayman
+5 Bimini twist | Fishing knot that makes a strong doubled line.
+6 Zeppelin bend/zeppelin | A bend that never jams, linked by legend to the US Navy's rigid airships.
+`},
+{q:"Name a word or term used in rowing", s:[], a:`
+1 Oar
+1 Stroke
+1 Coxswain/cox
+1 Bow
+1 Regatta
+1 Boat
+2 Stern
+2 Scull/sculling
+2 Erg/ergometer/rowing machine
+2 Blade
+2 Shell
+2 Eight
+2 Four
+2 Single
+2 Sprint
+3 Catch
+3 Drive
+3 Recovery
+3 Release/finish
+3 Feather/feathering
+3 Square/squaring
+3 Sweep
+3 Rigger
+3 Oarlock/gate
+3 Slide/seat
+3 Pair
+3 Quad
+3 Double
+4 Catch a crab/crab | When a blade gets stuck in the water and the handle can throw the rower out of the boat.
+4 Power ten/power 10
+4 Rate/rating
+4 Split
+4 Footstretcher/foot stretcher
+4 Layback
+4 Launch
+4 Head race
+5 Way enough/weigh enough | The coxswain's call to stop rowing.
+5 Let it run
+5 Check it down/check
+5 Puddle | The swirl a blade leaves behind in the water.
+5 Washing out | When the blade pops out of the water early at the finish.
+5 Skying | Carrying the blade too high just before the catch.
+5 Rushing the slide/rushing
+5 Ratio
+5 Hold water
+6 Rigger jigger/jigger | The wrench crews use to rig the boat.
+`},
+{q:"Name a phobia", s:[], a:`
+1 Arachnophobia
+1 Claustrophobia
+2 Acrophobia
+2 Agoraphobia
+3 Hydrophobia/aquaphobia
+3 Nyctophobia
+3 Trypophobia | Fear or disgust at clusters of small holes.
+4 Glossophobia | Fear of public speaking.
+4 Coulrophobia | Fear of clowns.
+4 Ophidiophobia
+4 Aerophobia/aviophobia
+4 Mysophobia/germophobia
+4 Thanatophobia
+4 Triskaidekaphobia | Fear of the number 13.
+4 Hemophobia/haemophobia
+5 Emetophobia
+5 Trypanophobia | Fear of needles.
+5 Nomophobia | Fear of being without your phone.
+5 Hippopotomonstrosesquippedaliophobia | A joke term for fear of long words.
+5 Cynophobia
+5 Ailurophobia
+5 Astraphobia
+5 Pogonophobia | Fear of beards.
+5 Chronophobia
+5 Somniphobia
+5 Philophobia
+5 Phobophobia
+6 Arachibutyrophobia | Fear of peanut butter sticking to the roof of your mouth. A coined joke word, not a diagnosis.
+`},
+{q:"Name a geologic period, era, epoch, or eon", s:["period","era","epoch","eon","age"], a:`
+1 Jurassic
+1 Cretaceous
+2 Triassic
+2 Cambrian
+2 Mesozoic
+3 Paleozoic/palaeozoic
+3 Cenozoic
+3 Precambrian
+3 Permian
+3 Devonian
+3 Carboniferous
+3 Holocene
+3 Pleistocene
+3 Anthropocene | Proposed epoch for the age of human impact. Geologists voted it down in 2024.
+4 Ordovician
+4 Silurian
+4 Pliocene
+4 Miocene
+4 Eocene
+4 Paleocene
+4 Quaternary
+4 Archean/archaean
+4 Hadean | Earth's first eon, named for Hades.
+4 Proterozoic
+5 Oligocene
+5 Paleogene
+5 Neogene
+5 Ediacaran
+5 Cryogenian | The period of "Snowball Earth" glaciations.
+5 Pennsylvanian
+5 Mississippian
+5 Phanerozoic
+6 Siderian | The first Proterozoic period, named from Greek sideros (iron) for banded iron rocks.
+6 Tonian | The Proterozoic period from 1,000 to 720 million years ago.
+6 Meghalayan | The age we live in now, the latest slice of the Holocene, starting about 4,200 years ago.
+`},
+{q:"Name a mineral or gemstone", s:["mineral","stone","crystal"], a:`
+1 Quartz
+1 Diamond
+2 Gold
+2 Feldspar
+2 Mica
+2 Talc
+2 Pyrite/fool's gold/fools gold
+2 Amethyst
+2 Emerald
+2 Ruby
+2 Sapphire
+3 Calcite
+3 Gypsum
+3 Halite/rock salt
+3 Graphite
+3 Magnetite
+3 Hematite/haematite
+3 Garnet
+3 Topaz
+3 Fluorite
+3 Opal
+3 Jade/jadeite/nephrite
+3 Turquoise
+4 Olivine/peridot
+4 Corundum
+4 Apatite
+4 Orthoclase
+4 Beryl
+4 Tourmaline
+4 Malachite
+4 Azurite
+4 Galena | The main ore of lead.
+4 Zircon
+4 Labradorite | Feldspar that flashes blue and green when it catches the light.
+5 Sphalerite | The main ore of zinc.
+5 Cinnabar | Bright red mercury ore, ground for vermilion pigment.
+5 Bornite
+5 Chalcopyrite
+5 Hornblende
+5 Augite
+5 Serpentine
+5 Kyanite
+6 Bridgmanite | The most abundant mineral on Earth, hidden in the lower mantle. It was formally named only in 2014.
+6 Ringwoodite | High-pressure mantle mineral. A diamond inclusion described in 2014 showed it can hold water.
+`},
+{q:"Name a type of pasta", s:["pasta"], a:`
+1 Spaghetti
+1 Penne
+1 Macaroni
+1 Fettuccine/fettucine/fettuccini
+1 Lasagna/lasagne
+1 Ravioli
+2 Linguine/linguini
+2 Rigatoni
+2 Farfalle/bowtie/bow tie
+2 Fusilli
+2 Rotini
+2 Tortellini
+2 Orzo
+2 Gnocchi
+2 Angel hair/capellini
+2 Shells/conchiglie
+3 Ziti
+3 Cannelloni
+3 Manicotti
+3 Orecchiette
+3 Pappardelle
+3 Tagliatelle
+3 Ditalini
+3 Vermicelli
+3 Bucatini
+3 Cavatappi
+4 Radiatori
+4 Campanelle
+4 Gemelli
+4 Paccheri
+4 Trofie
+4 Casarecce
+4 Mafaldine/mafalde
+4 Cappelletti
+4 Agnolotti
+4 Anelli
+4 Stelline
+4 Lumache
+5 Strozzapreti | "Priest stranglers," a hand-rolled twist from Emilia-Romagna.
+5 Garganelli
+5 Busiate
+5 Corzetti | Coin-shaped Ligurian pasta stamped with a carved wooden mold.
+5 Fregola | Toasted Sardinian pasta pearls.
+5 Scialatielli
+6 Su filindeu/filindeu | Sardinian "threads of God," made by only a handful of people in Nuoro.
+`},
+{q:"Name a word that means 'very large'", s:[], a:`
+1 Huge
+1 Big
+1 Giant
+1 Enormous
+1 Massive
+1 Gigantic
+2 Immense
+2 Colossal
+2 Vast
+2 Tremendous
+2 Mammoth
+2 Jumbo
+2 Mega
+2 Humongous
+3 Gargantuan
+3 Monumental
+3 Titanic
+3 Monstrous
+3 Mountainous
+3 Behemoth
+3 Whopping
+3 Ginormous
+3 Astronomical
+4 Prodigious
+4 Stupendous
+4 Elephantine
+4 Leviathan
+4 Herculean
+4 Hulking
+4 Galactic
+4 Monolithic
+5 Cyclopean | Massive, like the ancient stone walls Greeks said only Cyclopes could have built.
+5 Mastodonic
+6 Brobdingnagian | From Brobdingnag, the land of giants in Gulliver's Travels (1726).
+`},
+{q:"Name a dog breed", s:["dog","dogs"], a:`
+1 Labrador/lab/labrador retriever
+1 Golden retriever/golden
+1 Poodle
+1 German shepherd
+1 Bulldog/english bulldog/french bulldog/frenchie
+1 Beagle
+1 Chihuahua
+1 Husky/siberian husky
+2 Dachshund/wiener
+2 Boxer
+2 Pug
+2 Rottweiler
+2 Corgi
+2 Shih tzu
+2 Doberman/dobermann
+2 Great Dane
+2 Border collie/collie
+2 Yorkshire terrier/yorkie
+2 Pomeranian
+2 Dalmatian
+2 Greyhound
+3 Maltese
+3 Shiba inu/shiba
+3 Akita
+3 Samoyed
+3 Bernese mountain/bernese
+3 Saint Bernard/st bernard
+3 Whippet
+3 Basset hound/basset
+3 Bloodhound
+3 Newfoundland
+3 Mastiff
+3 Cocker spaniel/spaniel
+3 Schnauzer
+3 Chow chow/chow
+3 Pit bull/pitbull
+4 Weimaraner
+4 Vizsla
+4 Basenji
+4 Shar pei
+4 Afghan hound
+4 Borzoi
+4 Saluki
+4 Catahoula
+4 Leonberger
+4 Papillon
+5 Komondor | Hungarian guard dog whose coat grows into floor-length cords.
+5 Puli
+5 Xoloitzcuintli/xolo | Hairless Mexican breed with roots thousands of years old.
+5 Otterhound
+5 Lagotto Romagnolo/lagotto | Italian water dog trained to sniff out truffles.
+5 Kooikerhondje | Dutch dog once used to lure ducks into traps.
+5 Azawakh
+5 Mudi
+5 Bergamasco
+5 Coton de Tulear
+6 Norwegian Lundehund/lundehund | Puffin-hunting breed with six toes per foot and a neck that bends back to touch its spine.
+`},
+{q:"Name a musical instrument", s:[], a:`
+1 Piano
+1 Guitar
+1 Drums/drum
+1 Violin
+1 Flute
+1 Trumpet
+1 Saxophone/sax
+2 Cello
+2 Clarinet
+2 Trombone
+2 Harp
+2 Ukulele
+2 Banjo
+2 Viola
+2 Bass/double bass/bass guitar
+2 Tuba
+2 Oboe
+2 French horn/horn
+2 Harmonica
+2 Accordion
+2 Xylophone
+2 Tambourine
+2 Organ
+2 Triangle
+3 Bassoon
+3 Piccolo
+3 Mandolin
+3 Marimba
+3 Sitar
+3 Bagpipes/bagpipe
+3 Didgeridoo
+3 Timpani
+3 Glockenspiel
+3 Harpsichord
+3 Steelpan/steel drum/steel pan
+3 Djembe
+3 Ocarina
+3 Lute
+3 Lyre
+3 Sousaphone
+4 Euphonium
+4 Theremin | Electronic instrument you play without touching it.
+4 Kalimba
+4 Cajon
+4 Erhu
+4 Koto
+4 Shamisen
+4 Tabla
+4 Hurdy-gurdy/hurdy gurdy
+4 Zither
+4 Dulcimer
+4 Oud
+4 Balalaika
+4 Guzheng
+5 Celesta
+5 Contrabassoon
+5 Bandoneon
+5 Glass harmonica/armonica | Benjamin Franklin's 1761 invention of spinning glass bowls.
+5 Serpent | S-shaped bass wind instrument from the 1500s.
+5 Crumhorn
+5 Sackbut | The Renaissance ancestor of the trombone.
+5 Handpan/hang
+5 Waterphone | Metal instrument behind many horror film sound effects.
+5 Cimbalom
+6 Nyckelharpa | Swedish keyed fiddle played with a bow, with roots in the 1300s.
+6 Ondes Martenot/ondes | Early electronic instrument (1928) played by sliding a ring along a wire.
+`},
+{q:"Name a part of a castle", s:[], a:`
+1 Tower
+1 Moat
+1 Drawbridge
+1 Wall/walls
+1 Gate
+2 Keep
+2 Dungeon
+2 Turret
+2 Battlements
+2 Courtyard
+2 Ramparts/rampart
+3 Great hall
+3 Bailey
+3 Portcullis
+3 Gatehouse
+3 Parapet
+3 Crenellations/crenellation
+3 Arrow slit/arrowslit/loophole
+3 Chapel
+4 Motte | The earth mound an early castle stood on.
+4 Barbican | Fortified outpost that guards a gate.
+4 Murder holes/murder hole
+4 Curtain wall
+4 Bastion
+4 Ward
+4 Donjon
+5 Merlon | The solid upright block of a battlement between two gaps.
+5 Embrasure/crenel
+5 Machicolations/machicolation | Floor openings in a jutting parapet for dropping things on attackers.
+5 Postern | A small back gate.
+5 Solar | The lord's private upper chamber.
+5 Garderobe | A medieval toilet, often a chute through the wall.
+5 Oubliette | A dungeon reached only through a hatch in the ceiling.
+5 Buttery
+5 Undercroft
+5 Sally port
+5 Glacis
+6 Hoarding/hoardings/brattice | Wooden galleries built out from the top of a wall in wartime.
+`},
+{q:"Name a type of cheese", s:["cheese"], a:`
+1 Cheddar
+1 Mozzarella
+1 Parmesan/parmigiano/parmigiano reggiano
+1 Swiss
+1 Brie
+1 Gouda
+1 American
+2 Provolone
+2 Feta
+2 Ricotta
+2 Blue/bleu
+2 Camembert
+2 Monterey jack/jack
+2 Colby
+2 Pepper jack
+2 Gruyere
+2 Cottage
+2 Cream cheese/cream
+3 Havarti
+3 Emmental/emmentaler
+3 Manchego
+3 Roquefort
+3 Gorgonzola
+3 Stilton
+3 Halloumi
+3 Paneer
+3 Mascarpone
+3 Pecorino
+3 Asiago
+3 Fontina
+3 Burrata
+3 Muenster/munster
+3 Edam
+3 Queso fresco
+4 Limburger
+4 Jarlsberg
+4 Raclette
+4 Taleggio
+4 Comte
+4 Oaxaca
+4 Cotija
+4 Wensleydale
+4 Red Leicester/leicester
+5 Gjetost/brunost | Norwegian brown cheese made from caramelized whey.
+5 Epoisses | Pungent Burgundy cheese washed in brandy.
+5 Stinking Bishop | English cheese washed in perry.
+5 Vacherin
+5 Mimolette | French cheese whose rind is worked by cheese mites.
+5 Caerphilly
+6 Casu marzu | Sardinian sheep's cheese deliberately full of live insect larvae.
+`},
+{q:"Name an element on the periodic table", s:[], a:`
+1 Oxygen
+1 Hydrogen
+1 Carbon
+1 Gold
+1 Iron
+1 Helium
+1 Nitrogen
+1 Silver
+1 Copper
+1 Sodium
+1 Lead
+2 Calcium
+2 Aluminum/aluminium
+2 Neon
+2 Uranium
+2 Zinc
+2 Chlorine
+2 Potassium
+2 Magnesium
+2 Platinum
+2 Mercury
+2 Sulfur/sulphur
+2 Silicon
+2 Nickel
+2 Tin
+2 Lithium
+2 Titanium
+3 Phosphorus
+3 Iodine
+3 Fluorine
+3 Argon
+3 Cobalt
+3 Plutonium
+3 Radon
+3 Boron
+3 Chromium
+3 Manganese
+3 Tungsten
+3 Krypton
+3 Xenon
+3 Arsenic
+3 Radium
+4 Beryllium
+4 Bismuth
+4 Cesium/caesium
+4 Gallium
+4 Germanium
+4 Selenium
+4 Bromine
+4 Strontium
+4 Palladium
+4 Osmium
+4 Iridium
+4 Vanadium
+4 Antimony
+4 Cadmium
+4 Polonium
+4 Neodymium
+4 Thorium
+4 Neptunium
+4 Americium
+4 Zirconium
+5 Scandium
+5 Yttrium | One of four elements named after the Swedish village of Ytterby.
+5 Ytterbium
+5 Terbium
+5 Erbium
+5 Niobium
+5 Ruthenium
+5 Rhodium
+5 Hafnium
+5 Rhenium
+5 Tellurium
+5 Thallium
+5 Indium
+5 Francium
+5 Astatine | The rarest naturally occurring element in Earth's crust.
+5 Technetium | The first element produced artificially (1937).
+5 Praseodymium
+5 Promethium
+5 Samarium
+5 Europium
+5 Gadolinium
+5 Dysprosium
+5 Holmium
+5 Thulium
+5 Lutetium
+5 Lanthanum
+5 Cerium
+5 Actinium
+5 Protactinium
+5 Curium
+5 Berkelium
+5 Californium
+5 Einsteinium
+5 Fermium
+5 Mendelevium
+5 Nobelium
+5 Lawrencium
+5 Rutherfordium
+5 Dubnium
+5 Seaborgium
+5 Bohrium
+5 Hassium
+5 Meitnerium
+5 Darmstadtium
+5 Roentgenium
+5 Copernicium
+5 Nihonium
+5 Flerovium
+5 Moscovium
+5 Livermorium
+5 Tennessine
+6 Oganesson | Element 118, named for Yuri Oganessian, one of only two elements named after a living person.
+`},
+{q:"Name a constellation", s:["constellation","the"], a:`
+1 Orion
+2 Big Dipper/Ursa Major/great bear
+2 Cassiopeia
+2 Leo
+2 Scorpius/scorpio
+2 Taurus
+2 Gemini
+2 Cancer
+2 Virgo
+2 Libra
+2 Sagittarius
+2 Capricornus/capricorn
+2 Aquarius
+2 Pisces
+2 Aries
+3 Little Dipper/Ursa Minor
+3 Draco
+3 Pegasus
+3 Andromeda
+3 Perseus
+3 Cygnus
+3 Lyra
+3 Aquila
+3 Hercules
+3 Southern Cross/Crux | The smallest of the 88 constellations.
+3 Canis Major
+4 Cepheus
+4 Bootes
+4 Centaurus
+4 Canis Minor
+4 Auriga
+4 Ophiuchus
+4 Corona Borealis
+4 Lupus
+4 Hydra | The largest of the 88 constellations.
+4 Delphinus
+4 Cetus
+4 Phoenix
+5 Lepus
+5 Monoceros
+5 Camelopardalis
+5 Fornax
+5 Sculptor
+5 Microscopium
+5 Telescopium
+5 Horologium
+5 Antlia
+5 Pyxis
+5 Vulpecula
+5 Sextans
+5 Caelum
+5 Norma
+5 Circinus
+5 Reticulum
+5 Volans
+5 Dorado
+5 Chamaeleon
+5 Musca
+5 Tucana
+5 Pavo
+5 Grus
+5 Indus
+5 Octans
+5 Apus
+5 Hydrus
+5 Eridanus
+5 Carina
+5 Puppis
+5 Vela
+5 Columba
+5 Coma Berenices
+5 Sagitta
+5 Lacerta
+5 Lynx
+5 Leo Minor
+5 Triangulum
+5 Serpens
+5 Scutum
+5 Corvus
+5 Crater
+5 Pictor
+5 Ara
+5 Corona Australis
+5 Triangulum Australe
+5 Piscis Austrinus
+5 Equuleus
+5 Canes Venatici
+6 Mensa | Named after Table Mountain in South Africa.
+`},
+{q:"Name an English word borrowed from Japanese", s:[], a:`
+1 Sushi
+1 Karate
+1 Karaoke
+1 Tsunami
+1 Anime
+1 Manga
+1 Ninja
+1 Samurai
+1 Ramen
+2 Emoji | From e (picture) and moji (character). No link to "emotion."
+2 Origami
+2 Haiku
+2 Sake
+2 Tofu
+2 Kimono
+2 Bonsai
+2 Sudoku
+2 Judo
+2 Wasabi
+2 Teriyaki
+2 Sashimi
+2 Matcha
+3 Futon
+3 Tempura
+3 Edamame
+3 Umami
+3 Kawaii
+3 Otaku
+3 Zen
+3 Kamikaze
+3 Koi
+3 Sensei
+3 Dojo
+3 Shiitake
+3 Panko
+3 Tamagotchi
+4 Tatami
+4 Kaizen
+4 Ikigai
+4 Kintsugi
+4 Yuzu
+4 Shogun
+4 Geisha
+4 Bento
+5 Tycoon | From taikun, "great lord," a title foreigners used for the shogun.
+5 Honcho | From hancho, "squad leader," brought home by American soldiers.
+5 Kudzu | The invasive vine's name comes from Japanese kuzu.
+5 Hibachi
+5 Rickshaw | From jinrikisha, "human-powered vehicle."
+6 Tsundoku | Buying books and letting them pile up unread.
+6 Skosh | "A little bit," from sukoshi, picked up by US troops in Japan.
+`},
+{q:"Name a type of boat or ship", s:["boat","ship"], a:`
+1 Canoe
+1 Kayak
+1 Yacht
+1 Sailboat
+1 Submarine
+1 Ferry
+1 Raft
+1 Cruise ship/cruise
+1 Rowboat
+1 Speedboat
+2 Tugboat/tug
+2 Barge
+2 Gondola
+2 Catamaran
+2 Dinghy
+2 Pontoon
+2 Aircraft carrier/carrier
+2 Battleship
+2 Hovercraft
+2 Tanker
+2 Freighter/cargo
+3 Schooner
+3 Frigate
+3 Galleon
+3 Destroyer
+3 Trawler
+3 Junk
+3 Longship/viking
+3 Clipper
+3 Outrigger
+3 Icebreaker
+4 Dhow
+4 Sampan
+4 Trireme
+4 Sloop
+4 Ketch
+4 Brigantine/brig
+4 Caravel
+4 Dory
+4 Punt
+4 Bireme
+4 Scull/shell/eight
+5 Felucca | Lateen-sailed boat of the Nile.
+5 Yawl
+5 Carrack
+5 Coracle | Small round boat of hide or tarred cloth over a wicker frame.
+5 Umiak | Large open Inuit boat of skin over a frame.
+5 Pirogue
+5 Xebec
+5 Cog | Single-masted medieval trading ship.
+6 Quinquereme | Ancient warship whose name means "five-oared."
+`},
+{q:"Name a dance", s:["dance","dancing"], a:`
+1 Ballet
+1 Salsa
+1 Tango
+1 Waltz
+1 Hip hop
+1 Tap
+2 Swing
+2 Foxtrot
+2 Cha-cha/cha cha/chacha
+2 Breakdance/breaking/breakdancing
+2 Jazz
+2 Contemporary
+2 Polka
+2 Square
+2 Line
+2 Conga
+2 Macarena
+2 Twist
+2 Hula
+3 Charleston
+3 Jive
+3 Rumba
+3 Samba
+3 Mambo
+3 Flamenco
+3 Bachata
+3 Merengue
+3 Quickstep
+3 Lindy hop/lindy
+3 Moonwalk
+3 Floss
+3 Irish step/riverdance/jig
+4 Krumping/krump
+4 Vogue/voguing
+4 Paso doble
+4 Bolero
+4 Mazurka
+4 Polonaise
+4 Minuet
+4 Tarantella
+4 Hora
+4 Kathak
+4 Haka | Maori ceremonial dance, famous before New Zealand rugby matches.
+4 Capoeira | Afro-Brazilian mix of dance, music, and martial art.
+4 Clogging
+4 Morris
+4 Lambada
+4 Kizomba
+4 Hornpipe
+5 Gavotte
+5 Sarabande
+5 Galliard
+5 Pavane
+5 Bharatanatyam
+5 Schuhplattler | Bavarian dance of slapping your thighs, knees, and shoe soles.
+5 Jarabe tapatio/mexican hat dance
+5 Cueca
+5 Zouk
+5 Csardas/czardas
+6 Volta/la volta | Renaissance couple dance where the man lifts the woman into the air, reputedly a favorite of Elizabeth I.
+`},
+{q:"Name a part of a flower", s:[], a:`
+1 Petal/petals
+1 Stem
+1 Leaf/leaves
+1 Pollen
+1 Root
+1 Bud
+2 Stamen
+2 Pistil
+2 Nectar
+2 Thorn
+3 Sepal
+3 Anther
+3 Filament
+3 Stigma
+3 Style
+3 Ovary
+4 Ovule
+4 Receptacle
+4 Nectary
+4 Carpel
+4 Bract
+4 Corolla
+4 Calyx
+5 Pedicel
+5 Peduncle
+5 Perianth
+5 Tepal | What you call a petal or sepal when the two look the same, as in tulips.
+5 Spathe
+5 Spadix
+5 Androecium
+5 Gynoecium
+6 Hypanthium | Cup-like floral tube that carries the sepals, petals, and stamens. In roses it becomes the hip.
+`},
+{q:"Name a word that means 'nonsense'", s:[], a:`
+1 Rubbish
+1 Garbage
+1 Trash
+2 Baloney/boloney
+2 Gibberish
+2 Hogwash
+2 Drivel
+2 Mumbo jumbo
+2 Bull
+3 Twaddle
+3 Poppycock
+3 Balderdash
+3 Malarkey
+3 Claptrap
+3 Bunk
+3 Hooey
+3 Gobbledygook/gobbledegook
+3 Jibber-jabber/jibber jabber
+3 Blather
+3 Hokum
+4 Bunkum | From Buncombe County, North Carolina, after its congressman's pointless 1820 speech.
+4 Codswallop
+4 Piffle
+4 Tommyrot
+4 Tosh
+4 Bilge
+4 Jabberwocky
+4 Flimflam
+5 Flapdoodle
+5 Folderol/falderal
+5 Moonshine
+5 Fiddle-faddle/fiddle faddle
+5 Horsefeathers
+5 Applesauce | 1920s slang for nonsense.
+5 Bosh
+6 Bafflegab | Jargon meant to confuse, coined in the 1950s.
+`},
+{q:"Name a unit of measurement", s:[], a:`
+1 Meter/metre
+1 Inch
+1 Foot/feet
+1 Mile
+1 Kilogram/kilo
+1 Pound
+1 Liter/litre
+1 Gallon
+1 Second
+1 Yard
+1 Centimeter/centimetre
+1 Ounce
+1 Gram
+2 Ton/tonne
+2 Cup
+2 Kelvin
+2 Celsius/degree
+2 Fahrenheit
+2 Volt
+2 Watt
+2 Ampere/amp
+2 Acre
+2 Light year/lightyear
+2 Pint
+2 Quart
+2 Teaspoon
+2 Tablespoon
+2 Calorie
+2 Byte
+2 Horsepower
+3 Joule
+3 Newton
+3 Ohm
+3 Hertz
+3 Pascal
+3 Mole
+3 Hectare
+3 Furlong | An eighth of a mile, from "furrow long."
+3 Fathom | Six feet, used for water depth.
+3 League
+3 Knot
+3 Parsec
+3 Cubit
+3 Stone
+3 Bushel
+3 Barrel
+3 Decibel
+3 Carat
+4 Candela
+4 Astronomical unit/au
+4 Peck
+4 Tesla
+4 Coulomb
+4 Farad
+4 Lumen
+4 Hand
+4 Angstrom
+4 Micron
+4 Fortnight
+5 Weber
+5 Henry
+5 Siemens
+5 Becquerel
+5 Gray
+5 Sievert
+5 Lux
+5 Chain
+5 Rod/perch/pole
+5 Barn | Unit of area for nuclear cross sections, from "as big as a barn."
+5 Dram
+5 Grain
+5 Mil
+5 Slug
+5 Erg
+5 Dyne
+5 Torr
+5 Jiffy
+6 Smoot | 5 feet 7 inches. In 1958 MIT pledges measured the Harvard Bridge using classmate Oliver Smoot.
+`},
+{q:"Name a landlocked country", s:[], a:`
+1 Switzerland
+2 Austria
+2 Bolivia | Lost its coastline to Chile in the War of the Pacific.
+2 Nepal
+2 Mongolia
+2 Afghanistan
+2 Hungary
+2 Czech Republic/Czechia
+3 Paraguay
+3 Bhutan
+3 Slovakia
+3 Luxembourg
+3 Andorra
+3 San Marino
+3 Vatican City/vatican
+3 Belarus
+3 Moldova
+3 Serbia
+3 Armenia
+3 Kazakhstan | The largest landlocked country in the world.
+3 Ethiopia
+3 Uganda
+3 Rwanda
+3 Zimbabwe
+3 Chad
+4 North Macedonia/macedonia
+4 Kosovo
+4 Azerbaijan
+4 Turkmenistan
+4 Kyrgyzstan
+4 Tajikistan
+4 Laos
+4 South Sudan
+4 Burundi
+4 Malawi
+4 Zambia
+4 Botswana
+4 Lesotho | Completely surrounded by South Africa.
+4 Niger
+4 Mali
+4 Burkina Faso
+4 Central African Republic/car
+5 Eswatini/Swaziland
+6 Uzbekistan | Doubly landlocked: every country around it is landlocked too.
+6 Liechtenstein | Doubly landlocked, the only one besides Uzbekistan.
+`},
+{q:"Name a part of a ship", s:[], a:`
+1 Deck
+1 Hull
+1 Mast
+1 Sail
+1 Anchor
+1 Bow
+1 Stern
+2 Rudder
+2 Keel
+2 Port
+2 Starboard
+2 Cabin
+2 Bridge
+2 Helm/wheel
+2 Crow's nest/crows nest
+2 Porthole
+2 Propeller
+3 Galley
+3 Bilge
+3 Hold
+3 Poop deck
+3 Boom
+3 Rigging
+3 Figurehead
+3 Wheelhouse
+4 Forecastle/fo'c'sle/focsle
+4 Transom
+4 Gunwale | The upper edge of a boat's side, pronounced "gunnel."
+4 Bulkhead
+4 Jib
+4 Bowsprit
+4 Quarterdeck
+4 Capstan | Rotating drum crews pushed around to haul in the anchor.
+4 Yardarm
+4 Ballast
+4 Cleat
+5 Windlass
+5 Binnacle | The stand that houses the ship's compass.
+5 Scupper | Deck drain that lets water run overboard.
+5 Hawsehole/hawse
+5 Taffrail
+5 Strake
+5 Thwart
+5 Davit
+6 Orlop | The lowest deck of a sailing warship, often below the waterline.
+`},
+{q:"Name a scale named after a person", s:["scale","chart","index"], a:`
+1 Fahrenheit
+1 Celsius
+2 Richter
+2 Kelvin
+3 Mohs | Mineral hardness, by Friedrich Mohs (1812).
+3 Scoville | Chili heat, by pharmacist Wilbur Scoville (1912).
+3 Saffir-Simpson/saffir simpson
+3 Fujita/enhanced fujita/ef
+4 Beaufort | Wind force, by Francis Beaufort of the Royal Navy.
+4 Kinsey
+4 Apgar | Newborn health check, by Dr. Virginia Apgar.
+4 Mercalli | Earthquake intensity, by Giuseppe Mercalli.
+4 Likert
+5 Rankine
+5 Reaumur
+5 Kardashev | Ranks civilizations by how much energy they harness.
+5 Fitzpatrick
+5 Tanner
+5 Shore/durometer
+5 Gutenberg-Richter
+6 Bortle | Rates night-sky darkness, by amateur astronomer John Bortle (2001).
+`},
+{q:"Name a famous scientist", s:[], a:`
+1 Einstein/albert einstein
+1 Newton/isaac newton
+1 Darwin/charles darwin
+1 Curie/marie curie
+1 Galileo
+1 Tesla/nikola tesla
+1 Hawking/stephen hawking
+2 Edison/thomas edison
+2 Pasteur
+2 Copernicus
+2 Archimedes
+2 Oppenheimer
+2 Franklin/benjamin franklin
+3 Feynman
+3 Bohr/niels bohr
+3 Heisenberg
+3 Schrodinger
+3 Faraday
+3 Maxwell
+3 Mendel
+3 Kepler
+3 Aristotle
+3 Lovelace/ada lovelace
+3 Turing/alan turing
+3 Sagan/carl sagan
+3 Neil deGrasse Tyson/tyson
+3 Goodall/jane goodall
+3 Hubble
+3 Planck
+3 Fermi
+3 Mendeleev
+3 Rutherford
+3 Watson
+3 Crick
+3 Salk
+3 Fleming
+3 Rosalind Franklin
+4 Dirac
+4 Pauli
+4 Boltzmann
+4 Ramanujan
+4 Gauss
+4 Euler
+4 Linnaeus
+4 Lavoisier
+4 Hooke
+4 Boyle
+4 Avogadro
+4 Dalton
+4 Thomson
+4 Lister
+4 Jenner
+4 Katherine Johnson
+5 Noether/emmy noether | Proved that every symmetry in physics comes with a conservation law.
+5 Meitner/lise meitner
+5 Chandrasekhar
+5 Leeuwenhoek/van leeuwenhoek
+5 Hypatia
+5 Wu/chien-shiung wu
+5 Vera Rubin/rubin
+5 Wegener/alfred wegener | Proposed continental drift in 1912.
+5 Cecilia Payne/payne/payne-gaposchkin | Showed in 1925 that stars are made mostly of hydrogen and helium.
+5 Ibn al-Haytham/alhazen/al-haytham | 11th-century scholar whose Book of Optics argued that we see because light enters the eye.
+5 Gutenberg/beno gutenberg
+6 Inge Lehmann/lehmann | Danish seismologist who discovered Earth's solid inner core in 1936.
+6 Mohorovicic | Found the boundary between crust and mantle in 1909, now called the Moho.
+`},
+{q:"Name a type of tree", s:["tree","trees"], a:`
+1 Oak
+1 Maple
+1 Pine
+1 Palm
+1 Birch
+1 Willow
+1 Apple
+1 Cherry
+1 Christmas
+2 Redwood
+2 Sequoia
+2 Elm
+2 Cedar
+2 Spruce
+2 Fir
+2 Aspen
+2 Ash
+2 Beech
+2 Cypress
+2 Magnolia
+2 Dogwood
+2 Hickory
+2 Walnut
+2 Poplar
+2 Sycamore
+2 Eucalyptus
+2 Olive
+3 Baobab
+3 Banyan
+3 Juniper
+3 Hemlock
+3 Larch
+3 Chestnut
+3 Cottonwood
+3 Mahogany
+3 Teak
+3 Ginkgo
+3 Sassafras
+3 Linden/basswood/lime
+3 Yew
+3 Alder
+3 Hawthorn
+3 Holly
+3 Fig
+3 Mango
+3 Acacia
+3 Buckeye/horse chestnut
+3 Joshua
+3 Rubber
+4 Jacaranda
+4 Catalpa
+4 Tamarack
+4 Hornbeam
+4 Sweetgum
+4 Tupelo
+4 Mesquite
+4 Kapok
+4 Bristlecone pine/bristlecone | Some living specimens are over 4,800 years old.
+4 Monkey puzzle
+4 Ironwood
+4 Sandalwood
+4 Rowan/mountain ash
+4 Locust/black locust/honey locust
+4 Persimmon
+4 Tulip/tulip poplar
+4 Cork oak
+4 Cacao
+5 Dragon blood/dragon's blood/dragons blood | Umbrella-shaped tree of Socotra with red resin.
+5 Osage orange
+5 Pawpaw | Bears the largest edible fruit native to North America.
+5 Paulownia/princess
+5 Ombu | Giant of the Pampas that is technically an herb.
+5 Dawn redwood | Known only from fossils until living trees turned up in China in the 1940s.
+5 Ceiba
+5 Serviceberry
+6 Wollemi pine/wollemi | Known only from fossils until a park ranger found living trees in Australia in 1994.
+`},
+{q:"Name a field of study ending in '-ology'", s:[], a:`
+1 Biology
+1 Psychology
+1 Geology
+1 Technology
+2 Sociology
+2 Zoology
+2 Ecology
+2 Astrology
+2 Archaeology/archeology
+2 Anthropology
+2 Mythology
+2 Meteorology
+3 Theology
+3 Cardiology
+3 Dermatology
+3 Neurology
+3 Oncology
+3 Radiology
+3 Pathology
+3 Criminology
+3 Entomology
+3 Ornithology
+3 Paleontology/palaeontology
+3 Seismology
+3 Volcanology/vulcanology
+3 Etymology
+3 Cosmology
+3 Epidemiology
+3 Virology
+4 Herpetology
+4 Ichthyology
+4 Mycology
+4 Gerontology
+4 Oceanology
+4 Hydrology
+4 Immunology
+4 Histology
+4 Toxicology
+4 Ophthalmology
+4 Cryptozoology
+4 Egyptology
+4 Numerology
+5 Speleology | The study of caves.
+5 Oology | The study of birds' eggs.
+5 Vexillology | The study of flags.
+5 Dendrochronology | Dating events from tree rings.
+5 Palynology | The study of pollen and spores, used in forensics and oil hunting.
+5 Phrenology
+5 Glaciology
+5 Limnology | The study of lakes and fresh water.
+5 Nephrology
+5 Petrology
+5 Pedology | The study of soil.
+5 Phenology
+5 Oenology/enology
+5 Graphology
+5 Myrmecology | The study of ants.
+5 Selenology | The study of the Moon.
+5 Sinology
+6 Campanology | The study of bells and bell-ringing.
+`},
+{q:"Name a type of hat", s:["hat","hats","cap"], a:`
+1 Baseball/ball/cap
+1 Beanie
+1 Cowboy
+1 Top
+2 Fedora
+2 Sombrero
+2 Beret
+2 Bowler/derby
+2 Bucket
+2 Visor
+2 Helmet
+2 Crown
+2 Turban
+2 Bonnet
+2 Hard
+2 Sun
+2 Snapback
+3 Fez
+3 Panama
+3 Trilby
+3 Tiara
+3 Chef's/chefs/toque
+3 Stetson
+3 Balaclava
+3 Newsboy/flat
+3 Yarmulke/kippah
+4 Deerstalker
+4 Pork pie/porkpie
+4 Boater
+4 Tam o' shanter/tam/tam o shanter
+4 Cloche
+4 Fascinator
+4 Pillbox
+4 Mitre/miter
+4 Tricorne/tricorn
+4 Bicorne/bicorn
+4 Ushanka
+4 Mortarboard
+4 Coonskin
+5 Kepi
+5 Busby
+5 Bearskin | The tall fur hat of the King's Guard in London.
+5 Zucchetto
+5 Biretta
+5 Homburg
+5 Akubra
+5 Shako
+5 Chullo | Andean knit hat with earflaps.
+6 Montera | The black hat worn by matadors.
+`},
+{q:"Name a dinosaur", s:[], a:`
+1 T. rex/t rex/trex/tyrannosaurus/tyrannosaurus rex
+1 Triceratops
+1 Velociraptor/raptor
+1 Stegosaurus
+2 Brachiosaurus
+2 Ankylosaurus
+2 Spinosaurus
+2 Diplodocus
+2 Allosaurus
+2 Apatosaurus/brontosaurus
+3 Parasaurolophus
+3 Iguanodon
+3 Pachycephalosaurus
+3 Dilophosaurus
+3 Giganotosaurus
+3 Carnotaurus
+3 Gallimimus
+3 Compsognathus
+3 Archaeopteryx
+3 Deinonychus
+4 Argentinosaurus
+4 Utahraptor
+4 Baryonyx
+4 Ceratosaurus
+4 Oviraptor
+4 Therizinosaurus
+4 Maiasaura
+4 Edmontosaurus
+4 Protoceratops
+4 Styracosaurus
+4 Microraptor
+4 Troodon
+4 Coelophysis
+4 Plateosaurus
+5 Mamenchisaurus
+5 Nigersaurus | Plant-eater with around 500 replaceable teeth.
+5 Amargasaurus
+5 Kentrosaurus
+5 Minmi
+5 Masiakasaurus
+5 Mononykus
+5 Citipati | Fossils were found sitting on their nests like brooding birds.
+5 Dreadnoughtus
+5 Patagotitan
+5 Sinosauropteryx
+6 Irritator | Named because fossil dealers had tampered with its skull, irritating the scientists who studied it.
+0 Pterodactyl/pteranodon/pterosaur | A flying reptile that lived beside dinosaurs, but not a dinosaur.
+0 Plesiosaur/mosasaur/ichthyosaur | A marine reptile, not a dinosaur.
+0 Dimetrodon | A synapsid, closer to mammals than to dinosaurs.
+0 Mammoth/woolly mammoth | An Ice Age mammal.
+`},
+{q:"Name a landform", s:[], a:`
+1 Mountain
+1 Valley
+1 Hill
+1 Canyon
+1 Island
+1 Volcano
+1 Cliff
+1 Desert
+1 Cave
+1 Plain
+1 Bay
+1 Waterfall
+2 Plateau
+2 Mesa
+2 Peninsula
+2 Delta
+2 Glacier
+2 Dune
+2 Gorge
+2 Lagoon
+2 Cape
+2 Ridge
+2 Basin
+2 Crater
+2 Oasis
+2 Tundra
+3 Butte
+3 Fjord
+3 Archipelago
+3 Isthmus
+3 Atoll
+3 Geyser
+3 Sinkhole
+3 Arch
+3 Floodplain
+3 Estuary
+3 Bluff
+3 Knoll
+3 Steppe
+4 Moraine
+4 Spit
+4 Hoodoo | Thin spire of rock topped with a harder cap, as in Bryce Canyon.
+4 Karst
+4 Escarpment
+4 Alluvial fan
+4 Oxbow lake/oxbow
+4 Meander
+4 Badlands
+4 Cenote
+4 Sea stack/stack
+5 Drumlin
+5 Esker | Long winding gravel ridge left by a meltwater stream under a glacier.
+5 Cirque
+5 Arete
+5 Kame
+5 Kettle
+5 Tombolo | Sand bar that ties an island to the mainland.
+5 Inselberg/monadnock
+5 Tepui | Sheer-walled tabletop mountain of Venezuela.
+5 Col
+5 Horn
+5 Cuesta
+6 Pingo | Ice-cored hill pushed up out of permafrost.
+`},
+{q:"Name a font or typeface", s:["font","typeface"], a:`
+1 Times New Roman/times
+1 Arial
+1 Comic Sans | Designed by Vincent Connare in 1994.
+2 Helvetica
+2 Calibri
+2 Courier/courier new
+2 Papyrus
+2 Impact
+3 Georgia
+3 Verdana
+3 Garamond
+3 Futura
+3 Cambria
+3 Century Gothic
+3 Roboto
+3 Montserrat
+3 Wingdings
+4 Tahoma
+4 Trebuchet
+4 Palatino
+4 Baskerville
+4 Bodoni
+4 Gill Sans
+4 Franklin Gothic
+4 Open Sans
+4 Lato
+4 Avenir
+4 Gotham
+4 Rockwell
+4 Lobster
+4 Brush Script
+4 Consolas
+4 Inter
+4 Segoe
+4 San Francisco/sf pro
+4 Jokerman
+4 Curlz
+4 Bauhaus
+4 Copperplate
+4 Chalkduster
+4 Cooper Black
+5 Didot
+5 Frutiger
+5 Univers
+5 Optima
+5 Menlo
+5 Akzidenz-Grotesk/akzidenz
+5 Caslon
+5 Clarendon
+5 Trajan | Capitals based on the inscription on Trajan's Column in Rome.
+5 Mrs Eaves | Named after Sarah Eaves, John Baskerville's partner and later wife.
+5 Fraktur
+5 Hobo
+5 Souvenir
+6 Johnston | Designed in 1916 for the London Underground.
+`},
+{q:"Name a card game", s:["card","cards"], a:`
+1 Poker
+1 Uno
+1 Solitaire
+1 Go Fish
+1 Blackjack/twenty-one/21
+2 War
+2 Rummy
+2 Crazy Eights
+2 Spades
+2 Hearts
+2 Bridge
+2 Old Maid
+2 Gin rummy/gin
+2 Texas hold'em/texas holdem/holdem
+3 Slapjack
+3 Spit/speed
+3 Euchre
+3 Cribbage
+3 Canasta
+3 President/scum
+3 Egyptian Ratscrew/egyptian rat screw/ers
+3 Baccarat
+3 Pinochle
+3 Cheat/i doubt it
+3 Spoons
+3 Snap
+3 Magic/magic the gathering
+3 Pokemon
+3 Yu-Gi-Oh/yugioh
+3 Exploding Kittens
+4 Nertz
+4 Kemps
+4 Pitch
+4 Skat
+4 Whist
+4 Pig
+4 Beggar my neighbour/beggar my neighbor
+5 Piquet
+5 Bezique
+5 Ecarte
+5 Belote
+5 Durak | Russian game whose name means "fool," the title the loser gets.
+5 Briscola
+5 Scopa
+5 Mus
+5 Tichu
+5 Hanafuda | Japanese "flower cards," used for games like koi-koi.
+5 Sheepshead
+5 Cassino
+5 Klaberjass
+5 Mao | A game whose rules are kept secret from new players.
+5 Tarot/tarocchi
+5 Cuttle
+6 Faro | Fast betting game that ruled saloons in the American Old West.
+`},
+{q:"Name a color", s:["color","colour"], a:`
+1 Red
+1 Blue
+1 Green
+1 Yellow
+1 Orange
+1 Purple
+1 Pink
+1 Black
+1 White
+1 Brown
+1 Gray/grey
+2 Magenta
+2 Turquoise
+2 Teal
+2 Maroon
+2 Lavender
+2 Indigo
+2 Crimson
+2 Beige
+2 Cyan
+2 Coral
+2 Burgundy
+2 Fuchsia
+2 Mint
+2 Salmon
+2 Navy
+2 Gold
+2 Silver
+3 Ochre/ocher
+3 Chartreuse
+3 Mauve
+3 Vermilion
+3 Cerulean
+3 Periwinkle
+3 Ultramarine
+3 Sienna
+3 Taupe
+3 Aquamarine
+3 Cobalt
+3 Sepia
+4 Puce | French for "flea."
+4 Umber
+4 Ecru
+4 Carmine
+4 Amaranth
+4 Viridian
+4 Gunmetal
+4 Cerise
+5 Celadon
+5 Gamboge | Deep yellow from the resin of a Southeast Asian tree.
+5 Vantablack
+5 Glaucous | Pale grayish blue-green, like the bloom on a plum.
+5 Cochineal
+5 Falu red | The red paint on Swedish barns, made with copper mine waste.
+5 Heliotrope
+5 Wenge
+5 Coquelicot | The red of a field poppy.
+5 Zaffre
+5 Isabelline
+5 Payne's grey/paynes grey
+6 Eigengrau | The dark gray you see in total darkness. German for "intrinsic gray."
+`},
+{q:"Name a sport played with a ball", s:[], a:`
+1 Soccer/football
+1 Basketball
+1 Baseball
+1 Tennis
+1 Golf
+1 Volleyball
+1 Table tennis/ping pong/ping-pong
+2 Softball
+2 Rugby
+2 Cricket
+2 Field hockey
+2 Lacrosse
+2 Water polo
+2 Handball
+2 Dodgeball
+2 Bowling
+2 Pickleball
+2 Billiards/pool/snooker
+2 Kickball
+2 American football
+3 Squash
+3 Racquetball
+3 Polo
+3 Croquet
+3 Netball
+3 Bocce
+3 Australian rules/aussie rules/afl
+3 Roundnet/spikeball
+4 Petanque
+4 Jai alai
+4 Hurling
+4 Gaelic football
+4 Sepak takraw | Volleyball played with feet, knees, and head over a net.
+4 Pelota
+4 Quidditch/quadball
+4 Padel
+4 Rounders
+5 Korfball
+5 Bandy
+5 Shinty | Scottish stick-and-ball game, a close cousin of hurling.
+5 Fistball
+5 Tchoukball
+5 Goalball | Paralympic sport played blindfolded with a ball that has bells inside.
+5 Bossaball
+5 Footvolley
+5 Teqball
+5 Stoolball
+5 Calcio storico | Brutal 16th-century style football still played in Florence.
+5 Pesapallo | Finnish baseball.
+5 Underwater rugby
+5 Wallyball
+5 Fives
+6 Cuju | Ancient Chinese kicking game that FIFA recognizes as the earliest form of football.
+`}
+];
+
+/* ---------- Tiers and badges ---------- */
+const TIERS = [
+  {name:"Dud", pts:0, color:"#4a3f37", sq:"⬛", line:"Not in the sample."},
+  {name:"Topsoil", pts:5, color:"#8a6a4f", sq:"🟫", line:"Everyone dug here first."},
+  {name:"Clay", pts:20, color:"#b07a52", sq:"🟤", line:"Solid and familiar."},
+  {name:"Bedrock", pts:40, color:"#9a948d", sq:"⬜", line:"Took a second thought."},
+  {name:"Ore seam", pts:60, color:"#e5b54a", sq:"🟨", line:"Uncommon. Worth refining."},
+  {name:"Deep vein", pts:80, color:"#ff7a3d", sq:"🟧", line:"Almost nobody drills this far."},
+  {name:"One in a Quarrillion", pts:100, color:"#6fe3d2", sq:"💎", line:"The rarest find in the rock."}
+];
+const SPRITES = [
+ {p:{c:"#4a3f37",d:"#2e2621"}, m:[".........","...ccc...","..ccccc..","..cdccc..","...ccc...",".........","........."]},
+ {p:{g:"#6bbf59",a:"#a07d5e",b:"#8a6a4f",c:"#5a4330"}, m:["....g....","...gg.g..","....gg...","..aabaa..",".abbbbbc.",".bbcbbcc.","..ccccc.."]},
+ {p:{a:"#d89c72",b:"#b07a52",c:"#7a4f30"}, m:[".........","...aaa...","..abbba..",".abbbbbc.",".bbbbbbc.","..ccccc..","........."]},
+ {p:{a:"#c9c3bc",b:"#9a948d",w:"#e8e2db",c:"#5f5a55"}, m:[".........","..aaab...",".abbbbbc.","abbwbbbcc","bbbbbbccc",".ccccccc.","........."]},
+ {p:{a:"#ffe28a",w:"#fff6c8",b:"#e5b54a",c:"#a8781f"}, m:[".........","...aab...","..aawbb..",".abbbbbc.",".bbbbbccc","..bccccc.","........."]},
+ {p:{a:"#ffb36b",b:"#ff7a3d",w:"#ffe0b0",c:"#b8401a"}, m:["....a....","...aba...","..abwba..",".abbbbba.",".bbbbbbc.","..bcccc..","........."]},
+ {p:{a:"#b9fff6",b:"#6fe3d2",w:"#ffffff",c:"#2a9d8f"}, m:["..aaaaa..",".abwbbba.","abbbbbbbc",".cbbbbbc.","..cbbbc..","...cbc...","....c...."]}
+];
+const BADGE = SPRITES.map(s=>{
+  const c=document.createElement("canvas"); c.width=9; c.height=7; const x=c.getContext("2d");
+  s.m.forEach((row,y)=>[...row].forEach((ch,i)=>{if(ch!=="."){x.fillStyle=s.p[ch];x.fillRect(i,y,1,1);}}));
+  return c.toDataURL();
+});
+function badge(t,cls){return `<img class="badge ${cls||""}" src="${BADGE[t]}" alt="${TIERS[t].name}">`;}
+
+/* ---------- Matching ---------- */
+function fold(s){return s.normalize("NFD").replace(/[̀-ͯ]/g,"").toLowerCase().trim();}
+function compact(s){return s.replace(/&/g,"and").replace(/\+\+/g,"pp").replace(/#/g,"sharp").replace(/[^a-z0-9]/g,"");}
+function stripWords(s, words){
+  s = s.replace(/^(the|a|an)\s+/,"");
+  for(const w of words){
+    const re = new RegExp("(^|\\s)"+w.replace(/[.*+?^${}()|[\]\\]/g,"\\$&")+"$");
+    const t = s.replace(re,"").trim(); if(t) s=t;
+  }
+  return s;
+}
+function key(s, words){return compact(stripWords(fold(s), words||[]));}
+PROMPTS.forEach((p,pi)=>{
+  p.answers=[]; p.nopes=[]; p.id=pi;
+  for(const raw of p.a.split("\n")){
+    const m = raw.trim().match(/^(\d)\s+(.*)$/); if(!m) continue;
+    const tier=+m[1]; const [names,def]=m[2].split(" | ");
+    const alts=names.split("/").map(x=>x.trim()).filter(Boolean);
+    const e={tier,name:alts[0],def:def||"",keys:[...new Set(alts.map(x=>key(x,p.s)))].filter(Boolean)};
+    (tier===0?p.nopes:p.answers).push(e);
+  }
+  // crowd ranking: tier first, then the order listed (most common first)
+  p.answers.forEach((e,i)=>e.order=i);
+  p.crowd=[...p.answers].sort((a,b)=>a.tier-b.tier||a.order-b.order);
+  p.crowd.forEach((e,i)=>e.rank=i+1);
+});
+function lev(a,b,cap){
+  if(Math.abs(a.length-b.length)>cap) return 99;
+  let prev=[...Array(b.length+1).keys()];
+  for(let i=1;i<=a.length;i++){
+    const cur=[i];
+    for(let j=1;j<=b.length;j++) cur[j]=Math.min(prev[j]+1,cur[j-1]+1,prev[j-1]+(a[i-1]===b[j-1]?0:1));
+    prev=cur;
+  }
+  return prev[b.length];
+}
+function variants(k){const v=[k]; if(k.length>4&&k.endsWith("es")) v.push(k.slice(0,-2)); if(k.length>3&&k.endsWith("s")) v.push(k.slice(0,-1)); return v;}
+function squash(k){return k.replace(/(.)\1+/g,"$1");}
+function sound(k){return squash(k.replace(/ph/g,"f").replace(/hu(?=a)/g,"w").replace(/wh/g,"w").replace(/ck|q/g,"k").replace(/c(?=[eiy])/g,"s").replace(/c/g,"k").replace(/z/g,"s").replace(/y/g,"i").replace(/h/g,""));}
+function allow(n){return n<=3?0:n<=6?1:n<=10?2:3;}
+/* Returns {entry, exact:true} for a clean match, {entry, exact:false} for a likely typo, or null. */
+function lookup(p, input){
+  const k=key(input,p.s); if(!k) return null;
+  const vs=variants(k);
+  const all=[...p.answers,...p.nopes];
+  for(const e of all) for(const ek of e.keys) if(vs.includes(ek)||variants(ek).includes(k)) return {entry:e,exact:true};
+  let best=null, bd=99;
+  for(const e of all) for(const ek of e.keys){
+    const lim=allow(ek.length); if(!lim) continue;
+    for(const v of vs){
+      let d=lev(v,ek,lim);
+      if(d>lim && (squash(v)===squash(ek)||sound(v)===sound(ek))) d=lim;
+      if(d>lim && lim>1 && lev(sound(v),sound(ek),lim)<=lim-1) d=lim;
+      if(d<=lim && (d<bd||(d===bd&&best&&e.tier<best.tier))){best=e;bd=d;}
+    }
+  }
+  return best?{entry:best,exact:false}:null;
+}
+
+/* ---------- Daily selection ---------- */
+function mulberry32(a){return function(){a|=0;a=a+0x6D2B79F5|0;let t=Math.imul(a^a>>>15,1|a);t=t+Math.imul(t^t>>>7,61|t)^t;return((t^t>>>14)>>>0)/4294967296;}}
+function shuffled(n,seed){const r=mulberry32(seed),a=[...Array(n).keys()];for(let i=n-1;i>0;i--){const j=Math.floor(r()*(i+1));[a[i],a[j]]=[a[j],a[i]];}return a;}
+const EPOCH=new Date(2026,10,2);
+const NOW=new Date(), MID=new Date(NOW.getFullYear(),NOW.getMonth(),NOW.getDate());
+const DAY=Math.round((MID-EPOCH)/86400000);
+const ISO=MID.getFullYear()+"-"+String(MID.getMonth()+1).padStart(2,"0")+"-"+String(MID.getDate()).padStart(2,"0");
+function dailyCats(day){
+  const N=PROMPTS.length,out=[],cache={}; let pos=Math.max(0,day)*3;
+  while(out.length<3){const c=Math.floor(pos/N); cache[c]=cache[c]||shuffled(N,7919*c+104729); const i=cache[c][pos%N]; if(!out.includes(i)) out.push(i); pos++;}
+  return out;
+}
+function load(k){try{return JSON.parse(localStorage.getItem(k));}catch(e){return null;}}
+function save(k,v){try{localStorage.setItem(k,JSON.stringify(v));}catch(e){}}
+
+/* ---------- Earth model ---------- */
+const R_EARTH=6371, KM_PER_PT=6371/1600;
+const SEG_KM=[0,4,12.262,35,410,660,2891,5150,6371];
+const SEG_NAMES=["Crust","Crust","Crust","Upper mantle","Transition zone","Lower mantle","Outer core","Inner core"];
+const MARKS=[
+  {km:4,label:"Mponeng gold mine, the deepest mine on Earth (about 4 km)"},
+  {km:12.262,label:"Kola Superdeep Borehole, the deepest hole humans have drilled (12.3 km)"},
+  {km:35,label:"The Moho, where the crust ends (about 35 km under continents)"},
+  {km:410,label:"410 km discontinuity, top of the transition zone"},
+  {km:660,label:"660 km discontinuity, start of the lower mantle"},
+  {km:2891,label:"Gutenberg discontinuity, the core-mantle boundary (2,891 km)"},
+  {km:5150,label:"Lehmann discontinuity, where the solid inner core begins (5,150 km)"},
+  {km:6371,label:"The center of the Earth (6,371 km)"}
+];
+function layerAt(km){if(km<=0)return "Surface"; if(km>R_EARTH) return "Past the center"; for(let i=0;i<8;i++) if(km<=SEG_KM[i+1]) return SEG_NAMES[i]; return "Inner core";}
+function fmtKm(km){return (km<100?km.toFixed(km<10?1:0):Math.round(km).toLocaleString("en-US"))+" km";}
+
+/* ---------- Pixel world ---------- */
+const cv=document.getElementById("world"), cx=cv.getContext("2d");
+const SKY=150, SEG_H=130, WORLD_H=SKY+8*SEG_H+90;
+let S=3,W=200,H=150,world=null,drillY=SKY,targetY=SKY,sparks=[],mobile=false,tick=0;
+function kmToY(km){
+  if(km<=0) return SKY;
+  for(let i=0;i<8;i++) if(km<=SEG_KM[i+1]) return SKY+(i+(km-SEG_KM[i])/(SEG_KM[i+1]-SEG_KM[i]))*SEG_H;
+  return Math.min(WORLD_H-10, SKY+8*SEG_H+(km-R_EARTH)/R_EARTH*SEG_H*4);
+}
+function hash(x,y){let h=x*374761393+y*668265263;h=(h^(h>>>13))*1274126177;return((h^(h>>>16))>>>0)/4294967296;}
+function hex(c){return [parseInt(c.slice(1,3),16),parseInt(c.slice(3,5),16),parseInt(c.slice(5,7),16)];}
+function mix(a,b,t){return a.map((v,i)=>v+(b[i]-v)*t);}
+function buildWorld(){
+  const c=document.createElement("canvas"); c.width=W; c.height=WORLD_H;
+  const g=c.getContext("2d"), img=g.createImageData(W,WORLD_H), d=img.data;
+  const C=s=>hex(s);
+  const skyTop=C("#070b1f"), skyBot=C("#2a1f4d");
+  for(let y=0;y<WORLD_H;y++){
+    for(let x=0;x<W;x++){
+      const n=hash(x,y); let col;
+      if(y<SKY){
+        col=mix(skyTop,skyBot,Math.pow(y/SKY,1.6));
+        if(n>0.993&&y<SKY-30) col=n>0.998?[255,255,255]:[170,170,210];
+        const hill=SKY-12-Math.round(6*Math.sin(x*0.045)+4*Math.sin(x*0.13+1));
+        if(y>hill) col=C("#15122b");
+      } else {
+        const s=Math.min(8,Math.floor((y-SKY)/SEG_H)), ly=y-SKY-s*SEG_H, f=ly/SEG_H;
+        if(s===0){
+          if(ly<2) col=C("#4f8a3a");
+          else if(ly<9) col=C(n>.5?"#4a3424":"#3f2c1f");
+          else {const b=Math.floor((y+Math.sin(x*.05)*3)/6)%3; col=C(["#7a5a3f","#8d6b4a","#6a4c35"][b]);}
+        } else if(s===1){col=C(n>.94?"#9a7a72":n>.85?"#8d8781":"#6e6762");}
+        else if(s===2){col=C(n>.9?"#55504c":"#3f3a38");}
+        else if(s===3){col=C(n>.5?"#7d3518":"#86391a");}
+        else if(s===4){col=C(n>.5?"#93411a":"#9c461c");}
+        else if(s===5){col=mix(C("#a2471a"),C("#bb581d"),f);}
+        else if(s===6){const v=Math.sin(y*.32+Math.sin(x*.07)*2.2); col=v>.6?C("#ef9a35"):mix(C("#d0681d"),C("#e07f25"),f);}
+        else if(s===7){col=mix(C("#f0b440"),C("#fff0b0"),f); if(n>.97) col=C("#ffffff");}
+        else col=C("#fff5cf");
+        if(s<8 && ly===0 && s>0) col=col.map(v=>Math.min(255,v+45));
+        const j=(n-.5)*14; col=col.map(v=>v+j);
+      }
+      const o=(y*W+x)*4; d[o]=col[0];d[o+1]=col[1];d[o+2]=col[2];d[o+3]=255;
+    }
+  }
+  g.putImageData(img,0,0);
+  const r=mulberry32(99);
+  // fossils in sediment
+  for(let i=0;i<Math.ceil(W/40);i++){const x=Math.floor(r()*W),y=SKY+14+Math.floor(r()*(SEG_H-24));
+    g.fillStyle="#d8c3a0"; [[1,0],[2,0],[3,1],[3,2],[2,3],[1,3],[0,2],[0,1],[1,1],[2,2]].forEach(([a,b])=>g.fillRect(x+a,y+b,1,1));}
+  // bones
+  for(let i=0;i<Math.ceil(W/80);i++){const x=Math.floor(r()*(W-8)),y=SKY+20+Math.floor(r()*(SEG_H-30)); g.fillStyle="#e9dcc3"; g.fillRect(x+1,y+1,6,1); g.fillRect(x,y,2,3); g.fillRect(x+6,y,2,3);}
+  // gems in the deeper crust
+  const gem=["#6fe3d2","#b98cff","#ffd166","#ff6b8a"];
+  for(let i=0;i<W/6;i++){const x=Math.floor(r()*W),y=SKY+SEG_H+Math.floor(r()*SEG_H*2); g.fillStyle=gem[i%4]; g.fillRect(x,y,2,2); g.fillStyle="#fff"; g.fillRect(x,y,1,1);}
+  // magma pockets
+  for(let i=0;i<W/8;i++){const x=Math.floor(r()*W),y=SKY+SEG_H*3+Math.floor(r()*SEG_H*3),rad=1+Math.floor(r()*3);
+    g.fillStyle="#ff8a3d"; g.fillRect(x-rad,y-rad+1,rad*2+1,rad*2-1); g.fillRect(x-rad+1,y-rad,rad*2-1,rad*2+1); g.fillStyle="#ffd08a"; g.fillRect(x,y,1,1);}
+  return c;
+}
+function resize(){
+  mobile=innerWidth<=760;
+  S=Math.max(2,Math.round(Math.min(innerWidth/230,innerHeight/170)));
+  W=Math.ceil(innerWidth/S); H=Math.ceil(innerHeight/S);
+  cv.width=W; cv.height=H; world=buildWorld();
+}
+function drillX(){return mobile?Math.round(W/2):Math.round(W*0.2);}
+function frame(){
+  tick++;
+  const moving=Math.abs(targetY-drillY)>0.3;
+  drillY+=(targetY-drillY)*0.06;
+  if(moving&&tick%2===0&&!reduced) for(let i=0;i<2;i++) sparks.push({x:drillX(),y:drillY+6,vx:(Math.random()-.5)*2.2,vy:-Math.random()*1.6,l:16});
+  const focus=mobile?0.2:0.42;
+  const camY=Math.max(0,Math.min(WORLD_H-H,drillY-H*focus));
+  cx.drawImage(world,0,Math.round(camY),W,H,0,0,W,H);
+  const X=drillX(), sy=SKY-camY, dy=Math.round(drillY-camY);
+  // rig
+  cx.fillStyle="#3b3560"; for(let i=0;i<22;i++){cx.fillRect(X-6+Math.floor(i/4),Math.round(sy)-i,1,1);cx.fillRect(X+6-Math.floor(i/4),Math.round(sy)-i,1,1);}
+  cx.fillRect(X-4,Math.round(sy)-8,9,1); cx.fillRect(X-3,Math.round(sy)-15,7,1);
+  cx.fillStyle=(tick>>4)%2?"#ff7a3d":"#ffd166"; cx.fillRect(X,Math.round(sy)-23,1,1);
+  // shaft
+  if(dy>sy){cx.fillStyle="#0c0806"; cx.fillRect(X-3,Math.round(sy),7,dy-Math.round(sy)); cx.fillStyle="rgba(255,190,120,.18)"; cx.fillRect(X-3,Math.round(sy),1,dy-Math.round(sy));}
+  // drill
+  const t=(tick>>(moving?1:3))%2;
+  cx.fillStyle="#c9c3d6"; cx.fillRect(X-3,dy-9,7,7);
+  cx.fillStyle="#ff7a3d"; cx.fillRect(X-3,dy-6,7,2);
+  cx.fillStyle="#8d88a0"; cx.fillRect(X-1,dy-12,3,3);
+  for(let i=0;i<4;i++){cx.fillStyle=(i+t)%2?"#e6e2ef":"#8d88a0"; cx.fillRect(X-3+i,dy-2+i,7-2*i,1);}
+  cx.fillStyle="#ffd166"; cx.fillRect(X,dy+2,1,1);
+  // sparks
+  sparks=sparks.filter(s=>s.l>0);
+  for(const s of sparks){s.x+=s.vx;s.y+=s.vy;s.vy+=.12;s.l--; cx.fillStyle=s.l>8?"#ffd166":"#ff7a3d"; cx.fillRect(Math.round(s.x),Math.round(s.y-camY),1,1);}
+  requestAnimationFrame(frame);
+}
+const reduced=matchMedia("(prefers-reduced-motion: reduce)").matches;
+addEventListener("resize",()=>{resize();});
+resize(); requestAnimationFrame(frame);
+
+/* ---------- Game ---------- */
+const $=id=>document.getElementById(id);
+const SCREENS=["startScreen","playScreen","revealScreen","endScreen"];
+function show(id){SCREENS.forEach(s=>$(s).classList.toggle("hidden",s!==id)); scrollTo({top:0});}
+const KEY="quarrillion2:"+ISO;
+let G=null, slotTimer=0, pending=null, busy=false;
+
+function crowdPts(rank){const t=[0,100,85,75,65,55,45,45,45,35,35,35,35]; return rank<=12?t[rank]:0;}
+function surveyPts(e){return e.rank<=12?crowdPts(e.rank):e.tier===2?20:e.tier===3?10:5;}
+function ladderPts(t,target){const d=Math.abs(t-target); return d===0?100:d===1?40:d===2?15:0;}
+
+function newGame(mode){
+  const cats = mode==="daily" ? dailyCats(DAY) : shuffled(PROMPTS.length,(Math.random()*1e9)|0).slice(0,3);
+  const lr = mode==="daily" ? mulberry32(DAY*31+7) : Math.random;
+  const ladder = cats[2], lp = PROMPTS[ladder];
+  const tiersHave=[1,2,3,4,5,6].filter(t=>lp.answers.some(a=>a.tier===t));
+  const targets=[]; for(let i=0;i<4;i++) targets.push(tiersHave[Math.floor(lr()*tiersHave.length)]);
+  G={mode,cats,total:0,combo:false,used:{},rounds:[
+    {kind:"survey",cat:cats[0],slots:3,time:15,m:1},
+    {kind:"bore",cat:cats[0],slots:3,time:30,m:1},
+    {kind:"survey",cat:cats[1],slots:3,time:15,m:2},
+    {kind:"bore",cat:cats[1],slots:3,time:30,m:2},
+    {kind:"ladder",cat:ladder,slots:4,time:30,m:3,targets}
+  ],ri:0,si:0,log:[]};
+  G.rounds.forEach(r=>r.res=[]);
+  setDepth(0,true);
+  startRound();
+}
+
+const LABELS={survey:"Surface Survey",bore:"Deep Bore",ladder:"Core Sampler"};
+const ASKS={
+  survey:"Name what most people would say. The crowd's No. 1 answer is worth 100.",
+  bore:"Now name real answers almost nobody gives. Rarer tiers score more.",
+  ladder:"Name an answer in exactly this tier:"
+};
+function startRound(){
+  const r=G.rounds[G.ri], p=PROMPTS[r.cat];
+  G.si=0;
+  $("roundLabel").textContent="Mission "+r.m+" · "+LABELS[r.kind];
+  $("catText").textContent=p.q;
+  $("askText").textContent=ASKS[r.kind];
+  show("playScreen");
+  startSlot();
+}
+function drawSlots(){
+  const r=G.rounds[G.ri];
+  $("slots").innerHTML=Array.from({length:r.slots},(_,i)=>{
+    const x=r.res[i];
+    if(!x) return `<div class="slot ${i===G.si?"now":""}"></div>`;
+    if(x.miss) return `<div class="slot miss"><img src="${BADGE[0]}" alt="Missed"></div>`;
+    return `<div class="slot"><img src="${BADGE[x.tier]}" alt="${TIERS[x.tier].name}"></div>`;
+  }).join("");
+}
+function startSlot(){
+  const r=G.rounds[G.ri];
+  busy=false; pending=null; $("confirmBox").classList.add("hidden");
+  $("ansInput").value=""; $("ansInput").disabled=false;
+  fb("", "");
+  drawSlots();
+  if(r.kind==="ladder"){
+    const tgt=r.targets[G.si];
+    $("targetBox").classList.remove("hidden");
+    // short spin, then land on the target
+    let n=0; busy=true; $("ansInput").disabled=true;
+    const spin=setInterval(()=>{
+      const t=n<8?1+((n*5)%6):tgt;
+      $("targetImg").src=BADGE[t]; $("targetName").textContent=TIERS[t].name+" ("+TIERS[t].line.replace(/\.$/,"")+")";
+      if(n++>=8){clearInterval(spin); busy=false; $("ansInput").disabled=false; $("ansInput").focus(); runTimer();}
+    }, reduced?10:90);
+    return;
+  }
+  $("targetBox").classList.add("hidden");
+  $("ansInput").focus();
+  runTimer();
+}
+function runTimer(){
+  const r=G.rounds[G.ri];
+  G.t0=performance.now(); G.deadline=G.t0+r.time*1000;
+  cancelAnimationFrame(slotTimer);
+  const step=()=>{
+    const left=Math.max(0,G.deadline-performance.now()), frac=left/(r.time*1000);
+    $("timerBar").style.width=(frac*100)+"%";
+    $("timer").classList.toggle("late",frac<.3);
+    if(left<=0){timeUp();return;}
+    slotTimer=requestAnimationFrame(step);
+  };
+  slotTimer=requestAnimationFrame(step);
+}
+function fb(msg,cls){const f=$("feedback"); f.textContent=msg; f.className="feedback "+(cls||""); if(cls==="bad"){void f.offsetWidth; f.classList.add("shake");}}
+
+function guess(text){
+  if(busy) return;
+  text=text.trim(); if(!text) return;
+  const r=G.rounds[G.ri], p=PROMPTS[r.cat];
+  const hit=lookup(p,text);
+  if(!hit){fb("Not in the sample. Keep guessing, misses cost nothing.","bad"); $("ansInput").select(); return;}
+  if(!hit.exact){
+    pending=hit.entry;
+    $("confirmWord").textContent=hit.entry.name;
+    $("confirmBox").classList.remove("hidden");
+    fb("","");
+    $("btnYes").focus();
+    return;
+  }
+  take(hit.entry);
+}
+function take(e){
+  const r=G.rounds[G.ri], p=PROMPTS[r.cat];
+  pending=null; $("confirmBox").classList.add("hidden");
+  if(e.tier===0){fb(e.name+": "+e.def+" Try another.","bad"); $("ansInput").value=""; $("ansInput").focus(); return;}
+  const used=G.used[r.cat]||(G.used[r.cat]=new Set());
+  if(used.has(e.name)){fb("You already used "+e.name+" in this category. Try another.","bad"); $("ansInput").select(); return;}
+  used.add(e.name);
+  const frac=(performance.now()-G.t0)/(r.time*1000);
+  const speed=frac<=.5?1:Math.max(.6,1-(frac-.5)*.8);
+  let base = r.kind==="survey"?surveyPts(e) : r.kind==="bore"?TIERS[e.tier].pts : ladderPts(e.tier,r.targets[G.si]);
+  const comboUsed=G.combo && base>0;
+  let pts=Math.round(base*speed*(comboUsed?1.5:1));
+  const charge = (r.kind==="survey"&&e.rank<=3)||(r.kind==="bore"&&e.tier>=5)||(r.kind==="ladder"&&e.tier===r.targets[G.si]);
+  if(base>0) G.combo=charge;
+  G.total+=pts;
+  r.res[G.si]={name:e.name,tier:e.tier,rank:e.rank,pts,base,speed,combo:comboUsed,target:r.kind==="ladder"?r.targets[G.si]:null};
+  cancelAnimationFrame(slotTimer); busy=true; $("ansInput").disabled=true;
+  let msg;
+  if(r.kind==="survey") msg=e.rank<=12?e.name+" is the crowd's No. "+e.rank+".":e.name+" counts, but the crowd rarely says it.";
+  else if(r.kind==="bore") msg=e.name+" is "+TIERS[e.tier].name+". "+TIERS[e.tier].line;
+  else {const d=Math.abs(e.tier-r.targets[G.si]); msg=e.name+" is "+TIERS[e.tier].name+". "+(d===0?"Dead on.":d===1?"One tier off.":d===2?"Two tiers off.":"Too far off to count.");}
+  if(speed<1) msg+=" Speed x"+speed.toFixed(2)+".";
+  if(comboUsed) msg+=" Combo x1.5.";
+  fb(msg,"ok");
+  floatPts(pts);
+  updateHud(); setDepth(G.total*KM_PER_PT);
+  setTimeout(nextSlot,1300);
+}
+function timeUp(){
+  const r=G.rounds[G.ri];
+  busy=true; $("ansInput").disabled=true; pending=null; $("confirmBox").classList.add("hidden");
+  r.res[G.si]={miss:true,pts:0,tier:0,target:r.kind==="ladder"?r.targets[G.si]:null};
+  G.combo=false; updateHud();
+  fb("Time's up. The drill stalls on this one.","bad");
+  setTimeout(nextSlot,1100);
+}
+function nextSlot(){
+  const r=G.rounds[G.ri];
+  G.si++;
+  if(G.si<r.slots){startSlot();return;}
+  drawSlots(); revealRound();
+}
+function floatPts(n){
+  const b=$("ansInput").getBoundingClientRect(), d=document.createElement("div");
+  d.className="float"; d.textContent="+"+n; d.style.left=(b.left+b.width/2-20)+"px"; d.style.top=(b.top-30)+"px";
+  document.body.appendChild(d); setTimeout(()=>d.remove(),1200);
+}
+function esc(s){return String(s).replace(/[&<>"]/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c]));}
+function li(t,name,right,def,cls){return `<li class="${cls||""}">${typeof t==="number"?badge(t):`<span class="rk">${t}</span>`}<span class="nm">${esc(name)}</span><span class="pts">${right}</span>${def?`<span class="def">${esc(def)}</span>`:""}</li>`;}
+
+function revealRound(){
+  const r=G.rounds[G.ri], p=PROMPTS[r.cat];
+  $("revLabel").textContent="Mission "+r.m+" · "+LABELS[r.kind]+" results";
+  $("revCat").textContent=p.q;
+  $("revMine").innerHTML=r.res.map((x,i)=>{
+    const tgt=r.kind==="ladder"?"Target "+TIERS[x.target].name+". ":"";
+    if(x.miss) return li(0,"Time ran out","+0",tgt,"miss");
+    const e=p.answers.find(a=>a.name===x.name);
+    let sub = r.kind==="survey" ? (x.rank<=12?"Crowd rank No. "+x.rank:"Rarely said by the crowd") : TIERS[x.tier].name;
+    if(r.kind==="ladder") sub=tgt+"You hit "+TIERS[x.tier].name+".";
+    if(e&&e.def) sub+=". "+e.def;
+    return li(x.tier,x.name,"+"+x.pts,sub.replace(/\.\./g,"."));
+  }).join("");
+  if(r.kind==="survey"){
+    $("revOtherHead").textContent="The crowd's top 5 (our estimate)";
+    $("revOther").innerHTML=p.crowd.slice(0,5).map(e=>li("#"+e.rank,e.name,crowdPts(e.rank))).join("");
+  } else {
+    $("revOtherHead").textContent=r.kind==="bore"?"Rarest finds in this seam":"Rare finds in this category";
+    const mine=new Set(r.res.map(x=>x.name));
+    const top=p.answers.filter(a=>a.tier===6&&!mine.has(a.name));
+    const deep=p.answers.filter(a=>a.tier===5&&a.def&&!mine.has(a.name));
+    const rr=mulberry32(r.cat*131+DAY); deep.sort(()=>rr()-.5);
+    $("revOther").innerHTML=[...top,...deep].slice(0,4).map(e=>li(e.tier,e.name,TIERS[e.tier].pts,e.def)).join("");
+  }
+  $("btnNext").textContent=G.ri<G.rounds.length-1?(G.rounds[G.ri+1].m!==r.m?"Next mission":"Dig deeper"):"See how deep you got";
+  show("revealScreen"); $("btnNext").focus();
+}
+function nextRound(){G.ri++; if(G.ri<G.rounds.length) startRound(); else finish();}
+
+function finish(){
+  if(G.mode==="daily"){
+    save(KEY,{cats:G.cats,total:G.total,rounds:G.rounds.map(r=>({kind:r.kind,res:r.res}))});
+    const st=load("quarrillion2:streak")||{last:-9,n:0};
+    if(st.last!==DAY){st.n = st.last===DAY-1 ? st.n+1 : 1; st.last=DAY; save("quarrillion2:streak",st);}
+  }
+  renderEnd(G.mode, G.total, G.cats, G.rounds);
+}
+function renderEnd(mode,total,cats,rounds){
+  const km=total*KM_PER_PT; setDepth(km);
+  $("ptsOut").textContent=total+" pts";
+  $("endLabel").textContent=mode==="daily"?"Dig #"+(DAY+1)+" complete":"Unlimited dig complete";
+  $("endKm").textContent=fmtKm(km);
+  $("endLine").textContent = km>R_EARTH ? total+" points. You drilled straight through the center and are heading for the other side."
+    : total+" points. Your drill stopped in the "+layerAt(km).toLowerCase()+".";
+  const passed=MARKS.filter(m=>km>=m.km);
+  $("endMarks").innerHTML=passed.length?passed.map(m=>li("▸",m.label,"")).join(""):li("▸","Nothing yet. Even one point gets you past the deepest mine on Earth.","");
+  const gems=[]; cats.forEach(c=>PROMPTS[c].answers.forEach(a=>{if(a.tier===6) gems.push(a);}));
+  $("endGems").innerHTML=gems.map(e=>li(6,e.name,"",e.def)).join("");
+  $("comboOut").classList.add("hidden");
+  G=G||{}; G.share=shareString(mode,total,rounds);
+  $("shareText").classList.add("hidden"); $("toast").textContent="";
+  show("endScreen");
+}
+function shareString(mode,total,rounds){
+  const km=total*KM_PER_PT;
+  const lines=rounds.map(r=>({survey:"Survey ",bore:"Bore   ",ladder:"Sampler"}[r.kind])+" "+r.res.map(x=>x.miss?"⬛":TIERS[x.tier].sq).join(""));
+  return (mode==="daily"?"Quarrillion #"+(DAY+1):"Quarrillion unlimited")+"\n"+lines.join("\n")+"\n"+fmtKm(km)+" down, "+total+" pts ("+(km>R_EARTH?"through the center":layerAt(km).toLowerCase())+")";
+}
+let lastKm=0;
+function setDepth(km,instant){
+  lastKm=km; targetY=kmToY(km); if(instant) drillY=targetY;
+  $("kmOut").textContent=fmtKm(km);
+  $("layerOut").textContent=layerAt(km);
+}
+function updateHud(){
+  $("ptsOut").textContent=G.total+" pts";
+  $("comboOut").classList.toggle("hidden",!G.combo);
+}
+
+/* ---------- Wiring ---------- */
+$("dateLine").textContent="THE DAILY DIG · #"+(DAY+1);
+$("digNo").textContent="Dig #"+(DAY+1)+" · "+MID.toLocaleDateString(undefined,{weekday:"long",month:"long",day:"numeric"});
+$("ranks").innerHTML=TIERS.slice(1).map((t,i)=>`<div class="rank">${badge(i+1)}<span><b>${t.name}.</b> <span class="dim">${t.line}</span></span><span class="pts">+${t.pts}</span></div>`).join("");
+$("ansForm").addEventListener("submit",e=>{e.preventDefault(); if(pending) take(pending); else guess($("ansInput").value);});
+$("btnYes").onclick=()=>{if(pending) take(pending);};
+$("btnNo").onclick=()=>{pending=null; $("confirmBox").classList.add("hidden"); fb("Okay. Fix the spelling or try something else.",""); $("ansInput").focus(); $("ansInput").select();};
+$("ansInput").addEventListener("input",()=>{if(pending){pending=null;$("confirmBox").classList.add("hidden");}});
+addEventListener("keydown",e=>{if(e.key==="Escape"&&pending) $("btnNo").click();});
+$("btnNext").onclick=nextRound;
+$("btnDaily").onclick=()=>{
+  const prev=load(KEY);
+  if(prev){G={share:""}; renderEnd("daily",prev.total,prev.cats,prev.rounds); return;}
+  newGame("daily");
+};
+$("btnFree").onclick=()=>newGame("free");
+$("btnAgain").onclick=()=>newGame("free");
+$("btnShare").onclick=async()=>{
+  const s=G.share;
+  try{await navigator.clipboard.writeText(s); $("toast").textContent="Copied";}catch(e){$("toast").textContent="Copy blocked here. Select the text below.";}
+  $("shareText").textContent=s; $("shareText").classList.remove("hidden");
+};
+(function(){
+  const st=load("quarrillion2:streak");
+  if(load(KEY)){$("btnDaily").textContent="See today's result";}
+  if(st&&st.n&&(st.last===DAY||st.last===DAY-1)) $("streakLine").textContent="Streak: "+st.n+" day"+(st.n===1?"":"s")+".";
+})();
+window.__q={PROMPTS,lookup,dailyCats};
+</script>
+</body>
+</html>
