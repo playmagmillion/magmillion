@@ -5958,7 +5958,7 @@ resize(); requestAnimationFrame(frame);
 const $=id=>document.getElementById(id);
 const SCREENS=["startScreen","playScreen","revealScreen","endScreen","archiveScreen","payScreen"];
 function show(id){SCREENS.forEach(s=>$(s).classList.toggle("hidden",s!==id)); scrollTo({top:0});}
-const QTIME=25, NQ=7, SITE="huanghannah123.github.io/magmillion";
+const QTIME=25, NQ=7;
 const KEY=d=>"quarrillion3:"+d;
 let G=null, raf=0, pending=null, locked=false;
 
@@ -6097,7 +6097,7 @@ function untilMidnight(){const n=new Date(), m=new Date(n.getFullYear(),n.getMon
 function shareString(g){
   const km=g.total*KM_PER_PT;
   const head = g.mode==="free" ? "Magmillion extra game" : "Magmillion #"+(g.day+1);
-  return head+"\n"+g.res.map(r=>TIERS[r.tier].sq).join("")+"\n"+fmtKm(km)+" down ("+g.total+"/700), "+(g.total>=700?"center reached":layerAt(km).toLowerCase())+"\n"+SITE;
+  return head+"\n"+g.res.map(r=>TIERS[r.tier].sq).join("")+"\n"+fmtKm(km)+" down ("+g.total+"/700), "+(g.total>=700?"center reached":layerAt(km).toLowerCase());
 }
 function setDepth(km,instant){
   targetY=kmToY(km); if(instant) drillY=targetY;
