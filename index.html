@@ -6413,7 +6413,14 @@ document.addEventListener("click",e=>{const b=e.target.closest("button,a.btnlink
 /* ---------- Game (Cosmillion format: 7 prompts, 25 seconds, one answer each) ---------- */
 const $=id=>document.getElementById(id);
 const SCREENS=["startScreen","playScreen","revealScreen","endScreen","archiveScreen","payScreen"];
-function show(id){SCREENS.forEach(s=>$(s).classList.toggle("hidden",s!==id)); scrollTo({top:0});}
+function show(id){SCREENS.forEach(s=>$(s).classList.toggle("hidden",s!==id)); scrollTo({top:0}); if(id==="startScreen"||id==="archiveScreen"||id==="payScreen") setTopLine();}
+/* Top-left line under the logo: the daily dig number, or which Play again game this is. */
+function playLabel(g){return "Play again #"+(g.num||1)+(!isUnlocked()&&(g.num||1)<=FREE_UNLIMITED?" of "+FREE_UNLIMITED+" free":"");}
+function setTopLine(g){
+  $("dateLine").textContent = !g ? "THE DAILY DIG · #"+(DAY+1)
+    : g.mode==="free" ? playLabel(g).toUpperCase()
+    : g.mode==="daily" ? "THE DAILY DIG · #"+(g.day+1) : "ARCHIVE · DIG #"+(g.day+1);
+}
 const QTIME=25, NQ=7;
 const KEY=d=>"quarrillion3:"+d;
 let G=null, raf=0, pending=null, locked=false;
@@ -6426,11 +6433,11 @@ function dayLabel(d){return dayDate(d).toLocaleDateString(undefined,{weekday:"sh
    page resumes the same game, and a question that was open when the page went
    away counts as no answer. Free games are charged when they start. */
 const RUNKEY=(mode,day)=>mode==="free"?"quarrillion3:freeRun":"quarrillion3:run:"+day;
-function saveRun(qi,open){save(RUNKEY(G.mode,G.day),{mode:G.mode,day:G.day,set:G.set,res:G.res,total:G.total,qi,open});}
+function saveRun(qi,open){save(RUNKEY(G.mode,G.day),{mode:G.mode,day:G.day,set:G.set,res:G.res,total:G.total,qi,open,num:G.num});}
 function clearRun(g){try{localStorage.removeItem(RUNKEY(g.mode,g.day));}catch(e){}}
 function getRun(mode,day){const r=load(RUNKEY(mode,day)); return r&&Array.isArray(r.set)&&Array.isArray(r.res)?r:null;}
 function resumeRun(r){
-  G={mode:r.mode, day:r.day, set:r.set, qi:r.qi, total:r.total, res:r.res};
+  G={mode:r.mode, day:r.day, set:r.set, qi:r.qi, total:r.total, res:r.res, num:r.num};
   if(r.open && G.res.length<=G.qi){
     G.res.push({p:G.set[G.qi], raw:"", name:"", tier:0, pts:0, timedOut:true, nope:"", web:null, why:"Left the page"});
     G.qi++; saveRun(G.qi,false);
@@ -6438,9 +6445,9 @@ function resumeRun(r){
   setDepth(G.total*KM_PER_PT,true); updateHud(G.total);
   if(G.qi<NQ) ask(); else finish();
 }
-function newGame(mode, day){
+function newGame(mode, day, num){
   const set = mode==="free" ? shuffled(PROMPTS.length,(Math.random()*1e9)|0).slice(0,NQ) : dailyCats(day);
-  G={mode, day, set, qi:0, total:0, res:[]};
+  G={mode, day, set, qi:0, total:0, res:[], num};
   setDepth(0,true); updateHud();
   ask();
 }
@@ -6449,7 +6456,8 @@ function ask(){
   pending=null; locked=false; G.tries=0; checking=false; timerPaused=false; $("timer").classList.remove("paused");
   $("confirmBox").classList.add("hidden");
   $("qNum").textContent=(G.qi+1)+" / "+NQ;
-  $("qMode").textContent=G.mode==="free"?"Extra game":"Dig #"+(G.day+1);
+  $("qMode").textContent=G.mode==="free"?playLabel(G):"Dig #"+(G.day+1);
+  setTopLine(G);
   $("qText").textContent=p.q;
   $("ansInput").value=""; $("ansInput").disabled=false;
   fb("","");
@@ -6930,7 +6938,8 @@ function finish(){
 }
 function renderEnd(g){
   const km=g.total*KM_PER_PT; setDepth(km); updateHud(g.total);
-  $("endLabel").textContent = g.mode==="free" ? "Extra game complete" : "Dig #"+(g.day+1)+" complete · "+dayLabel(g.day);
+  if(g.mode==="free") setTopLine(g);
+  $("endLabel").textContent = g.mode==="free" ? playLabel(g)+" complete" : "Dig #"+(g.day+1)+" complete · "+dayLabel(g.day);
   countUp($("endKm"), km);
   $("endLine").textContent = g.total>=700 ? "A perfect 700. You broke through to the center of the Earth."
     : g.total+" of 700 points. Your drill stopped in the "+layerAt(km).toLowerCase()+".";
@@ -7043,6 +7052,8 @@ function djb2(t){let h=5381; for(const c of t) h=((h<<5)+h+c.charCodeAt(0))>>>0;
 function isUnlocked(){return !!load("quarrillion3:unlocked");}
 function cookieNum(n){const m=document.cookie.match(new RegExp("(?:^|; )"+n+"=(\\d+)")); return m?+m[1]:0;}
 function freeUsed(){return Math.max(load("quarrillion3:freeUsed")||0, cookieNum("mm_free"));}
+// Every Play again game gets the next number: #1, #2, then #3 and up after paying.
+function nextPlayNum(){const n=Math.max((load("quarrillion3:playCount")||0), freeUsed()-1)+1; save("quarrillion3:playCount",n); return n;}
 function setFreeUsed(n){save("quarrillion3:freeUsed",n); try{document.cookie="mm_free="+n+"; max-age=63072000; path=/; SameSite=Lax";}catch(e){}}
 function refreshFree(){
   const el=$("freeLeft"); if(!el) return;
@@ -7052,9 +7063,9 @@ function refreshFree(){
 }
 function playUnlimited(){
   const run=getRun("free"); if(run){resumeRun(run);return;}   // refreshing resumes the same game, it doesn't hand out a new one
-  if(isUnlocked()){newGame("free");return;}
+  if(isUnlocked()){newGame("free",undefined,nextPlayNum());return;}
   const used=freeUsed();
-  if(used<FREE_UNLIMITED){setFreeUsed(used+1); refreshFree(); newGame("free"); return;}
+  if(used<FREE_UNLIMITED){setFreeUsed(used+1); refreshFree(); newGame("free",undefined,nextPlayNum()); return;}
   openPay();
 }
 function openPay(){
@@ -7101,7 +7112,7 @@ $("btnArch2").onclick=openArchive;
 $("btnArchBack").onclick=()=>show("startScreen");
 $("btnPayBack").onclick=()=>show("startScreen");
 $("codeForm").addEventListener("submit",e=>{e.preventDefault();
-  if(tryUnlock($("codeInput").value)){$("codeMsg").textContent="Done. You can play again as often as you like."; $("codeMsg").className="feedback ok"; setTimeout(()=>newGame("free"),900);}
+  if(tryUnlock($("codeInput").value)){$("codeMsg").textContent="Done. You can play again as often as you like."; $("codeMsg").className="feedback ok"; setTimeout(()=>newGame("free",undefined,nextPlayNum()),900);}
   else {$("codeMsg").textContent="That code didn't work. Check the code on your receipt and try again."; $("codeMsg").className="feedback bad";}
 });
 (function(){
@@ -7112,7 +7123,7 @@ $("codeForm").addEventListener("submit",e=>{e.preventDefault();
   addEventListener("storage",e=>{
     if(e.key&&e.key.indexOf("unlocked")>-1&&isUnlocked()){
       refreshFree();
-      if(!$("payScreen").classList.contains("hidden")){$("codeMsg").textContent="Payment received. You can play again as often as you like."; $("codeMsg").className="feedback ok"; setTimeout(()=>newGame("free"),900);}
+      if(!$("payScreen").classList.contains("hidden")){$("codeMsg").textContent="Payment received. You can play again as often as you like."; $("codeMsg").className="feedback ok"; setTimeout(()=>newGame("free",undefined,nextPlayNum()),900);}
     }
   });
 })();
