@@ -1,0 +1,285 @@
+Apple
+Banana
+Orange = Orange (fruit)
+Strawberry
+Grape
+Mango
+Pineapple
+Watermelon
+Peach
+Pear
+Cherry
+Lemon
+Lime = Lime (fruit)
+Blueberry
+Raspberry
+Blackberry
+Kiwifruit/Kiwi
+Plum
+Apricot
+Coconut
+Pomegranate
+Papaya
+Cantaloupe
+Honeydew = Honeydew (melon)
+Grapefruit
+Fig = Common fig
+Date = Date palm
+Avocado
+Tomato
+Cranberry
+Nectarine
+Tangerine
+Clementine
+Mandarin orange/Mandarin
+Passion fruit/Passionfruit
+Dragon fruit/Pitaya/Pitahaya
+Lychee/Litchi
+Guava
+Persimmon
+Quince
+Jackfruit
+Durian
+Rambutan
+Mangosteen
+Starfruit/Carambola = Carambola
+Kumquat
+Gooseberry
+Elderberry
+Mulberry
+Boysenberry
+Loganberry
+Huckleberry
+Currant/Blackcurrant = Blackcurrant
+Redcurrant
+Lingonberry
+Cloudberry
+Bilberry
+Salmonberry
+Thimbleberry
+Dewberry
+Olive
+Plantain = Cooking banana
+Breadfruit
+Soursop/Guanabana
+Cherimoya/Custard apple = Cherimoya
+Sugar apple/Sweetsop = Sugar-apple
+Atemoya
+Feijoa
+Tamarillo
+Tamarind
+Longan
+Langsat/Lanzones = Lansium parasiticum
+Salak/Snake fruit
+Pawpaw = Asimina triloba
+Medlar
+Loquat
+Jujube
+Ugli fruit/Ugli = Ugli fruit
+Pomelo
+Yuzu
+Bergamot orange/Bergamot
+Citron
+Calamansi
+Finger lime = Citrus australasica
+Buddha's hand
+Blood orange
+Satsuma = Satsuma mandarin
+Navel orange
+Key lime
+Meyer lemon
+Sapodilla
+Mamey sapote = Pouteria sapota
+Black sapote
+White sapote = Casimiroa edulis
+Canistel
+Lucuma
+Acerola/Barbados cherry = Malpighia emarginata
+Jabuticaba
+Pitanga/Surinam cherry = Eugenia uniflora
+Cupuaçu/Cupuacu = Theobroma grandiflorum
+Açaí/Acai = Açaí palm
+Camu camu
+Bacuri = Platonia
+Cashew apple
+Marula
+Baobab = Adansonia digitata
+Ackee
+Breadnut
+Chempedak = Artocarpus integer
+Santol
+Marang = Artocarpus odoratissimus
+Pulasan
+Salak
+Mangaba = Hancornia
+Noni = Morinda citrifolia
+Miracle fruit = Synsepalum dulcificum
+Monk fruit = Siraitia grosvenorii
+Horned melon/Kiwano = Cucumis metuliferus
+Pepino = Solanum muricatum
+Naranjilla/Lulo = Solanum quitoense
+Cape gooseberry/Physalis/Goldenberry = Physalis peruviana
+Tomatillo
+Prickly pear/Cactus pear/Tuna = Opuntia ficus-indica
+Pitahaya
+Wood apple = Limonia
+Bael = Aegle marmelos
+Amla/Indian gooseberry = Phyllanthus emblica
+Jamun/Java plum = Syzygium cumini
+Rose apple = Syzygium jambos
+Wax apple/Water apple = Syzygium samarangense
+Malay apple = Syzygium malaccense
+Star apple = Chrysophyllum cainito
+Ilama = Annona macroprophyllata
+Soncoya = Annona purpurea
+Rollinia/Biribá = Annona mucosa
+Sugar palm fruit = Borassus flabellifer
+Snake fruit
+Mabolo = Diospyros blancoi
+Velvet apple
+Ambarella = Spondias dulcis
+Hog plum = Spondias mombin
+Red mombin = Spondias purpurea
+Imbu = Spondias tuberosa
+Caja = Spondias mombin
+Kei apple = Dovyalis caffra
+Governor's plum = Flacourtia indica
+Carissa/Natal plum = Carissa macrocarpa
+Karonda = Carissa carandas
+Phalsa = Grewia asiatica
+Ber = Ziziphus mauritiana
+Sea buckthorn = Hippophae
+Rowan = Sorbus aucuparia
+Serviceberry/Saskatoon = Amelanchier
+Chokeberry/Aronia = Aronia
+Chokecherry = Prunus virginiana
+Sloe/Blackthorn = Prunus spinosa
+Damson
+Greengage
+Mirabelle plum/Mirabelle
+Bullace = Prunus domestica subsp. insititia
+Pluot = Pluot
+Aprium = Plumcot
+Plumcot
+Tayberry
+Marionberry
+Olallieberry
+Youngberry
+Wineberry = Rubus phoenicolasius
+Cloudberry
+Crowberry = Empetrum
+Bearberry = Arctostaphylos uva-ursi
+Juniper berry
+Barberry = Berberis
+Goji/Wolfberry = Goji
+Schisandra = Schisandra chinensis
+Haskap/Honeyberry = Lonicera caerulea
+Jostaberry
+Whitecurrant = Whitecurrant
+Muscadine
+Concord grape
+Scuppernong
+Cranberry
+Partridgeberry = Mitchella repens
+Wintergreen berry = Gaultheria procumbens
+Ugni/Chilean guava = Ugni molinae
+Maqui = Aristotelia chilensis
+Calafate = Berberis microphylla
+Pequi = Caryocar brasiliense
+Buriti = Mauritia flexuosa
+Pupunha/Peach palm = Bactris gasipaes
+Jatobá = Hymenaea courbaril
+Grumichama = Eugenia brasiliensis
+Uvaia = Eugenia pyriformis
+Cambuca = Plinia edulis
+Araçá = Psidium cattleyanum
+Strawberry guava = Psidium cattleyanum
+Pineapple guava = Acca sellowiana
+Abiu = Pouteria caimito
+Sapote
+Green sapote = Pouteria viridis
+Mamoncillo/Spanish lime = Melicoccus bijugatus
+Genip = Melicoccus bijugatus
+Monstera deliciosa/Monstera fruit = Monstera deliciosa
+Ice cream bean = Inga edulis
+Carob
+Honey locust = Gleditsia triacanthos
+Mesquite = Prosopis
+Pawpaw
+Persimmon
+Hackberry = Celtis
+Osage orange = Maclura pomifera
+Che/Chinese mulberry = Maclura tricuspidata
+Kiwiberry/Hardy kiwi = Actinidia arguta
+Akebia = Akebia quinata
+Fingered citron
+Kaffir lime/Makrut lime = Kaffir lime
+Rangpur = Rangpur (fruit)
+Tangelo
+Minneola = Tangelo
+Tangor
+Sudachi
+Kabosu
+Dekopon/Sumo citrus = Dekopon
+Hassaku = Hassaku orange
+Iyokan
+Amanatsu = Citrus natsudaidai
+Mikan = Citrus unshiu
+Chinotto = Citrus myrtifolia
+Etrog
+Limequat
+Orangequat
+Calamondin
+Kinnow
+Mosambi/Sweet lime = Citrus limetta
+Citrange
+Desert lime = Citrus glauca
+Australian finger lime
+Quandong = Santalum acuminatum
+Davidson's plum = Davidsonia
+Riberry = Syzygium luehmannii
+Lilly pilly = Syzygium smithii
+Muntries = Kunzea pomifera
+Kakadu plum = Terminalia ferdinandiana
+Illawarra plum = Podocarpus elatus
+Bush tomato = Solanum centrale
+Marang
+Durian
+Cempedak
+Duku = Lansium parasiticum
+Mangosteen
+Bilimbi = Averrhoa bilimbi
+Pandanus = Pandanus tectorius
+Nipa palm fruit = Nypa fruticans
+Buah merah = Pandanus conoideus
+Keppel fruit = Stelechocarpus burahol
+Kepel
+Gandaria = Bouea macrophylla
+Kundang
+Matoa = Pometia pinnata
+Rambai = Baccaurea motleyana
+Tampoi = Baccaurea macrocarpa
+Mundu = Garcinia dulcis
+Kokum = Garcinia indica
+Gamboge = Garcinia gummi-gutta
+Mangaba
+Cocona = Solanum sessiliflorum
+Tree tomato
+Pear melon
+Galia melon = Galia (melon)
+Charentais melon = Charentais melon
+Canary melon
+Casaba = Casaba melon
+Crenshaw melon
+Santa Claus melon = Piel de sapo
+Bitter melon
+Horned cucumber
+Muskmelon
+Wintermelon = Wax gourd
+Bael fruit
+Elephant apple = Dillenia indica
+Indian jujube
+Chinese date = Jujube
+Raisin
+Prune
+Sultana = Sultana (grape)
