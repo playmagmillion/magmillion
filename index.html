@@ -105,6 +105,9 @@ form.ans input{flex:1;min-width:0;font:inherit;font-size:18px;padding:11px 12px;
 .feedback.bad{color:#ff9b8a}
 .feedback.ok{color:var(--good)}
 .feedback.shake{animation:shake .3s}
+.chips{display:flex;flex-wrap:wrap;gap:6px;margin:8px 0 4px}
+.chips span{font-family:var(--pixel);font-size:18px;line-height:1;padding:5px 8px 4px;background:#0d1322;border:2px solid var(--tc,#4a5a78);color:#e8e2db}
+.chips span.you{background:var(--tc,#4a5a78);color:#05070d}
 @keyframes shake{25%{transform:translateX(-5px)}75%{transform:translateX(5px)}}
 .confirm{display:flex;align-items:center;gap:10px;flex-wrap:wrap;margin-top:10px;padding:10px 12px;border:2px solid var(--gold);background:#1d1a10}
 .confirm .q{flex:1;min-width:160px;font-size:16px}
@@ -385,6 +388,7 @@ body.urgent .heat{animation:kheat 1s step-end infinite}
     </div>
     <p class="small dim" id="sNote"></p>
     <p class="small"><a id="reportLink" class="hidden" href="#" target="_blank" rel="noopener" style="color:var(--gold)">Think this should count? Report it and it gets added.</a></p>
+    <div id="sameWrap" class="hidden"><h3 id="sameH"></h3><div class="chips" id="sameList"></div></div>
     <p class="small" id="rCommon"></p>
     <h3>Rarest finds in this seam</h3>
     <ul class="list" id="finds"></ul>
@@ -6925,6 +6929,16 @@ function reveal(){
   $("sNote").textContent=note;
   const rep=$("reportLink");
   if(rep){ if(!r.tier&&r.raw){rep.classList.remove("hidden"); rep.href="https://github.com/playmagmillion/magmillion/issues/new?title="+encodeURIComponent('"'+r.raw+'" should count for '+p.q)+"&body="+encodeURIComponent("Prompt: "+p.q+"\nAnswer: "+r.raw+"\nWhy it fits: ");} else rep.classList.add("hidden"); }
+  // every answer in the same level as the player's
+  const same=r.tier?p.answers.filter(a=>a.tier===r.tier):[];
+  $("sameWrap").classList.toggle("hidden",!same.length);
+  if(same.length){
+    const mine=same.find(a=>a.name===r.name);
+    const list=(mine?[mine]:[]).concat(same.filter(a=>a!==mine));
+    $("sameH").textContent=t.name+" answers for this prompt ("+same.length+")";
+    $("sameList").style.setProperty("--tc",t.color);
+    $("sameList").innerHTML=list.map(a=>`<span class="${a===mine?"you":""}"${a.def?` title="${esc(a.def)}"`:""}>${esc(a.name)}</span>`).join("");
+  }
   $("rCommon").innerHTML="Most people said "+p.crowd.slice(0,3).map(e=>"<b>"+esc(e.name)+"</b>").join(", ")+".";
   $("finds").innerHTML=rareFinds(p,r.name,G.day||0).map(e=>li(e.tier,e.name,"+"+TIERS[e.tier].pts,e.def)).join("");
   $("btnNext").textContent=G.qi<NQ-1?"Keep drilling":"See how deep you got";
