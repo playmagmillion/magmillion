@@ -1,0 +1,1253 @@
+{
+"programming-language": {
+"q": "Name a programming language",
+"lists": [
+"List of programming languages",
+"Generational list of programming languages"
+],
+"any": [
+"programming language",
+"language for",
+"scripting language",
+"query language",
+"markup language"
+],
+"hint": "(programming language)"
+},
+"mineral": {
+"q": "Name a mineral or gemstone",
+"lists": [
+"List of minerals",
+"List of gemstones by species",
+"Gemstone"
+],
+"any": [
+"mineral",
+"gemstone",
+"gem ",
+"variety of"
+],
+"hint": "(mineral)"
+},
+"pasta": {
+"q": "Name a type of pasta",
+"lists": [
+"List of pasta",
+"Pasta"
+],
+"any": [
+"pasta",
+"noodle",
+"dumpling",
+"gnocchi"
+],
+"hint": "(pasta)"
+},
+"dog": {
+"q": "Name a dog breed",
+"lists": [
+"List of dog breeds",
+"List of dog crossbreeds"
+],
+"any": [
+"dog breed",
+"breed of dog",
+"breed of domestic dog",
+"dog type",
+"crossbreed",
+"dog"
+],
+"hint": "(dog)"
+},
+"instrument": {
+"q": "Name a musical instrument",
+"lists": [
+"List of musical instruments",
+"List of string instruments",
+"List of percussion instruments",
+"List of woodwind instruments",
+"List of brass instruments",
+"List of keyboard instruments"
+],
+"any": [
+"instrument",
+"drum",
+"flute",
+"lute",
+"zither",
+"horn",
+"trumpet",
+"bell",
+"organ",
+"fiddle",
+"guitar",
+"harp",
+"pipe",
+"whistle",
+"gong",
+"rattle",
+"bagpipe",
+"oboe",
+"clarinet",
+"viol"
+],
+"hint": "(instrument)"
+},
+"cheese": {
+"q": "Name a type of cheese",
+"lists": [
+"List of cheeses",
+"List of French cheeses",
+"List of Italian cheeses",
+"List of British cheeses",
+"List of Swiss cheeses",
+"List of Spanish cheeses",
+"List of American cheeses",
+"List of Dutch cheeses",
+"List of Greek cheeses",
+"List of German cheeses"
+],
+"any": [
+"cheese"
+],
+"hint": "(cheese)"
+},
+"boat": {
+"q": "Name a type of boat or ship",
+"lists": [
+"List of boat types",
+"List of ship types",
+"List of historical ship types",
+"List of sailing boat types"
+],
+"any": [
+"boat",
+"ship",
+"vessel",
+"watercraft",
+"craft",
+"canoe",
+"yacht",
+"barge",
+"sailing",
+"warship",
+"galley"
+],
+"hint": "(boat)"
+},
+"dance": {
+"q": "Name a dance",
+"lists": [
+"List of dances",
+"List of dance style categories",
+"List of ethnic, regional, and folk dances by origin",
+"List of Latin dances"
+],
+"any": [
+"dance",
+"ballroom",
+"dancing"
+],
+"hint": "(dance)"
+},
+"unit": {
+"q": "Name a unit of measurement",
+"lists": [
+"List of unusual units of measurement",
+"List of obsolete units of measurement",
+"International System of Units",
+"Imperial units",
+"United States customary units",
+"SI derived unit",
+"List of physical units",
+"Non-SI units mentioned in the SI"
+],
+"any": [
+"unit of",
+"units of",
+"unit for",
+"measure of",
+"measurement"
+],
+"hint": "(unit)"
+},
+"scientist": {
+"q": "Name a famous scientist",
+"lists": [
+"List of physicists",
+"List of chemists",
+"List of biologists",
+"List of astronomers",
+"List of inventors",
+"List of geologists",
+"List of Nobel laureates in Physics",
+"List of Nobel laureates in Chemistry",
+"List of Nobel laureates in Physiology or Medicine",
+"List of geneticists",
+"List of women in science",
+"List of computer scientists",
+"List of naturalists"
+],
+"any": [
+"physicist",
+"chemist",
+"biologist",
+"scientist",
+"mathematician",
+"astronomer",
+"geologist",
+"naturalist",
+"inventor",
+"geneticist",
+"engineer",
+"physician",
+"botanist",
+"zoologist",
+"microbiologist",
+"biochemist",
+"neuroscientist",
+"psychologist",
+"paleontologist",
+"ecologist",
+"polymath",
+"crystallographer",
+"primatologist",
+"virologist",
+"immunologist",
+"astrophysicist",
+"cosmologist"
+],
+"person": true
+},
+"tree": {
+"q": "Name a type of tree",
+"lists": [
+"List of tree genera",
+"List of trees and shrubs by taxonomic family",
+"List of superlative trees"
+],
+"any": [
+"tree",
+"conifer",
+"species of plant",
+"genus of plant",
+"genus of flowering plant",
+"species of flowering plant",
+"palm",
+"oak",
+"maple",
+"pine"
+],
+"hint": "(tree)"
+},
+"ology": {
+"q": "Name a field of study ending in '-ology'",
+"lists": [
+"-logy",
+"List of words ending in -ology",
+"Outline of academic disciplines",
+"Branches of science"
+],
+"any": [
+"study of",
+"science",
+"branch of",
+"discipline",
+"field of"
+],
+"suffix": "ology"
+},
+"dinosaur": {
+"q": "Name a dinosaur",
+"lists": [
+"List of dinosaur genera",
+"List of informally named dinosaurs"
+],
+"any": [
+"dinosaur",
+"theropod",
+"sauropod",
+"ornithischian",
+"ornithopod",
+"ceratopsian",
+"hadrosaur",
+"ankylosaur",
+"stegosaur",
+"sauropodomorph"
+],
+"hint": "(dinosaur)"
+},
+"typeface": {
+"q": "Name a font or typeface",
+"lists": [
+"List of typefaces",
+"List of monospaced typefaces",
+"List of typefaces included with macOS",
+"List of typefaces included with Microsoft Windows"
+],
+"any": [
+"typeface",
+"font",
+"type family"
+],
+"hint": "(typeface)"
+},
+"cardgame": {
+"q": "Name a card game",
+"lists": [
+"List of card games by number of cards",
+"List of traditional card and tile packs",
+"List of collectible card games",
+"List of solitaire card games",
+"List of poker variants",
+"Glossary of card game terms"
+],
+"any": [
+"card game",
+"patience",
+"solitaire",
+"poker",
+"trick-taking",
+"shedding",
+"rummy",
+"collectible card",
+"game played with"
+],
+"hint": "(card game)"
+},
+"color": {
+"q": "Name a color",
+"lists": [
+"List of colors (compact)",
+"List of colors: A–F",
+"List of colors: G–M",
+"List of colors: N–Z",
+"Web colors",
+"Shades of red",
+"Shades of blue",
+"Shades of green",
+"Shades of yellow",
+"Shades of orange",
+"Shades of purple",
+"Shades of pink",
+"Shades of brown",
+"Shades of white",
+"Shades of gray",
+"Shades of black",
+"Shades of cyan",
+"Shades of magenta",
+"Shades of violet"
+],
+"any": [
+"color",
+"colour",
+"shade of",
+"tint",
+"hue",
+"pigment",
+"dye"
+],
+"hint": "(color)"
+},
+"fruit": {
+"q": "Name a fruit",
+"lists": [
+"List of culinary fruits",
+"List of apple cultivars",
+"List of grape varieties",
+"List of banana cultivars",
+"List of pear cultivars",
+"List of mango cultivars",
+"List of citrus fruits"
+],
+"any": [
+"fruit",
+"berry",
+"melon",
+"citrus",
+"cultivar",
+"variety of",
+"species of",
+"plant",
+"tree",
+"shrub",
+"vine",
+"palm",
+"apple",
+"grape",
+"banana",
+"pear",
+"mango",
+"hybrid"
+],
+"hint": "(fruit)",
+"hand": "fruit"
+},
+"vegetable": {
+"q": "Name a vegetable",
+"lists": [
+"List of vegetables",
+"List of root vegetables",
+"List of leaf vegetables",
+"List of culinary herbs and spices",
+"List of squash and pumpkin cultivars",
+"List of potato cultivars",
+"List of Capsicum cultivars",
+"List of tomato cultivars"
+],
+"any": [
+"vegetable",
+"species of",
+"plant",
+"cultivar",
+"variety of",
+"root",
+"leaf",
+"bean",
+"legume",
+"squash",
+"cabbage",
+"onion",
+"pepper",
+"herb",
+"tuber",
+"pumpkin",
+"potato",
+"tomato",
+"chili",
+"lettuce",
+"brassica",
+"allium"
+],
+"hint": "(vegetable)"
+},
+"bird": {
+"q": "Name a bird",
+"lists": [
+"List of birds",
+"List of birds of the United States",
+"List of birds of Great Britain",
+"List of birds of Australia",
+"List of birds of India",
+"List of birds of South Africa",
+"List of birds of Canada",
+"List of birds of New Zealand",
+"List of birds of Brazil",
+"List of birds of Japan",
+"List of birds of prey",
+"List of parrots",
+"List of owl species",
+"List of penguins"
+],
+"any": [
+"bird",
+"parrot",
+"owl",
+"raptor",
+"penguin",
+"duck",
+"hawk",
+"eagle",
+"finch",
+"heron",
+"gull"
+],
+"hint": "(bird)"
+},
+"fish": {
+"q": "Name a fish",
+"lists": [
+"List of common fish names",
+"List of freshwater aquarium fish species",
+"List of marine aquarium fish species",
+"List of sharks",
+"List of fish families"
+],
+"any": [
+"fish",
+"shark",
+"ray",
+"eel",
+"salmon",
+"trout",
+"catfish",
+"cichlid",
+"carp",
+"tuna",
+"cod"
+],
+"hint": "(fish)"
+},
+"insect": {
+"q": "Name an insect",
+"lists": [
+"Insect",
+"List of insect orders",
+"List of butterflies of North America",
+"List of moths of North America",
+"List of beetle families",
+"List of ant genera",
+"List of mosquito genera",
+"Lists of insects"
+],
+"any": [
+"insect",
+"beetle",
+"butterfly",
+"moth",
+"ant",
+"bee",
+"wasp",
+"fly",
+"bug",
+"cricket",
+"grasshopper",
+"dragonfly",
+"mantis",
+"termite",
+"cockroach",
+"mosquito",
+"flea",
+"louse",
+"cicada",
+"aphid"
+],
+"hint": "(insect)"
+},
+"mammal": {
+"q": "Name a mammal",
+"lists": [
+"List of mammals of North America",
+"List of mammals of Africa",
+"List of mammals of Australia",
+"List of mammals of South America",
+"List of mammals of Europe",
+"List of mammals of Asia",
+"List of mammals of India",
+"List of placental mammals",
+"List of marsupials",
+"List of primates",
+"List of whale species",
+"List of bat species",
+"List of rodents",
+"List of carnivorans",
+"List of even-toed ungulates by population"
+],
+"any": [
+"mammal",
+"primate",
+"rodent",
+"bat",
+"whale",
+"deer",
+"antelope",
+"monkey",
+"marsupial",
+"carnivoran",
+"ungulate"
+],
+"hint": "(animal)"
+},
+"reptile": {
+"q": "Name a reptile",
+"lists": [
+"List of reptiles",
+"List of snakes by scientific name",
+"List of lizards",
+"List of turtles",
+"List of crocodilians",
+"List of reptiles of North America",
+"List of reptiles of Australia",
+"List of venomous snakes",
+"List of Testudines families",
+"List of gecko genera",
+"List of chameleon species"
+],
+"any": [
+"reptile",
+"lizard",
+"snake",
+"turtle",
+"tortoise",
+"crocodil",
+"alligator",
+"gecko",
+"iguana",
+"skink",
+"viper",
+"python",
+"cobra",
+"chameleon",
+"monitor"
+],
+"hint": "(reptile)"
+},
+"horse": {
+"q": "Name a horse breed",
+"lists": [
+"List of horse breeds",
+"List of pony breeds"
+],
+"any": [
+"horse breed",
+"breed of horse",
+"pony",
+"horse",
+"breed"
+],
+"hint": "(horse)"
+},
+"mushroom": {
+"q": "Name a mushroom",
+"lists": [
+"List of mushroom-forming fungi",
+"List of deadly fungi",
+"List of psilocybin mushroom species",
+"Edible mushroom",
+"List of bioluminescent fungi",
+"List of Agaricales genera",
+"List of Amanita species",
+"List of Boletus species",
+"List of Russula species",
+"List of Cortinarius species",
+"List of the largest fungal fruit bodies"
+],
+"any": [
+"mushroom",
+"fungus",
+"fungi",
+"toadstool",
+"bolete",
+"agaric"
+],
+"hint": "(mushroom)"
+},
+"sauce": {
+"q": "Name a sauce or condiment",
+"lists": [
+"List of sauces",
+"List of condiments",
+"List of dips",
+"List of hot sauces",
+"List of mustard brands",
+"List of salad dressings",
+"List of chutneys",
+"List of fish sauces",
+"List of syrups"
+],
+"any": [
+"sauce",
+"condiment",
+"dip",
+"relish",
+"dressing",
+"chutney",
+"paste",
+"salsa",
+"mustard",
+"ketchup",
+"gravy",
+"syrup",
+"spread",
+"pickle",
+"seasoning",
+"oil",
+"vinegar",
+"mayonnaise"
+],
+"hint": "(sauce)"
+},
+"dessert": {
+"q": "Name a dessert",
+"lists": [
+"List of desserts",
+"List of cakes",
+"List of pastries",
+"List of pies, tarts and flans",
+"List of puddings",
+"List of cookies",
+"List of custard desserts",
+"List of frozen dessert brands",
+"List of ice cream flavors",
+"List of doughnut varieties",
+"List of Indian sweets and desserts",
+"List of Philippine desserts",
+"List of Japanese desserts and sweets",
+"List of French desserts",
+"List of Italian desserts and pastries"
+],
+"any": [
+"dessert",
+"cake",
+"pastry",
+"pudding",
+"confection",
+"sweet",
+"pie",
+"tart",
+"cookie",
+"biscuit",
+"ice cream",
+"custard",
+"doughnut",
+"candy",
+"flan",
+"mousse",
+"cheesecake",
+"sorbet",
+"fritter",
+"bun",
+"bread"
+],
+"hint": "(dessert)"
+},
+"bread": {
+"q": "Name a type of bread",
+"lists": [
+"List of breads",
+"List of bread rolls",
+"List of quick breads",
+"List of sweet breads",
+"List of American breads",
+"List of Indian breads",
+"List of buns",
+"List of flatbreads"
+],
+"any": [
+"bread",
+"roll",
+"bun",
+"flatbread",
+"loaf",
+"baked",
+"biscuit",
+"pastry",
+"cracker",
+"dough",
+"bagel",
+"pancake",
+"toast"
+],
+"hint": "(bread)"
+},
+"soup": {
+"q": "Name a soup",
+"lists": [
+"List of soups",
+"List of stews",
+"List of Chinese soups",
+"List of Japanese soups and stews",
+"List of Korean soups",
+"List of Vietnamese dishes"
+],
+"any": [
+"soup",
+"stew",
+"broth",
+"chowder",
+"bisque",
+"consommé",
+"potage",
+"gumbo",
+"curry",
+"ramen",
+"noodle"
+],
+"hint": "(soup)"
+},
+"sandwich": {
+"q": "Name a sandwich",
+"lists": [
+"List of sandwiches",
+"List of American sandwiches",
+"List of submarine sandwich restaurants"
+],
+"any": [
+"sandwich",
+"burger",
+"wrap",
+"sub",
+"roll",
+"bun",
+"toast",
+"taco",
+"burrito",
+"hot dog",
+"hamburger"
+],
+"hint": "(sandwich)"
+},
+"candy": {
+"q": "Name a candy",
+"lists": [
+"List of confectionery brands",
+"List of candies",
+"List of chocolate bar brands",
+"List of bean-to-bar chocolate manufacturers",
+"List of British confectionery",
+"List of Indian sweets and desserts",
+"List of Japanese snacks"
+],
+"any": [
+"candy",
+"confection",
+"chocolate",
+"sweets",
+"sweet",
+"lollipop",
+"toffee",
+"fudge",
+"gum",
+"marshmallow",
+"licorice",
+"liquorice",
+"caramel",
+"nougat",
+"praline",
+"bar"
+],
+"hint": "(candy)"
+},
+"clothing": {
+"q": "Name an item of clothing",
+"lists": [
+"List of clothing types",
+"List of hats and headgear",
+"List of shoe styles",
+"List of dresses",
+"List of skirt styles",
+"List of types of trousers",
+"List of costumes",
+"List of neckwear",
+"List of coats",
+"Lists of clothing"
+],
+"any": [
+"garment",
+"clothing",
+"worn by",
+"worn on",
+"dress",
+"coat",
+"jacket",
+"shirt",
+"skirt",
+"trousers",
+"hat",
+"shoe",
+"boot",
+"sandal",
+"scarf",
+"sweater",
+"robe",
+"cloak",
+"gown",
+"vest",
+"waistcoat",
+"glove",
+"sock",
+"headgear",
+"headwear",
+"tunic",
+"apron",
+"underwear",
+"swimsuit",
+"uniform",
+"costume",
+"footwear",
+"neckwear",
+"sleeve",
+"cap"
+],
+"hint": "(clothing)"
+},
+"job": {
+"q": "Name a job",
+"lists": [
+"Lists of occupations",
+"List of healthcare occupations",
+"List of legal occupations",
+"List of artistic occupations",
+"List of agricultural occupations",
+"List of construction trades",
+"List of corporate titles",
+"List of industrial occupations",
+"List of Military occupations",
+"List of obsolete occupations",
+"List of sports occupations",
+"List of science occupations",
+"List of film and television occupations",
+"List of hospitality occupations",
+"List of mental health occupations"
+],
+"any": [
+"occupation",
+"profession",
+"job",
+"worker",
+"person who",
+"practitioner",
+"specialist",
+"trade",
+"craftsman",
+"professional",
+"officer",
+"employee",
+"laborer",
+"tradesperson",
+"technician",
+"physician",
+"artist"
+],
+"hint": "(occupation)"
+},
+"car": {
+"q": "Name a car brand",
+"lists": [
+"List of car brands",
+"List of automobile manufacturers",
+"List of current automobile manufacturers by country",
+"List of defunct automobile manufacturers of the United States",
+"List of automobile manufacturers of Germany",
+"List of automobile manufacturers of Italy",
+"List of automobile manufacturers of France",
+"List of automobile manufacturers of the United Kingdom",
+"List of automobile manufacturers of Japan",
+"List of automobile manufacturers of China"
+],
+"any": [
+"automobile",
+"automaker",
+"car manufacturer",
+"vehicle manufacturer",
+"cars",
+"car brand",
+"motor company",
+"marque",
+"motor vehicle",
+"sports car",
+"truck",
+"manufacturer"
+],
+"hint": "(automobile)"
+},
+"boardgame": {
+"q": "Name a board game",
+"lists": [
+"List of board games",
+"List of abstract strategy games",
+"List of mancala games",
+"List of chess variants",
+"List of Eurogames",
+"List of tabletop role-playing games",
+"List of games in Game theory",
+"List of dice games",
+"List of war games"
+],
+"any": [
+"board game",
+"game",
+"tabletop",
+"strategy game",
+"abstract strategy",
+"dice game",
+"chess variant",
+"mancala",
+"wargame",
+"role-playing"
+],
+"hint": "(board game)"
+},
+"martial": {
+"q": "Name a martial art or combat sport",
+"lists": [
+"List of martial arts",
+"List of combat sports",
+"Outline of combat sports",
+"List of Chinese martial arts",
+"List of Indian martial arts",
+"List of Japanese martial arts",
+"List of Filipino martial arts",
+"List of Korean martial arts"
+],
+"any": [
+"martial art",
+"combat sport",
+"wrestling",
+"fighting",
+"boxing",
+"fencing",
+"stick fighting",
+"self-defense",
+"self-defence",
+"kung fu",
+"grappling",
+"kickboxing",
+"swordsmanship",
+"archery"
+],
+"hint": "(martial art)"
+},
+"musicgenre": {
+"q": "Name a music genre",
+"lists": [
+"List of music genres and styles",
+"List of electronic music genres",
+"List of rock genres",
+"List of hip-hop genres",
+"List of heavy metal genres",
+"List of jazz genres",
+"List of styles of music: A–F",
+"List of styles of music: G–M",
+"List of styles of music: N–R",
+"List of styles of music: S–Z",
+"List of country music genres",
+"List of pop music genres",
+"List of punk rock genres",
+"List of folk music traditions"
+],
+"any": [
+"genre",
+"style of music",
+"music",
+"subgenre",
+"musical style",
+"rock",
+"jazz",
+"hip hop",
+"metal",
+"pop",
+"folk",
+"punk",
+"electronic",
+"dance"
+],
+"hint": "(music)"
+},
+"composer": {
+"q": "Name a classical composer",
+"lists": [
+"List of classical music composers by era",
+"List of Baroque composers",
+"List of Classical-era composers",
+"List of Romantic-era composers",
+"List of Renaissance composers",
+"List of medieval composers",
+"List of 20th-century classical composers",
+"List of 21st-century classical composers",
+"List of modernist composers",
+"List of opera composers",
+"List of composers by name"
+],
+"any": [
+"composer"
+],
+"person": true
+},
+"painter": {
+"q": "Name a famous painter",
+"lists": [
+"List of painters by name",
+"List of Italian painters",
+"List of French painters",
+"List of Dutch painters",
+"List of Spanish painters",
+"List of American painters",
+"List of German painters",
+"List of British painters",
+"List of Russian painters",
+"List of Japanese painters",
+"List of Impressionist painters",
+"List of Renaissance painters",
+"List of Baroque painters",
+"List of Mexican painters",
+"List of Belgian painters",
+"List of Flemish painters",
+"List of most expensive paintings"
+],
+"any": [
+"painter",
+"artist"
+],
+"person": true
+},
+"mythical": {
+"q": "Name a mythical creature",
+"lists": [
+"List of legendary creatures by type",
+"List of legendary creatures (A)",
+"List of legendary creatures (B)",
+"List of legendary creatures (C)",
+"List of legendary creatures (D)",
+"List of legendary creatures (E)",
+"List of legendary creatures (F)",
+"List of legendary creatures (G)",
+"List of legendary creatures (H)",
+"List of legendary creatures (I)",
+"List of legendary creatures (J)",
+"List of legendary creatures (K)",
+"List of legendary creatures (L)",
+"List of legendary creatures (M)",
+"List of legendary creatures (N)",
+"List of legendary creatures (O)",
+"List of legendary creatures (P)",
+"List of legendary creatures (Q)",
+"List of legendary creatures (R)",
+"List of legendary creatures (S)",
+"List of legendary creatures (T)",
+"List of legendary creatures (U–Z)",
+"List of legendary creatures from Japan",
+"List of dragons in mythology and folklore",
+"List of cryptids"
+],
+"any": [
+"mytholog",
+"legendary creature",
+"folklore",
+"mythical",
+"legend",
+"cryptid",
+"spirit",
+"demon",
+"monster",
+"creature",
+"dragon",
+"giant",
+"fairy",
+"yokai",
+"yōkai"
+],
+"hint": "(mythology)"
+},
+"language": {
+"q": "Name a language",
+"lists": [
+"List of languages by total number of speakers",
+"List of languages by number of native speakers",
+"List of language names",
+"List of official languages",
+"List of constructed languages",
+"List of extinct languages",
+"List of sign languages",
+"List of endangered languages in the United States",
+"List of languages of India",
+"List of languages of Africa"
+],
+"any": [
+"language",
+"dialect",
+"lingua"
+],
+"hint": "(language)",
+"strip": " language"
+},
+"river": {
+"q": "Name a river",
+"lists": [
+"List of rivers by length",
+"List of rivers by discharge",
+"List of rivers of the United States",
+"List of rivers of Europe",
+"List of rivers of Asia",
+"List of rivers of Africa",
+"List of rivers of South America",
+"List of rivers of the United Kingdom",
+"List of rivers of India",
+"List of rivers of China",
+"List of rivers of Australia",
+"List of rivers of Canada",
+"List of rivers of Russia",
+"List of rivers of Germany",
+"List of rivers of France"
+],
+"any": [
+"river",
+"tributary",
+"stream"
+],
+"hint": "(river)"
+},
+"mountain": {
+"q": "Name a mountain",
+"lists": [
+"List of mountains by elevation",
+"List of highest mountains on Earth",
+"Seven Summits",
+"List of mountains in the United States",
+"List of mountains of the Alps above 3000 m",
+"List of volcanoes by elevation",
+"List of mountains in Japan",
+"List of mountains of Canada",
+"List of mountains in New Zealand",
+"List of mountains in Africa",
+"List of mountains in South America",
+"Eight-thousander",
+"Seven Second Summits",
+"List of Munros",
+"Fourteener"
+],
+"any": [
+"mountain",
+"peak",
+"volcano",
+"summit",
+"massif",
+"mount",
+"hill",
+"stratovolcano"
+],
+"hint": "(mountain)"
+},
+"island": {
+"q": "Name an island",
+"lists": [
+"List of islands by area",
+"List of islands by population",
+"List of islands of Greece",
+"List of islands of Indonesia",
+"List of islands of the Philippines",
+"List of islands of Japan",
+"List of islands of the United States",
+"List of islands of the United Kingdom",
+"List of islands of Italy",
+"List of islands of Scotland",
+"List of islands in the Caribbean",
+"List of islands in the Pacific Ocean",
+"List of islands of Canada",
+"List of islands of Australia"
+],
+"any": [
+"island",
+"archipelago",
+"atoll",
+"islet",
+"isle"
+],
+"hint": "(island)"
+},
+"cocktail": {
+"q": "Name a cocktail",
+"lists": [
+"List of cocktails",
+"List of IBA official cocktails",
+"List of martini cocktails",
+"List of flaming beverages",
+"List of cocktails with rum",
+"Tiki culture",
+"List of non-alcoholic mixed drinks"
+],
+"any": [
+"cocktail",
+"mixed drink",
+"drink",
+"punch",
+"highball",
+"sour",
+"martini",
+"liqueur",
+"beverage"
+],
+"hint": "(cocktail)",
+"new": true
+}
+}
