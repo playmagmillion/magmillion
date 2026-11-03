@@ -10,7 +10,8 @@ Looking for more games like Krillion? See [games like Krillion](https://playmagm
 
 - Seven prompts a day, like "Name a fruit," the same for everyone, with 25 seconds each.
 - Type any real thing that fits. Spelling is forgiven: the game asks "Did you mean...?" for typos, swapped letters, sound-alike spellings, and words cut short.
-- Answers aren't limited to a fixed list. If an answer isn't on the hand-made list, the game searches Wikipedia to check that it fits the category and uses the article's views over the last 30 days to rate how common it is. For "word that means..." prompts it asks the free Datamuse dictionary instead. Web finds top out at Deep vein (+85).
+- Answers aren't limited to a fixed list. If an answer isn't on the hand-made list, the game checks Wikipedia, Wikidata, Wiktionary, WordNet (through Datamuse), and ConceptNet at the same time, and accepts it if any of them confirm it fits the category. Word-origin prompts check the word's Wiktionary etymology, and "word that means..." prompts check the Datamuse dictionary. Rarity comes from Wikipedia views over the last 30 days or word frequency, and tops out at Deep vein (+85).
+- An answer that doesn't fit gets one more try before it counts as a Dud.
 - Rarer answers drill deeper. "Name a fruit": Apple is +10, Miracle fruit is +100.
 - Seven perfect answers (700 points) reach the center of the Earth, 6,371 km down, past real landmarks like the Kola Superdeep Borehole and the Moho.
 - One logged dig a day. Share your depth and keep your streak. Missed a day? Play it from the Archive. After the daily dig, Play again gives everyone 2 free extra games with random prompts. More after that costs $5.

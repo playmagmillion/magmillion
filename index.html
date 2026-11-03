@@ -306,7 +306,7 @@ body.urgent .heat{animation:kheat 1s step-end infinite}
     <h3>How it works</h3>
     <ul class="how">
       <li>Seven prompts, the same for everyone today, with new ones every day.</li>
-      <li>Type any real thing that fits. If it isn't on our list, the game checks Wikipedia to see if it counts and how well known it is. Spelling is forgiven: the drill asks "Did you mean...?"</li>
+      <li>Type any real thing that fits. If it isn't on our list, the game checks Wikipedia, Wikidata, Wiktionary, WordNet, and ConceptNet, and it counts if any of them back you up. Spelling is forgiven: the drill asks "Did you mean...?" If an answer doesn't fit, you get one more try.</li>
       <li>Rarer answers drill deeper. Common ones barely scratch the surface.</li>
       <li>Seven perfect answers reach the center of the Earth, 6,371 km down. That's 700 points.</li>
       <li>One logged dig a day. Share your depth and keep the streak.</li>
@@ -380,7 +380,7 @@ body.urgent .heat{animation:kheat 1s step-end infinite}
     <ul class="list" id="endMarks"></ul>
     <h3>One in a Magmillion finds from today</h3>
     <ul class="list" id="endGems"></ul>
-    <p class="legal">Listed answers use hand-made rarity tiers. Other answers are checked on Wikipedia (rarity from article views in the last 30 days) or the Datamuse dictionary (word frequency), and top out at Deep vein. Depth: 700 points equals Earth's radius, so each point is about 9.1 km.</p>
+    <p class="legal">Listed answers use hand-made rarity tiers. Other answers are checked against Wikipedia, Wikidata, Wiktionary, WordNet, and ConceptNet, and count if any of them confirm the answer fits. Their rarity comes from Wikipedia views in the last 30 days or word frequency, and tops out at Deep vein. Depth: 700 points equals Earth's radius, so each point is about 9.1 km.</p>
   </section>
 
   <section id="payScreen" class="hidden">
@@ -6278,7 +6278,7 @@ function newGame(mode, day){
 }
 function ask(){
   const p=PROMPTS[G.set[G.qi]];
-  pending=null; locked=false;
+  pending=null; locked=false; G.tries=0; checking=false;
   $("confirmBox").classList.add("hidden");
   $("qNum").textContent=(G.qi+1)+" / "+NQ;
   $("qMode").textContent=G.mode==="free"?"Extra game":"Dig #"+(G.day+1);
@@ -6417,6 +6417,16 @@ const WEB={
 "Name a salad":{h:"salad",any:["salad"]},
 "Name a citrus fruit":{h:"citrus",any:["citrus"]}
 };
+/* Prompts with no Wikipedia category check get dictionary-based checks instead */
+Object.assign(WEB,{
+"Name a collective noun for a group of animals":{wikt:true,any:["group of","collective noun","company of","flock of","herd of"]},
+"Name a word or term used in rowing":{wikt:true,any:["rowing","oar","rower","coxswain","regatta","scull"]},
+"Name a letter of the Greek alphabet":{wikt:true,any:["greek alphabet","greek letter"]},
+"Name an English word borrowed from Japanese":{ety:["ja"],lang:"Japanese"},
+"Name an English word borrowed from French":{ety:["fr","frm","fro","xno"],lang:"French"},
+"Name an English word borrowed from Arabic":{ety:["ar"],lang:"Arabic"},
+"Name an English word that comes from Hindi, Urdu, or Sanskrit":{ety:["hi","ur","sa","hns"],lang:"Hindi, Urdu, or Sanskrit"}
+});
 const WEB_CACHE={};
 function withTimeout(ms){const c=new AbortController(); setTimeout(()=>c.abort(),ms); return c.signal;}
 function viewsTier(v){return v>=150000?1:v>=50000?2:v>=15000?3:v>=4000?4:5;}
@@ -6427,51 +6437,122 @@ function close(a,b){ // lenient: same word, one contains the other, or a small t
   const lim=Math.max(1,allow(Math.max(a.length,b.length)));
   return lev(a,b,lim)<=lim||sound(a)===sound(b);
 }
+const GENERIC=new Set(["dish","type","term","word","style","part","event","thing","kind","technique","of","the","a","in","and"]);
+function fits(spec,text){
+  text=" "+text.toLowerCase()+" ";
+  return spec.any.some(w=>text.includes(w))&&(spec.all||[]).every(w=>text.includes(w));
+}
+function catNouns(spec){
+  const set=new Set();
+  (spec.h||"").split(/\s+/).forEach(w=>{if(w&&!GENERIC.has(w)) set.add(w);});
+  (spec.any||[]).forEach(w=>{w=w.trim(); if(w&&!w.includes(" ")&&!GENERIC.has(w)) set.add(w);});
+  return [...set];
+}
+async function getJSON(url,ms){const r=await fetch(url,{signal:withTimeout(ms||5500)}); if(!r.ok) throw new Error(r.status); return r.json();}
+const enc=encodeURIComponent;
+/* Each source returns {ok, name, def, views} or {ok:false}. Network failures throw. */
+const SOURCES={
+  async wikipedia(p,raw,spec){
+    const url="https://en.wikipedia.org/w/api.php?action=query&format=json&origin=*&redirects=1&generator=search&gsrlimit=5&gsrsearch="+enc(raw+" "+(spec.h||""))+
+      "&prop=description|extracts|categories|pageprops|pageviews&exintro=1&explaintext=1&exsentences=3&exlimit=5&cllimit=150&clshow=!hidden&ppprop=disambiguation&pvipdays=30";
+    const data=await getJSON(url,6500), k=key(raw,p.s);
+    const pages=Object.values((data.query&&data.query.pages)||{}).sort((a,b)=>a.index-b.index);
+    for(const pg of pages){
+      if(pg.pageprops&&("disambiguation" in pg.pageprops)) continue;
+      const title=pg.title.replace(/\s*\(.*?\)\s*/g," ").trim();
+      if(!close(key(title,p.s),k)) continue;
+      const text=(pg.description||"")+" "+(pg.extract||"")+" "+(pg.categories||[]).map(c=>c.title).join(" ");
+      if(fits(spec,text)) return {ok:true,name:title,def:pg.description||"",views:Object.values(pg.pageviews||{}).reduce((s,x)=>s+(x||0),0)};
+    }
+    return {ok:false};
+  },
+  async wikidata(p,raw,spec){
+    const data=await getJSON("https://www.wikidata.org/w/api.php?action=wbsearchentities&format=json&origin=*&language=en&uselang=en&type=item&limit=7&search="+enc(raw));
+    const k=key(raw,p.s);
+    for(const it of data.search||[]){
+      const label=(it.label||"").trim(); if(!close(key(label,p.s),k)) continue;
+      if(fits(spec,it.description||"")) return {ok:true,name:label,def:it.description||""};
+    }
+    return {ok:false};
+  },
+  async wiktionary(p,raw,spec){
+    const w=raw.trim().toLowerCase().replace(/\s+/g,"_");
+    let data; try{data=await getJSON("https://en.wiktionary.org/api/rest_v1/page/definition/"+enc(w));}catch(e){if(String(e.message)==="404") return {ok:false}; throw e;}
+    const defs=(data.en||[]).flatMap(x=>(x.definitions||[]).map(d=>String(d.definition||"").replace(/<[^>]+>/g,"")));
+    const hit=defs.find(d=>fits(spec,d));
+    return hit?{ok:true,name:raw.trim(),def:hit.slice(0,140)}:{ok:false};
+  },
+  async wordnet(p,raw,spec){ // Datamuse serves WordNet "kind of" links
+    const nouns=catNouns(spec); if(!nouns.length) return {ok:false};
+    const up=await getJSON("https://api.datamuse.com/words?rel_spc="+enc(raw.toLowerCase())+"&max=40");
+    const words=up.map(x=>x.word.toLowerCase());
+    const hit=words.some(w=>nouns.some(n=>w===n||w.endsWith(" "+n)))&&(spec.all||[]).every(a=>words.join(" ").includes(a.trim())||nouns.includes(a.trim()));
+    return hit?{ok:true,name:raw.trim(),def:""}:{ok:false};
+  },
+  async conceptnet(p,raw,spec){
+    const nouns=catNouns(spec); if(!nouns.length) return {ok:false};
+    const c="/c/en/"+raw.trim().toLowerCase().replace(/\s+/g,"_");
+    const data=await getJSON("https://api.conceptnet.io/query?start="+enc(c)+"&rel=/r/IsA&limit=60",5000);
+    const ends=(data.edges||[]).map(e=>String((e.end&&e.end.label)||"").toLowerCase());
+    const hit=ends.some(e=>nouns.some(n=>e===n||e.endsWith(" "+n)||e.startsWith(n+" ")));
+    return hit?{ok:true,name:raw.trim(),def:""}:{ok:false};
+  },
+  async etymology(p,raw,spec){
+    const page=raw.trim().toLowerCase();
+    const data=await getJSON("https://en.wiktionary.org/w/api.php?action=parse&format=json&origin=*&prop=wikitext&redirects=1&page="+enc(page));
+    const txt=(data.parse&&data.parse.wikitext&&data.parse.wikitext["*"])||"";
+    const m=("\n"+txt).split(/\n==English==\n/)[1]; if(!m) return {ok:false};
+    const en=m.split(/\n==[^=]/)[0];
+    const re=new RegExp("\\{\\{(bor\\+?|der\\+?|lbor|inh|calque|ubor|slbor)\\|en\\|("+spec.ety.join("|")+")\\|","i");
+    const words=spec.lang.split(/, | or /);
+    return (re.test(en)||words.some(w=>new RegExp("from "+w,"i").test(en)))?{ok:true,name:raw.trim(),def:"Its English entry traces it to "+spec.lang+"."}:{ok:false};
+  }
+};
 /* Returns {entry} (an answer object with tier, name, def, web:true), {reject:"reason"}, or {offline:true}. */
 async function webCheck(p, raw){
   const spec=WEB[p.q]; if(!spec) return {reject:""};
   const ck=p.id+"|"+key(raw,p.s); if(WEB_CACHE[ck]) return WEB_CACHE[ck];
+  if(spec.suffix && !key(raw,[]).endsWith(spec.suffix)) return {reject:"That doesn't end in -"+spec.suffix+"."};
+  if(spec.h && key(raw,[])===key(spec.h,[])) return {reject:"That's the category itself."};
+  let names;
+  if(spec.syn) names=["synonyms"]; else if(spec.ety) names=["etymology"]; else if(spec.wikt) names=["wiktionary","wordnet"];
+  else names=["wikipedia","wikidata","wiktionary","wordnet","conceptnet"];
   let out;
-  try{
-    if(spec.syn){
-      const r=await fetch("https://api.datamuse.com/words?ml="+encodeURIComponent(spec.syn)+"&max=1000&md=f",{signal:withTimeout(6000)});
-      const list=await r.json(), k=key(raw,[]);
-      let best=null,bd=99;
-      for(const w of list){const wk=key(w.word,[]); if(wk.length<3) continue; const d=wk===k?0:lev(wk,k,3); const lim=allow(wk.length)||(wk.length>=3?1:0); if(d<=lim&&d<bd){best=w;bd=d;}}
-      if(!best){out={reject:"The dictionary we check doesn't list "+raw+" as meaning \""+spec.syn+".\""};}
-      else{
+  if(spec.syn){
+    try{
+      const [ml,sy]=await Promise.all([getJSON("https://api.datamuse.com/words?ml="+enc(spec.syn)+"&max=1000&md=f"),getJSON("https://api.datamuse.com/words?rel_syn="+enc(spec.syn)+"&max=300&md=f")]);
+      const k=key(raw,[]); let best=null,bd=99;
+      for(const w of [...sy,...ml]){const wk=key(w.word,[]); if(wk.length<3) continue; const d=wk===k?0:lev(wk,k,3); const lim=allow(wk.length)||1; if(d<=lim&&d<bd){best=w;bd=d;}}
+      if(!best){
+        const wk=await SOURCES.wiktionary(p,raw,{any:[spec.syn]}).catch(()=>({ok:false}));
+        out=wk.ok?{entry:{tier:4,name:raw.trim(),def:wk.def,web:true,src:"Wiktionary"}}:{reject:"The dictionaries we check don't list "+raw+" as meaning \""+spec.syn+".\""};
+      } else {
         const f=parseFloat(((best.tags||[]).find(t=>t.startsWith("f:"))||"f:0").slice(2));
-        out={entry:{tier:freqTier(f),name:best.word,def:"",web:true,src:"Datamuse dictionary: about "+(f>=1?f.toFixed(0):f.toFixed(2))+" uses per million words"}};
+        out={entry:{tier:freqTier(f),name:best.word,def:"",web:true,src:"Datamuse dictionary, about "+(f>=1?f.toFixed(0):f.toFixed(2))+" uses per million words"}};
       }
+    }catch(e){out={offline:true};}
+  } else {
+    const LABEL={wikipedia:"Wikipedia",wikidata:"Wikidata",wiktionary:"Wiktionary",wordnet:"WordNet",conceptnet:"ConceptNet",etymology:"Wiktionary"};
+    const results=await Promise.allSettled(names.map(n=>SOURCES[n](p,raw,spec)));
+    const okNames=[], hits=[]; let failed=0;
+    results.forEach((r,i)=>{if(r.status==="rejected") failed++; else if(r.value.ok){okNames.push(LABEL[names[i]]); hits.push([names[i],r.value]);}});
+    if(!hits.length){
+      const srcs=[...new Set(names.map(n=>LABEL[n]))];
+      const list=srcs.length>1?srcs.slice(0,-1).join(", ")+", and "+srcs[srcs.length-1]:srcs[0];
+      out = failed===names.length ? {offline:true} : {reject: spec.ety ? "Wiktionary doesn't trace it to "+spec.lang+"." : "We checked "+list+", and "+(srcs.length>1?"none of them":"it doesn't")+" back it up."};
     } else {
-      if(spec.suffix && !key(raw,[]).endsWith(spec.suffix)) return {reject:"That doesn't end in -"+spec.suffix+"."};
-      const q=raw+" "+spec.h;
-      const url="https://en.wikipedia.org/w/api.php?action=query&format=json&origin=*&redirects=1"+
-        "&generator=search&gsrlimit=4&gsrsearch="+encodeURIComponent(q)+
-        "&prop=description|extracts|categories|pageprops|pageviews&exintro=1&explaintext=1&exsentences=3&exlimit=4"+
-        "&cllimit=100&clshow=!hidden&ppprop=disambiguation&pvipdays=30";
-      const r=await fetch(url,{signal:withTimeout(7000)});
-      const data=await r.json();
-      const pages=Object.values((data.query&&data.query.pages)||{}).sort((a,b)=>a.index-b.index);
-      const k=key(raw,p.s), noun=key(spec.h,[]);
-      let found=null;
-      for(const pg of pages){
-        if(pg.pageprops&&("disambiguation" in pg.pageprops)) continue;
-        const title=pg.title.replace(/\s*\(.*?\)\s*/g," ").trim(), tk=key(title,p.s);
-        if(!close(tk,k)) continue;
-        if(tk===noun||k===noun) continue;
-        const text=((pg.description||"")+" "+(pg.extract||"")+" "+(pg.categories||[]).map(c=>c.title).join(" ")).toLowerCase();
-        const anyOk=spec.any.some(w=>text.includes(w)), allOk=(spec.all||[]).every(w=>text.includes(w));
-        if(anyOk&&allOk){found={pg,title};break;}
+      const wiki=hits.find(h=>h[0]==="wikipedia"), wd=hits.find(h=>h[0]==="wikidata");
+      const main=(wiki||wd||hits[0])[1];
+      let tier, how;
+      if(wiki){tier=viewsTier(wiki[1].views||0); how="about "+(wiki[1].views||0).toLocaleString("en-US")+" Wikipedia views in the last 30 days";}
+      else {
+        let f=0; try{const fr=await getJSON("https://api.datamuse.com/words?sp="+enc(raw.toLowerCase())+"&md=f&max=1",3500); if(fr[0]&&key(fr[0].word,[])===key(raw,[])) f=parseFloat(((fr[0].tags||[]).find(t=>t.startsWith("f:"))||"f:0").slice(2));}catch(e){}
+        tier=f?freqTier(f):4; how=f?"about "+(f>=1?f.toFixed(0):f.toFixed(2))+" uses per million words":"rarely used";
       }
-      if(!found){out={reject:"We searched Wikipedia but couldn't match "+raw+" to this category."};}
-      else{
-        const v=Object.values(found.pg.pageviews||{}).reduce((s,x)=>s+(x||0),0);
-        const desc=found.pg.description?found.pg.description.replace(/^./,c=>c.toUpperCase())+".":"";
-        out={entry:{tier:viewsTier(v),name:found.title,def:desc,web:true,src:"Wikipedia: about "+v.toLocaleString("en-US")+" views in the last 30 days"}};
-      }
+      const def=(main.def||"").replace(/^./,c=>c.toUpperCase());
+      out={entry:{tier,name:main.name,def:def&&!/[.!?]$/.test(def)?def+".":def,web:true,src:"confirmed by "+[...new Set(okNames)].join(" and ")+"; "+how}};
     }
-  }catch(e){out={offline:true};}
+  }
   if(!out.offline) WEB_CACHE[ck]=out;
   return out;
 }
@@ -6485,40 +6566,64 @@ function askConfirm(entry){
   $("confirmBox").classList.remove("hidden");
   $("btnYes").focus();
 }
+/* Decide what an answer is: exact, confirm (likely typo), nope (a listed near miss), reject, or offline */
+async function judge(p, raw){
+  const hit=lookup(p,raw);
+  if(hit&&hit.exact) return hit.entry.tier===0?{kind:"nope",entry:hit.entry}:{kind:"exact",entry:hit.entry};
+  if(WEB[p.q]){
+    const res=await webCheck(p,raw);
+    if(res.entry){
+      if(key(res.entry.name,p.s)===key(raw,p.s)) return {kind:"exact",entry:res.entry};
+      if(hit&&hit.entry.tier>0) return {kind:"confirm",entry:hit.entry};
+      return {kind:"confirm",entry:res.entry};
+    }
+    if(hit) return hit.entry.tier===0?{kind:"nope",entry:hit.entry}:{kind:"confirm",entry:hit.entry};
+    if(res.offline) return {kind:"offline"};
+    return {kind:"reject",why:res.reject};
+  }
+  if(hit) return hit.entry.tier===0?{kind:"nope",entry:hit.entry}:{kind:"confirm",entry:hit.entry};
+  return {kind:"reject",why:"That isn't on our list for this prompt."};
+}
 let checking=false;
+function checkingUI(on,raw){checking=on; $("ansInput").disabled=on; fb(on?"Checking Wikipedia, Wikidata, Wiktionary, WordNet, and ConceptNet for "+raw+"...":"","");}
+function secondTry(msg,entry,raw){
+  if(!G.tries){
+    G.tries=1;
+    fb('"'+raw+'" doesn\'t seem to fit this category. '+msg+" You get one more try.","bad");
+    $("ansInput").value=""; $("ansInput").focus();
+    return true;
+  }
+  return false;
+}
 async function submit(){
   if(locked||checking) return;
   if(pending){score(pending, $("ansInput").value.trim()); return;}
   const raw=$("ansInput").value.trim(); if(!raw) return;
-  const p=PROMPTS[G.set[G.qi]], hit=lookup(p,raw);
-  if(hit && hit.exact){score(hit.entry, raw); return;}
-  if(hit && hit.entry.tier===0){askConfirm(hit.entry); return;}
-  if(WEB[p.q]){
-    checking=true; pauseTimer(); $("ansInput").disabled=true; fb("Checking the web for "+raw+"...","");
-    const res=await webCheck(p,raw);
-    checking=false; if(locked) return;
-    $("ansInput").disabled=false; fb("","");
-    if(res.entry){
-      // a listed typo match beats a web match, since the list's rarity is hand-checked
-      const pick = hit ? hit.entry : res.entry;
-      if(key(pick.name,p.s)===key(raw,p.s)){score(pick,raw);return;}
-      askConfirm(pick); resumeTimer(); return;
-    }
-    if(hit){askConfirm(hit.entry); resumeTimer(); return;}
-    if(res.offline){fb("Couldn't reach the web to check that. Try another answer.","bad"); resumeTimer(); $("ansInput").select(); return;}
-    score(null, raw, false, res.reject);
-    return;
-  }
-  if(hit){askConfirm(hit.entry); return;}
-  score(null, raw);
+  const p=PROMPTS[G.set[G.qi]];
+  const quick=lookup(p,raw);
+  const needsWeb=!(quick&&quick.exact)&&WEB[p.q];
+  if(needsWeb){pauseTimer(); checkingUI(true,raw);}
+  const r=await judge(p,raw);
+  if(needsWeb){checkingUI(false); if(locked) return; resumeTimer();}
+  if(r.kind==="exact"){score(r.entry,raw);return;}
+  if(r.kind==="confirm"){askConfirm(r.entry);return;}
+  if(r.kind==="offline"){fb("Couldn't reach the web to check "+raw+". Try it again or try another answer.","bad"); $("ansInput").select(); return;}
+  const why=r.kind==="nope"?r.entry.name+": "+r.entry.def:r.why;
+  if(secondTry(why,r.entry,raw)) return;
+  score(r.kind==="nope"?r.entry:null, raw, false, r.kind==="nope"?"":why);
 }
-function timeUp(){
+async function timeUp(){
   if(locked||checking) return;
   const raw=$("ansInput").value.trim();
   if(pending){score(pending,raw);return;}
   if(!raw){score(null,"",true);return;}
-  const hit=lookup(PROMPTS[G.set[G.qi]],raw);
-  score(hit?hit.entry:null,raw);   // out of time, so a likely typo is accepted as is
+  const p=PROMPTS[G.set[G.qi]];
+  checkingUI(true,raw);
+  const r=await judge(p,raw);   // out of time, so a likely typo is accepted as is
+  checkingUI(false);
+  if(locked) return;
+  if(r.kind==="exact"||r.kind==="confirm"){score(r.entry,raw);return;}
+  score(r.kind==="nope"?r.entry:null, raw, false, r.kind==="reject"?r.why:"");
 }
 function score(e, raw, timedOut, why){
   locked=true; cancelAnimationFrame(raf);
@@ -6551,7 +6656,8 @@ function rareFinds(p, exclude, seed){
   return [...top,...deep,...more].slice(0,3);
 }
 function reveal(){
-  const r=G.res[G.qi], p=PROMPTS[r.p], t=TIERS[r.tier];
+  const r=G.res[G.qi]; if(!r) return;
+  const p=PROMPTS[r.p], t=TIERS[r.tier];
   $("rNum").textContent=(G.qi+1)+" / "+NQ;
   $("rText").textContent=p.q;
   $("sBadge").src=BADGE[r.tier];
