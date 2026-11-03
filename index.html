@@ -6421,6 +6421,23 @@ let G=null, raf=0, pending=null, locked=false;
 function dayDate(d){return new Date(2026,10,2+d);}
 function dayLabel(d){return dayDate(d).toLocaleDateString(undefined,{weekday:"short",month:"short",day:"numeric"});}
 
+/* ---------- No do-overs ----------
+   Each game in progress is saved after every question. Refreshing or closing the
+   page resumes the same game, and a question that was open when the page went
+   away counts as no answer. Free games are charged when they start. */
+const RUNKEY=(mode,day)=>mode==="free"?"quarrillion3:freeRun":"quarrillion3:run:"+day;
+function saveRun(qi,open){save(RUNKEY(G.mode,G.day),{mode:G.mode,day:G.day,set:G.set,res:G.res,total:G.total,qi,open});}
+function clearRun(g){try{localStorage.removeItem(RUNKEY(g.mode,g.day));}catch(e){}}
+function getRun(mode,day){const r=load(RUNKEY(mode,day)); return r&&Array.isArray(r.set)&&Array.isArray(r.res)?r:null;}
+function resumeRun(r){
+  G={mode:r.mode, day:r.day, set:r.set, qi:r.qi, total:r.total, res:r.res};
+  if(r.open && G.res.length<=G.qi){
+    G.res.push({p:G.set[G.qi], raw:"", name:"", tier:0, pts:0, timedOut:true, nope:"", web:null, why:"Left the page"});
+    G.qi++; saveRun(G.qi,false);
+  }
+  setDepth(G.total*KM_PER_PT,true); updateHud(G.total);
+  if(G.qi<NQ) ask(); else finish();
+}
 function newGame(mode, day){
   const set = mode==="free" ? shuffled(PROMPTS.length,(Math.random()*1e9)|0).slice(0,NQ) : dailyCats(day);
   G={mode, day, set, qi:0, total:0, res:[]};
@@ -6437,6 +6454,7 @@ function ask(){
   $("ansInput").value=""; $("ansInput").disabled=false;
   fb("","");
   show("playScreen"); $("ansInput").focus(); updateHud();
+  saveRun(G.qi,true);   // a refresh from here counts this question as no answer
   G.deadline=performance.now()+QTIME*1000;
   cancelAnimationFrame(raf);
   const step=()=>{
@@ -6820,6 +6838,7 @@ function score(e, raw, timedOut, why){
   const pts = TIERS[tier].pts;
   G.total+=pts;
   G.res.push({p:G.set[G.qi], raw, name: e&&e.tier>0 ? e.name : raw, tier, pts, timedOut:!!timedOut, nope: e&&e.tier===0 ? e.name+": "+e.def : "", web: e&&e.web ? {def:e.def,src:e.src} : null, why: why||""});
+  saveRun(G.qi+1,false);
   document.body.classList.remove("urgent");
   const km=G.total*KM_PER_PT;
   $("kmOut").textContent=fmtKm(km); $("layerOut").textContent=layerAt(km); updateHud();
@@ -6899,6 +6918,7 @@ function reveal(){
 function next(){G.qi++; if(G.qi<NQ) ask(); else finish();}
 
 function finish(){
+  clearRun(G); refreshFree();
   if(G.mode!=="free"){
     save(KEY(G.day),{set:G.set,res:G.res,total:G.total});
     if(G.mode==="daily"){
@@ -7007,7 +7027,7 @@ function openArchive(){
   $("archList").querySelectorAll("button").forEach(b=>b.onclick=()=>{
     const d=+b.dataset.day, rec=load(KEY(d));
     if(rec) renderEnd({mode:d===DAY?"daily":"archive",day:d,set:rec.set,res:rec.res,total:rec.total});
-    else newGame(d===DAY?"daily":"archive", d);
+    else {const mode=d===DAY?"daily":"archive", run=getRun(mode,d); if(run) resumeRun(run); else newGame(mode, d);}
   });
   show("archiveScreen");
 }
@@ -7021,16 +7041,20 @@ const FREE_UNLIMITED = 2;
 const UNLOCK_HASH = 266412929; // djb2 hash of the code DEEPCORE5
 function djb2(t){let h=5381; for(const c of t) h=((h<<5)+h+c.charCodeAt(0))>>>0; return h;}
 function isUnlocked(){return !!load("quarrillion3:unlocked");}
-function freeUsed(){return load("quarrillion3:freeUsed")||0;}
+function cookieNum(n){const m=document.cookie.match(new RegExp("(?:^|; )"+n+"=(\\d+)")); return m?+m[1]:0;}
+function freeUsed(){return Math.max(load("quarrillion3:freeUsed")||0, cookieNum("mm_free"));}
+function setFreeUsed(n){save("quarrillion3:freeUsed",n); try{document.cookie="mm_free="+n+"; max-age=63072000; path=/; SameSite=Lax";}catch(e){}}
 function refreshFree(){
   const el=$("freeLeft"); if(!el) return;
+  $("btnFree").textContent=getRun("free")?"Continue extra game":"Play again";
   if(isUnlocked()) el.textContent="Play again as often as you like";
-  else {const left=Math.max(0,FREE_UNLIMITED-freeUsed()); el.textContent=left?left+" free extra game"+(left===1?"":"s")+" left":"Extra games: $5";}
+  else {const left=Math.max(0,FREE_UNLIMITED-freeUsed()); el.textContent=left?left+" of "+FREE_UNLIMITED+" free games left, then $5 for unlimited":"Free games used. Unlimited play is $5.";}
 }
 function playUnlimited(){
+  const run=getRun("free"); if(run){resumeRun(run);return;}   // refreshing resumes the same game, it doesn't hand out a new one
   if(isUnlocked()){newGame("free");return;}
   const used=freeUsed();
-  if(used<FREE_UNLIMITED){save("quarrillion3:freeUsed",used+1); refreshFree(); newGame("free"); return;}
+  if(used<FREE_UNLIMITED){setFreeUsed(used+1); refreshFree(); newGame("free"); return;}
   openPay();
 }
 function openPay(){
@@ -7049,6 +7073,7 @@ function startDaily(){
   SFX.wake(); SFX.start();
   const rec=load(KEY(DAY));
   if(rec){renderEnd({mode:"daily",day:DAY,set:rec.set,res:rec.res,total:rec.total});return;}
+  const run=getRun("daily",DAY); if(run){resumeRun(run);return;}
   newGame("daily",DAY);
 }
 
@@ -7098,6 +7123,7 @@ $("btnShare").onclick=async()=>{
 (function(){
   const st=load("quarrillion3:streak");
   if(load(KEY(DAY))) $("btnDaily").firstChild.textContent="See today's dig ";
+  else if(getRun("daily",DAY)) $("btnDaily").firstChild.textContent="Continue today's dig ";
   if(st&&st.n&&(st.last===DAY||st.last===DAY-1)) $("streakLine").textContent="Streak: "+st.n+" day"+(st.n===1?"":"s")+".";
   updateHud(0);
 })();
