@@ -7012,9 +7012,10 @@ function openArchive(){
   show("archiveScreen");
 }
 /* ---------- Unlimited: 2 free digs, then a $5 unlock ----------
-   PAY_URL: paste your payment link here (for example a Stripe Payment Link).
-   Set the payment page to redirect buyers to .../quarrillion/#unlock-DEEPCORE5
-   so their game unlocks right away. Change UNLOCK_HASH if you change the code. */
+   PAY_URL: your Stripe Payment Link (https://buy.stripe.com/...).
+   In the Payment Link's "After payment" settings, choose "Don't show confirmation
+   page" and redirect to https://playmagmillion.github.io/magmillion/#unlock-DEEPCORE5
+   so the game unlocks right away. Change UNLOCK_HASH if you change the code. */
 const PAY_URL = "";
 const FREE_UNLIMITED = 2;
 const UNLOCK_HASH = 266412929; // djb2 hash of the code DEEPCORE5
@@ -7080,8 +7081,15 @@ $("codeForm").addEventListener("submit",e=>{e.preventDefault();
 });
 (function(){
   const m=location.hash.match(/^#unlock-([A-Za-z0-9]+)$/);
-  if(m){ if(tryUnlock(m[1])) $("streakLine").textContent="Thanks for your purchase. You can play again as often as you like."; history.replaceState(null,"",location.pathname+location.search); }
+  if(m){ if(tryUnlock(m[1])) $("streakLine").textContent="Thanks for your purchase. You can play again as often as you like. To unlock another device, enter the code "+m[1].toUpperCase()+" on the payment screen."; history.replaceState(null,"",location.pathname+location.search); }
   refreshFree();
+  // Checkout opens in a new tab. When that tab unlocks, update this one too.
+  addEventListener("storage",e=>{
+    if(e.key&&e.key.indexOf("unlocked")>-1&&isUnlocked()){
+      refreshFree();
+      if(!$("payScreen").classList.contains("hidden")){$("codeMsg").textContent="Payment received. You can play again as often as you like."; $("codeMsg").className="feedback ok"; setTimeout(()=>newGame("free"),900);}
+    }
+  });
 })();
 $("btnShare").onclick=async()=>{
   try{await navigator.clipboard.writeText(G.share); $("toast").textContent="Copied";}catch(e){$("toast").textContent="Copy blocked here. Select the text below.";}
