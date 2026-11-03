@@ -97,6 +97,8 @@ button[disabled]{opacity:.45;cursor:default}
 .timer{height:10px;background:#0d0c18;border:2px solid #000;margin-bottom:12px}
 .timer div{height:100%;width:100%;background:var(--gold)}
 .timer.late div{background:var(--magma)}
+.timer.paused div{background:#7d93b8}
+.timer.paused{border-color:#7d93b8}
 form.ans{display:flex;gap:8px}
 form.ans input{flex:1;min-width:0;font:inherit;font-size:18px;padding:11px 12px;border:2px solid #000;background:#14122a;color:var(--text);box-shadow:inset 3px 3px 0 rgba(0,0,0,.4)}
 .feedback{min-height:26px;margin-top:10px;font-size:15px}
@@ -361,7 +363,7 @@ body.urgent .heat{animation:kheat 1s step-end infinite}
       <button class="go" type="submit">Drill</button>
     </form>
     <div class="confirm hidden" id="confirmBox" role="alertdialog" aria-labelledby="confirmQ">
-      <div class="q" id="confirmQ">Did you mean <b id="confirmWord"></b>?</div>
+      <div class="q" id="confirmQ">Did you mean <b id="confirmWord"></b>? <span class="dim small">(clock paused)</span></div>
       <button class="yes" id="btnYes" type="button">Yes</button>
       <button class="ghost" id="btnNo" type="button">No, let me fix it</button>
     </div>
@@ -6326,7 +6328,7 @@ function newGame(mode, day){
 }
 function ask(){
   const p=PROMPTS[G.set[G.qi]];
-  pending=null; locked=false; G.tries=0; checking=false;
+  pending=null; locked=false; G.tries=0; checking=false; timerPaused=false; $("timer").classList.remove("paused");
   $("confirmBox").classList.add("hidden");
   $("qNum").textContent=(G.qi+1)+" / "+NQ;
   $("qMode").textContent=G.mode==="free"?"Extra game":"Dig #"+(G.day+1);
@@ -6638,9 +6640,11 @@ async function webCheckOne(p, raw){
 }
 
 let paused=0;
-function pauseTimer(){cancelAnimationFrame(raf); document.body.classList.remove("urgent"); paused=Math.max(0,G.deadline-performance.now());}
-function resumeTimer(){G.deadline=performance.now()+paused; const step=()=>{const left=Math.max(0,G.deadline-performance.now()),frac=left/(QTIME*1000); $("timerBar").style.width=(frac*100)+"%"; $("timer").classList.toggle("late",frac<.3); $("qTime").textContent=Math.ceil(left/1000)+"s"; document.body.classList.toggle("urgent",left>0&&left<5000); if(left<=0){timeUp();return;} raf=requestAnimationFrame(step);}; raf=requestAnimationFrame(step);}
+let timerPaused=false;
+function pauseTimer(){if(timerPaused) return; timerPaused=true; cancelAnimationFrame(raf); document.body.classList.remove("urgent"); paused=Math.max(0,G.deadline-performance.now()); $("timer").classList.add("paused");}
+function resumeTimer(){if(!timerPaused||locked) return; timerPaused=false; $("timer").classList.remove("paused"); cancelAnimationFrame(raf); G.deadline=performance.now()+paused; const step=()=>{const left=Math.max(0,G.deadline-performance.now()),frac=left/(QTIME*1000); $("timerBar").style.width=(frac*100)+"%"; $("timer").classList.toggle("late",frac<.3); $("qTime").textContent=Math.ceil(left/1000)+"s"; document.body.classList.toggle("urgent",left>0&&left<5000); if(left<=0){timeUp();return;} raf=requestAnimationFrame(step);}; raf=requestAnimationFrame(step);}
 function askConfirm(entry){
+  pauseTimer();   // the clock stops while you decide
   pending=entry;
   $("confirmWord").textContent=entry.name;
   $("confirmBox").classList.remove("hidden");
@@ -6665,7 +6669,7 @@ async function judge(p, raw){
   return {kind:"reject",why:"That isn't on our list for this prompt."};
 }
 let checking=false;
-function checkingUI(on,raw){checking=on; $("ansInput").disabled=on; fb(on?"Checking Wikipedia, Wikidata, Wiktionary, WordNet, and ConceptNet for "+raw+"...":"","");}
+function checkingUI(on,raw){checking=on; $("ansInput").disabled=on; fb(on?"Clock paused. Checking Wikipedia, Wikidata, Wiktionary, WordNet, and ConceptNet for "+raw+"...":"","");}
 function secondTry(msg,entry,raw){
   if(!G.tries){
     G.tries=1;
@@ -6684,7 +6688,7 @@ async function submit(){
   const needsWeb=!(quick&&quick.exact)&&WEB[p.q];
   if(needsWeb){pauseTimer(); checkingUI(true,raw);}
   const r=await judge(p,raw);
-  if(needsWeb){checkingUI(false); if(locked) return; resumeTimer();}
+  if(needsWeb){checkingUI(false); if(locked) return; if(r.kind!=="confirm") resumeTimer();}
   if(r.kind==="exact"){score(r.entry,raw);return;}
   if(r.kind==="confirm"){askConfirm(r.entry);return;}
   if(r.kind==="offline"){fb("Couldn't reach the web to check "+raw+". Try it again or try another answer.","bad"); $("ansInput").select(); return;}
@@ -6945,8 +6949,8 @@ $("digBtnSub").textContent="Dig #"+(DAY+1)+" · press Enter";
 $("ranks").innerHTML=TIERS.slice(1).map((t,i)=>`<div class="rank">${badge(i+1)}<span><b>${t.name}.</b> <span class="dim">${t.line}</span></span><span class="pts">+${t.pts}</span></div>`).join("");
 $("ansForm").addEventListener("submit",e=>{e.preventDefault(); submit();});
 $("btnYes").onclick=()=>{if(pending&&!locked) score(pending,$("ansInput").value.trim());};
-$("btnNo").onclick=()=>{pending=null; $("confirmBox").classList.add("hidden"); fb("Okay. Fix the spelling, then press Enter.",""); $("ansInput").focus(); $("ansInput").select();};
-$("ansInput").addEventListener("input",()=>{if(pending){pending=null;$("confirmBox").classList.add("hidden");}});
+$("btnNo").onclick=()=>{pending=null; $("confirmBox").classList.add("hidden"); resumeTimer(); fb("Okay. Fix the spelling, then press Enter.",""); $("ansInput").focus(); $("ansInput").select();};
+$("ansInput").addEventListener("input",()=>{if(pending){pending=null;$("confirmBox").classList.add("hidden"); resumeTimer();}});
 addEventListener("keydown",e=>{
   if(e.key==="Escape"&&pending) $("btnNo").click();
   if(e.key==="Enter"&&!$("startScreen").classList.contains("hidden")&&document.activeElement.tagName!=="BUTTON"){e.preventDefault(); startDaily();}
