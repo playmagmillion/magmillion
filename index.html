@@ -350,6 +350,7 @@ body.urgent .heat{animation:kheat 1s step-end infinite}
       <div class="spts" id="sPts">+0</div>
     </div>
     <p class="small dim" id="sNote"></p>
+    <p class="small"><a id="reportLink" class="hidden" href="#" target="_blank" rel="noopener" style="color:var(--gold)">Think this should count? Report it and it gets added.</a></p>
     <p class="small" id="rCommon"></p>
     <h3>Rarest finds in this seam</h3>
     <ul class="list" id="finds"></ul>
@@ -3076,7 +3077,7 @@ const MORE = [
 5 Kouign-amann
 5 Sachertorte
 5 Clafoutis
-5 Mille-feuille
+5 Mille-feuille/napoleon/napoleon pastry/vanilla slice/custard slice | Layers of puff pastry and cream, also called a napoleon.
 5 Croquembouche
 5 Semifreddo
 5 Zabaglione
@@ -6453,16 +6454,22 @@ const enc=encodeURIComponent;
 /* Each source returns {ok, name, def, views} or {ok:false}. Network failures throw. */
 const SOURCES={
   async wikipedia(p,raw,spec){
-    const url="https://en.wikipedia.org/w/api.php?action=query&format=json&origin=*&redirects=1&generator=search&gsrlimit=5&gsrsearch="+enc(raw+" "+(spec.h||""))+
-      "&prop=description|extracts|categories|pageprops|pageviews&exintro=1&explaintext=1&exsentences=3&exlimit=5&cllimit=150&clshow=!hidden&ppprop=disambiguation&pvipdays=30";
-    const data=await getJSON(url,6500), k=key(raw,p.s);
-    const pages=Object.values((data.query&&data.query.pages)||{}).sort((a,b)=>a.index-b.index);
+    const k=key(raw,p.s), word=raw.trim().toLowerCase();
+    const q=s2=>"https://en.wikipedia.org/w/api.php?action=query&format=json&origin=*&redirects=1&generator=search&gsrlimit=8&gsrsearch="+enc(s2)+
+      "&prop=description|extracts|categories|pageprops|pageviews|redirects&rdlimit=60&exintro=1&explaintext=1&exsentences=4&exlimit=8&cllimit=200&clshow=!hidden&ppprop=disambiguation&pvipdays=30";
+    const [d1,d2]=await Promise.all([getJSON(q(raw+" "+(spec.h||"")),6500),getJSON(q(raw),6500).catch(()=>({}))]);
+    const seen=new Set(), pages=[];
+    for(const d of [d1,d2]) for(const pg of Object.values((d.query&&d.query.pages)||{}).sort((a,b)=>a.index-b.index)) if(!seen.has(pg.pageid)){seen.add(pg.pageid); pages.push(pg);}
+    const wordRe=new RegExp("(^|[^a-z])"+word.replace(/[.*+?^${}()|[\]\\]/g,"\\$&")+"([^a-z]|$)","i");
     for(const pg of pages){
       if(pg.pageprops&&("disambiguation" in pg.pageprops)) continue;
       const title=pg.title.replace(/\s*\(.*?\)\s*/g," ").trim();
-      if(!close(key(title,p.s),k)) continue;
+      const names=[title,...(pg.redirects||[]).map(r=>r.title.replace(/\s*\(.*?\)\s*/g," ").trim())];
+      const byName=names.some(n=>close(key(n,p.s),k));
+      const byText=word.length>=4&&wordRe.test((pg.extract||"").slice(0,500));   // "also known as the Napoleon"
+      if(!byName&&!byText) continue;
       const text=(pg.description||"")+" "+(pg.extract||"")+" "+(pg.categories||[]).map(c=>c.title).join(" ");
-      if(fits(spec,text)) return {ok:true,name:title,def:pg.description||"",views:Object.values(pg.pageviews||{}).reduce((s,x)=>s+(x||0),0)};
+      if(fits(spec,text)) return {ok:true,name:byName&&close(key(title,p.s),k)?title:raw.trim(),alias:byName&&close(key(title,p.s),k)?"":title,def:pg.description||"",views:Object.values(pg.pageviews||{}).reduce((s,x)=>s+(x||0),0)};
     }
     return {ok:false};
   },
@@ -6470,7 +6477,8 @@ const SOURCES={
     const data=await getJSON("https://www.wikidata.org/w/api.php?action=wbsearchentities&format=json&origin=*&language=en&uselang=en&type=item&limit=7&search="+enc(raw));
     const k=key(raw,p.s);
     for(const it of data.search||[]){
-      const label=(it.label||"").trim(); if(!close(key(label,p.s),k)) continue;
+      const label=(it.label||"").trim(), alias=(it.match&&it.match.text)||"";
+      if(!close(key(label,p.s),k)&&!(alias&&close(key(alias,p.s),k))&&!(it.aliases||[]).some(a=>close(key(a,p.s),k))) continue;
       if(fits(spec,it.description||"")) return {ok:true,name:label,def:it.description||""};
     }
     return {ok:false};
@@ -6509,7 +6517,31 @@ const SOURCES={
   }
 };
 /* Returns {entry} (an answer object with tier, name, def, web:true), {reject:"reason"}, or {offline:true}. */
+/* Likely intended spellings for a typo, from Wikipedia's "did you mean" and Datamuse's spell matcher */
+async function spellings(raw,spec){
+  const k=key(raw,[]), out=new Set();
+  const tasks=[
+    getJSON("https://en.wikipedia.org/w/api.php?action=query&format=json&origin=*&list=search&srinfo=suggestion&srlimit=1&srsearch="+enc(raw+" "+(spec.h||"")),4500)
+      .then(d=>{const sg=d.query&&d.query.searchinfo&&d.query.searchinfo.suggestion; if(sg){const w=sg.replace(new RegExp("\\s*"+(spec.h||"").split(" ").join("\\s*"),"i"),"").trim(); if(w) out.add(w);}}).catch(()=>{}),
+    getJSON("https://en.wikipedia.org/w/api.php?action=query&format=json&origin=*&list=search&srinfo=suggestion&srlimit=1&srsearch="+enc(raw),4500)
+      .then(d=>{const sg=d.query&&d.query.searchinfo&&d.query.searchinfo.suggestion; if(sg) out.add(sg);}).catch(()=>{}),
+    getJSON("https://api.datamuse.com/words?sp="+enc(raw.toLowerCase())+"&max=4",4000).then(l=>l.forEach(w=>out.add(w.word))).catch(()=>{}),
+    getJSON("https://api.datamuse.com/words?sl="+enc(raw.toLowerCase())+"&max=3",4000).then(l=>l.forEach(w=>out.add(w.word))).catch(()=>{})
+  ];
+  await Promise.all(tasks);
+  return [...out].filter(w=>{const wk=key(w,[]); return wk&&wk!==k&&lev(wk,k,Math.max(3,Math.ceil(k.length*.45)))<=Math.max(3,Math.ceil(k.length*.45));}).slice(0,4);
+}
 async function webCheck(p, raw){
+  const first=await webCheckOne(p,raw);
+  if(first.entry||first.offline||!WEB[p.q]||WEB[p.q].suffix&&/end in/.test(first.reject||"")) return first;
+  const cands=await spellings(raw,WEB[p.q]);
+  if(!cands.length) return first;
+  const tries=await Promise.all(cands.map(c=>webCheckOne(p,c).catch(()=>({offline:true}))));
+  const i=tries.findIndex(t=>t.entry);
+  if(i>=0){const e=Object.assign({},tries[i].entry); if(key(e.name,p.s)===key(raw,p.s)) e.name=cands[i]; return {entry:e};}
+  return first;
+}
+async function webCheckOne(p, raw){
   const spec=WEB[p.q]; if(!spec) return {reject:""};
   const ck=p.id+"|"+key(raw,p.s); if(WEB_CACHE[ck]) return WEB_CACHE[ck];
   if(spec.suffix && !key(raw,[]).endsWith(spec.suffix)) return {reject:"That doesn't end in -"+spec.suffix+"."};
@@ -6549,7 +6581,8 @@ async function webCheck(p, raw){
         let f=0; try{const fr=await getJSON("https://api.datamuse.com/words?sp="+enc(raw.toLowerCase())+"&md=f&max=1",3500); if(fr[0]&&key(fr[0].word,[])===key(raw,[])) f=parseFloat(((fr[0].tags||[]).find(t=>t.startsWith("f:"))||"f:0").slice(2));}catch(e){}
         tier=f?freqTier(f):4; how=f?"about "+(f>=1?f.toFixed(0):f.toFixed(2))+" uses per million words":"rarely used";
       }
-      const def=(main.def||"").replace(/^./,c=>c.toUpperCase());
+      let def=(main.def||"").replace(/^./,c=>c.toUpperCase());
+      if(main.alias) def=(def?def.replace(/[.!?]$/,"")+". ":"")+"Also known as "+main.alias;
       out={entry:{tier,name:main.name,def:def&&!/[.!?]$/.test(def)?def+".":def,web:true,src:"confirmed by "+[...new Set(okNames)].join(" and ")+"; "+how}};
     }
   }
@@ -6672,6 +6705,8 @@ function reveal(){
   else if(r.web) note=(r.web.def?r.web.def+" ":"")+"Checked on the web ("+r.web.src+").";
   else {const e=p.answers.find(a=>a.name===r.name); if(e&&e.def) note=e.def;}
   $("sNote").textContent=note;
+  const rep=$("reportLink");
+  if(rep){ if(!r.tier&&r.raw){rep.classList.remove("hidden"); rep.href="https://github.com/playmagmillion/magmillion/issues/new?title="+encodeURIComponent('"'+r.raw+'" should count for '+p.q)+"&body="+encodeURIComponent("Prompt: "+p.q+"\nAnswer: "+r.raw+"\nWhy it fits: ");} else rep.classList.add("hidden"); }
   $("rCommon").innerHTML="Most people said "+p.crowd.slice(0,3).map(e=>"<b>"+esc(e.name)+"</b>").join(", ")+".";
   $("finds").innerHTML=rareFinds(p,r.name,G.day||0).map(e=>li(e.tier,e.name,"+"+TIERS[e.tier].pts,e.def)).join("");
   $("btnNext").textContent=G.qi<NQ-1?"Keep drilling":"See how deep you got";
