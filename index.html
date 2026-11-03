@@ -7035,8 +7035,8 @@ function playUnlimited(){
 }
 function openPay(){
   const a=$("payLink");
-  if(PAY_URL){a.href=PAY_URL; a.classList.remove("off"); $("payNote").textContent="Checkout opens in a new tab. Payments are handled by the payment provider.";}
-  else {a.href="#"; a.classList.add("off"); $("payNote").textContent="Payments aren't set up yet. Check back soon.";}
+  if(PAY_URL){a.href=PAY_URL; a.classList.remove("off"); a.textContent="Unlock for $5"; $("payNote").textContent="Checkout opens in a new tab. Payments are handled by the payment provider.";}
+  else {a.href="#"; a.classList.add("off"); a.textContent="Coming soon"; $("payNote").textContent="Paid unlimited play opens soon. Today's daily dig is free, and a new one drops every day.";}
   $("codeMsg").textContent="";
   show("payScreen");
 }
