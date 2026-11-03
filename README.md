@@ -17,6 +17,10 @@ Looking for more games like Krillion? See [games like Krillion](https://playmagm
 - Seven perfect answers (700 points) reach the center of the Earth, 6,371 km down, past real landmarks like the Kola Superdeep Borehole and the Moho.
 - One logged dig a day. Share your depth and keep your streak. Missed a day? Play it from the Archive. After the daily dig, Play again gives everyone 2 free extra games with random prompts. More after that costs $5.
 
+## Drilling
+
+After you answer, the panel slides away and the whole screen shows the drill boring down to your new depth. Rarer answers get bigger effects: dust for Topsoil, rock chips for Bedrock, gold sparkles and a flash for Ore seam, a magma eruption for Deep vein, and a full crystal burst with rings, a rainbow banner, and an erupting volcano for One in a Magmillion.
+
 ## Where you landed
 
 After all 7 prompts, the results screen shows a score distribution with your score marked and the share of players you beat. There's no server collecting real scores yet, so the chart comes from a simulation of 20,000 players on that day's prompts, and the game says so on screen.

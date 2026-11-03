@@ -253,6 +253,31 @@ pre.share{border:2px solid var(--edge);border-radius:0;background:var(--night);f
 .legal{font-size:16px}
 .live{border-radius:0;box-shadow:none;width:10px;height:10px}
 .heat{background:none;box-shadow:inset 0 0 0 8px #ff5a1e,inset 0 0 0 16px rgba(255,90,30,.35)}
+/* full-screen drilling */
+.stage{transition:opacity .2s steps(2,end)}
+body.drilling .stage{opacity:0;pointer-events:none}
+body.drilling .hud .brand{opacity:.4}
+#flash{position:fixed;inset:0;z-index:4;pointer-events:none;opacity:0}
+#flash.on{animation:flash .7s steps(5,end) forwards}
+#flash.on.t6{animation:flash6 1.4s steps(8,end) forwards}
+@keyframes flash{0%{opacity:var(--fo)}100%{opacity:0}}
+@keyframes flash6{0%{opacity:.95;background:#fff}25%{opacity:.6;background:#6fe3d2}50%{opacity:.5;background:#fff}100%{opacity:0;background:#6fe3d2}}
+#strikeBanner{position:fixed;left:50%;top:22%;z-index:5;transform:translate(-50%,-50%) scale(0);display:flex;flex-direction:column;align-items:center;gap:4px;pointer-events:none;font-family:var(--pixel);text-align:center}
+#strikeBanner.on{animation:sbIn .5s steps(5,end) forwards}
+#strikeBanner img{width:96px;height:68px;image-rendering:pixelated}
+#strikeBanner b{font-weight:400;font-size:44px;letter-spacing:.12em;color:var(--text);text-shadow:3px 3px 0 #03060c;white-space:nowrap}
+#strikeBanner span{font-size:72px;line-height:.9;color:var(--gold);text-shadow:4px 4px 0 #5a2a12,8px 8px 0 #03060c}
+#strikeBanner.t0 b,#strikeBanner.t0 span{color:#7d93b8;text-shadow:3px 3px 0 #03060c}
+#strikeBanner.t4 b{color:var(--gold)}
+#strikeBanner.t5 b{color:#ffb347;animation:kmis .6s steps(3,end) infinite}
+#strikeBanner.t6 b{font-size:54px;animation:rainbow .48s steps(6,end) infinite}
+#strikeBanner.t6 span{font-size:96px;color:#b9fff6;text-shadow:4px 4px 0 #2a9d8f,8px 8px 0 #03060c}
+#strikeBanner.t6.on{animation:sbIn6 .9s steps(7,end) forwards}
+@keyframes sbIn{0%{transform:translate(-50%,-50%) scale(.2)}60%{transform:translate(-50%,-50%) scale(1.25)}100%{transform:translate(-50%,-50%) scale(1)}}
+@keyframes sbIn6{0%{transform:translate(-50%,-50%) scale(.1) rotate(-12deg)}40%{transform:translate(-50%,-50%) scale(1.5) rotate(6deg)}70%{transform:translate(-50%,-50%) scale(.95) rotate(-2deg)}100%{transform:translate(-50%,-50%) scale(1.1) rotate(0)}}
+@keyframes rainbow{0%{color:#6fe3d2}17%{color:#ffffff}33%{color:#ffd166}50%{color:#ff6b8a}67%{color:#b98cff}83%{color:#7ee2a8}100%{color:#6fe3d2}}
+@media (max-width:760px){#strikeBanner b{font-size:30px;white-space:normal}#strikeBanner.t6 b{font-size:34px}#strikeBanner span{font-size:56px}#strikeBanner.t6 span{font-size:68px}}
+@media (prefers-reduced-motion:reduce){#strikeBanner.on,#strikeBanner.t6.on{animation:none;transform:translate(-50%,-50%) scale(1)}#flash.on{animation:none}#strikeBanner.t5 b,#strikeBanner.t6 b{animation:none}}
 /* depth notes in the scene */
 #notes{position:fixed;inset:0;z-index:1;pointer-events:none;overflow:hidden}
 .note{position:absolute;top:0;font-family:var(--pixel);font-size:16px;line-height:1.05;letter-spacing:.06em;color:rgba(232,241,255,.6);white-space:normal;text-shadow:2px 2px 0 #03060c}
@@ -281,6 +306,8 @@ body.urgent .heat{animation:kheat 1s step-end infinite}
 <canvas id="world" aria-hidden="true"></canvas>
 <div class="heat" aria-hidden="true"></div>
 <div id="notes" aria-hidden="true"></div>
+<div id="flash" aria-hidden="true"></div>
+<div id="strikeBanner" aria-live="polite"><img id="sbImg" alt=""><b id="sbName"></b><span id="sbPts"></span></div>
 
 <div class="hud">
   <div class="brand"><svg class="vol" viewBox="0 0 15 12" shape-rendering="crispEdges" aria-hidden="true"><path fill="#ff6a2b" d="M6 0h3v1H6zM5 1h1v1H5zM9 1h1v1H9z"/><path fill="#ffd166" d="M7 2h1v1H7z"/><path fill="#3a2232" d="M6 3h3v1H6zM5 4h5v1H5zM4 5h7v1H4zM3 6h9v1H3zM2 7h11v1H2zM1 8h13v1H1zM0 9h15v1H0z"/><path fill="#ff6a2b" d="M7 4h1v2H7zM8 6h1v2H8z"/><path fill="#5b3f2b" d="M0 10h15v2H0z"/></svg><span>MAGMILLION<small id="dateLine">THE DAILY DIG</small></span></div>
@@ -6027,6 +6054,7 @@ const reduced=matchMedia("(prefers-reduced-motion: reduce)").matches;
 const BAYER=[[0,8,2,10],[12,4,14,6],[3,11,1,9],[15,7,13,5]];
 const dith=(x,y,t)=>t*16>BAYER[y&3][x&3];
 let S=3,W=400,H=260,SKY=110,SEG_H=170,WORLD_H=1800,world=null,mobile=false,tick=0;
+let moleText="dig!";
 let drillY=110,targetY=110,curKm=0,sparks=[],embers=[],smoke=[],shakeT=0,twinkle=[],lavaPx=[],moleSay=0;
 function hash(x,y){let h=x*374761393+y*668265263;h=(h^(h>>>13))*1274126177;return((h^(h>>>16))>>>0)/4294967296;}
 function hex(c){return [parseInt(c.slice(1,3),16),parseInt(c.slice(3,5),16),parseInt(c.slice(5,7),16)];}
@@ -6037,7 +6065,7 @@ function kmToY(km){
   return Math.min(WORLD_H-20, SKY+8*SEG_H+(km-R_EARTH)/R_EARTH*SEG_H);
 }
 function yOfKm(km){const k=curKm, y=kmToY(km); curKm=k; return y;}
-function drillX(){return Math.round(W*(mobile?0.5:0.32));}
+function drillX(){return Math.round(W*0.5);}
 function volX(){return Math.round(W*(mobile?0.82:0.11));}
 /* flat banded palettes per segment: [colors], band height in px */
 const BANDS=[
@@ -6188,7 +6216,7 @@ function buildNotes(){
 let panelLeft=99999, plTick=0;
 function placeNotes(camY){
   const xs=drillX()*S;
-  if(plTick--<=0){const pn=document.querySelector(".panel"); const r=pn?pn.getBoundingClientRect():null; panelLeft=(r&&!mobile)?r.left:innerWidth; plTick=30;}
+  if(plTick--<=0||document.body.classList.contains("drilling")){const pn=document.querySelector(".panel"); const r=pn?pn.getBoundingClientRect():null; panelLeft=(r&&!mobile&&!document.body.classList.contains("drilling"))?r.left:innerWidth; plTick=30;}
   for(const [el,wy] of noteEls){
     const y=(wy-camY)*S;
     if(y<-40||y>innerHeight+40){el.style.display="none";continue;}
@@ -6203,14 +6231,30 @@ const DRILL={p:{a:"#e8eaf2",b:"#b6bacb",c:"#7d829c",d:"#4a4f68",o:"#ff7a3d",y:"#
 const MOLE={p:{a:"#6a4a3a",b:"#4a3226",n:"#ff8aa0",e:"#111111",w:"#e8dcc8"},
  m:[".aaaa..","aaeaaa.","aaaaaan","baaaaa.",".bwbw.."]};
 function sprite(spr,x,y,flip){spr.m.forEach((row,j)=>{for(let i=0;i<row.length;i++){const ch=row[flip?row.length-1-i:i]; if(ch==="."||!spr.p[ch]) continue; cx.fillStyle=spr.p[ch]; cx.fillRect(x+i,y+j,1,1);}});}
-function quake(n){if(!reduced) shakeT=n;}
+function quake(n){if(!reduced) shakeT=Math.max(shakeT,n);}
+let rings=[], erupt=0, DESC=null;
+function ring(color,speed,max){if(!reduced) rings.push({r:2,v:speed,max,color});}
+function spray(n,colors,opt){ if(reduced) return; opt=opt||{};
+  for(let i=0;i<n;i++){const a=opt.up?(-Math.PI/2+(Math.random()-.5)*1.4):Math.random()*Math.PI*2, v=(opt.v||1.4)*(.4+Math.random());
+    sparks.push({x:drillX()+(Math.random()-.5)*3,y:drillY+2,vx:Math.cos(a)*v,vy:Math.sin(a)*v-(opt.lift||.6),l:(opt.life||26)+Math.random()*16|0,c:colors[i%colors.length],s:opt.size||1,g:opt.grav===undefined?.08:opt.grav});}}
 function burst(n,color){if(reduced) return; for(let i=0;i<n;i++){const a=Math.random()*Math.PI*2, v=.6+Math.random()*1.6; sparks.push({x:drillX(),y:drillY+3,vx:Math.cos(a)*v,vy:Math.sin(a)*v-.8,l:20+Math.random()*14|0,c:color&&Math.random()<.6?color:null});} moleSay=90;}
 function frame(){
   tick++;
   const moving=Math.abs(targetY-drillY)>0.4;
-  drillY+=(targetY-drillY)*0.05;
+  if(DESC){
+    const pr=Math.min(1,(performance.now()-DESC.t0)/DESC.dur), e=pr<.5?4*pr*pr*pr:1-Math.pow(-2*pr+2,3)/2;
+    drillY=DESC.from+(DESC.to-DESC.from)*e; targetY=drillY;
+    const t=DESC.tier;
+    if(!reduced&&pr<1){ // trail grows with rarity
+      const n=t>=6?5:t>=5?4:t>=4?3:t>=2?2:1;
+      const col=[["#8a6a4f"],["#8a6a4f","#ffd166"],["#c58a5e","#ffd166"],["#a8a29b","#ffd166"],["#ffd166","#fff6c8"],["#ff7a3d","#ffb347","#ffe9a8"],["#6fe3d2","#ffffff","#b9fff6","#ffd166"]][t];
+      if(tick%(t>=4?1:2)===0) spray(n,col,{v:t>=5?1.8:1.2,life:t>=5?22:16,lift:.9});
+      if(t>=4) shakeT=Math.max(shakeT,t>=6?4:2);
+    }
+    if(pr>=1&&!DESC.fx){DESC.fx=true; impact(t);}
+  } else drillY+=(targetY-drillY)*0.05;
   if(moving&&!reduced&&tick%2===0) sparks.push({x:drillX()+(Math.random()<.5?-2:2),y:drillY+4,vx:(Math.random()-.5)*1.6,vy:-Math.random()*1.2,l:14});
-  const focus=mobile?0.16:0.42, camY=Math.max(0,Math.min(WORLD_H-H,Math.round(drillY-H*focus)));
+  const focus=DESC?0.45:(mobile?0.16:0.42), camY=Math.max(0,Math.min(WORLD_H-H,Math.round(drillY-H*focus)));
   let ox=0,oy=0; if(shakeT>0){shakeT--; ox=(tick%2?1:-1)*(shakeT>6?2:1); oy=(tick%3)-1;}
   cx.setTransform(1,0,0,1,ox,oy);
   cx.drawImage(world,0,camY,W,H,0,0,W,H);
@@ -6225,6 +6269,7 @@ function frame(){
     if(!reduced){
       if(tick%9===0) smoke.push({x:vx+(Math.random()*4-2),y:SKY-hv-3,vx:.12+Math.random()*.1,vy:-.18-Math.random()*.1,l:160,s:2});
       if(tick%5===0) embers.push({x:vx+(Math.random()*6-3),y:SKY-hv,vx:(Math.random()-.5)*.5,vy:-.6-Math.random()*.6,l:50+Math.random()*30|0});
+      if(erupt>0){erupt--; for(let i=0;i<(erupt>120?5:3);i++) embers.push({x:vx+(Math.random()*8-4),y:SKY-hv,vx:(Math.random()-.5)*1.6,vy:-1.4-Math.random()*1.8,l:60+Math.random()*40|0});}
     }
   }
   smoke=smoke.filter(s=>s.l>0);
@@ -6248,10 +6293,12 @@ function frame(){
   // mole friend riding along
   const mx=X+8, my=dy-7+(reduced?0:((tick>>4)%2));
   sprite(MOLE,mx,my);
-  if(moleSay>0){moleSay--; cx.fillStyle="#e8f1ff"; const t="dig!"; cx.font="8px VT323, monospace"; cx.fillText(t,mx+6,my-2);}
+  if(moleSay>0){moleSay--; cx.fillStyle="#e8f1ff"; const t=moleText; cx.font="8px VT323, monospace"; cx.fillText(t,mx+6,my-2);}
   // sparks
+  rings=rings.filter(r=>r.r<r.max);
+  for(const r of rings){r.r+=r.v; cx.fillStyle=r.color; const steps=Math.max(16,Math.round(r.r*4)); for(let i=0;i<steps;i++){const a=i/steps*Math.PI*2; cx.fillRect(Math.round(drillX()+Math.cos(a)*r.r),Math.round(drillY-camY+Math.sin(a)*r.r*.8),1,1);}}
   sparks=sparks.filter(s=>s.l>0);
-  for(const s of sparks){s.x+=s.vx; s.y+=s.vy; s.vy+=.08; s.l--; cx.fillStyle=s.c||(s.l>10?"#ffd166":"#ff7a3d"); cx.fillRect(Math.round(s.x),Math.round(s.y-camY),1,1);}
+  for(const s of sparks){s.x+=s.vx; s.y+=s.vy; s.vy+=(s.g===undefined?.08:s.g); s.l--; cx.fillStyle=s.c||(s.l>10?"#ffd166":"#ff7a3d"); const z=s.s||1; cx.fillRect(Math.round(s.x),Math.round(s.y-camY),z,z);}
   placeNotes(camY-oy);
   requestAnimationFrame(frame);
 }
@@ -6666,12 +6713,35 @@ function score(e, raw, timedOut, why){
   G.total+=pts;
   G.res.push({p:G.set[G.qi], raw, name: e&&e.tier>0 ? e.name : raw, tier, pts, timedOut:!!timedOut, nope: e&&e.tier===0 ? e.name+": "+e.def : "", web: e&&e.web ? {def:e.def,src:e.src} : null, why: why||""});
   document.body.classList.remove("urgent");
-  if(pts) floatPts(pts);
-  if(tier>=5){quake(tier===6?18:10); burst(tier===6?40:22, tier===6?"#6fe3d2":"#ffb347");}
-  else if(tier>=1) burst(6+tier*3);
-  else {const pn=document.querySelector(".panel"); pn.classList.remove("jolt"); void pn.offsetWidth; pn.classList.add("jolt");}
-  setDepth(G.total*KM_PER_PT); updateHud();
-  setTimeout(reveal, 650);
+  const km=G.total*KM_PER_PT;
+  $("kmOut").textContent=fmtKm(km); $("layerOut").textContent=layerAt(km); updateHud();
+  startDescent(km, tier, reveal);
+}
+const IMPACT=[
+  {hold:1000,quake:6},{hold:1100,quake:0},{hold:1200,quake:3},{hold:1300,quake:8},
+  {hold:1600,quake:12,flash:"#ffd166",fo:.3},{hold:2100,quake:18,flash:"#ff7a3d",fo:.45},{hold:2900,quake:28,flash:"#ffffff",fo:.9}];
+function impact(t){
+  const fx=IMPACT[t];
+  quake(fx.quake);
+  if(t===0){spray(16,["#6b625a","#4a4642","#8a8079"],{v:.8,life:20,grav:.05}); moleSay=70; moleText="hm.";}
+  if(t===1) spray(22,["#8a6a4f","#5a4330","#a07d5e"],{v:1.2,size:1});
+  if(t===2) spray(30,["#c58a5e","#8a5a38","#f0c39a"],{v:1.4,size:2});
+  if(t===3){spray(40,["#a8a29b","#6e6964","#e8e2db"],{v:1.8,size:2}); ring("#a8a29b",1.2,26);}
+  if(t===4){spray(70,["#ffd166","#fff6c8","#e5b54a"],{v:2.2,life:34,grav:.03}); ring("#ffd166",1.5,40); setTimeout(()=>ring("#fff6c8",1.8,50),160);}
+  if(t===5){spray(120,["#ff7a3d","#ffb347","#ffe9a8","#c94a1a"],{v:2.6,up:true,lift:1.6,life:40,size:2,grav:.07}); ring("#ff7a3d",1.8,60); setTimeout(()=>ring("#ffb347",2.2,80),180); erupt=140;}
+  if(t===6){spray(200,["#6fe3d2","#ffffff","#b9fff6","#ffd166","#ff6b8a","#b98cff"],{v:3,life:52,size:2,grav:.02}); ring("#ffffff",2.2,90); setTimeout(()=>ring("#6fe3d2",2.4,110),150); setTimeout(()=>ring("#ffd166",2.6,130),300); setTimeout(()=>ring("#ff6b8a",2.8,150),450); erupt=260; moleText="WOW!";}
+  if(t>=1&&t<6) moleText="dig!";
+  moleSay=Math.max(moleSay,80);
+  if(fx.flash&&!reduced){const f=$("flash"); f.style.background=fx.flash; f.style.setProperty("--fo",fx.fo); f.className=""; void f.offsetWidth; f.className="on t"+t;}
+  const bn=$("strikeBanner"), tt=TIERS[t];
+  $("sbImg").src=BADGE[t]; $("sbName").textContent=t===6?"ONE IN A MAGMILLION":tt.name.toUpperCase(); $("sbPts").textContent="+"+tt.pts;
+  bn.className="t"+t; void bn.offsetWidth; bn.className="on t"+t;
+  setTimeout(()=>{bn.className="t"+t; document.body.classList.remove("drilling"); const d=DESC&&DESC.done; DESC=null; if(d) d();}, reduced?400:fx.hold);
+}
+function startDescent(km,t,done){
+  const from=drillY, to=kmToY(km), dist=Math.abs(to-from);
+  DESC={from,to,t0:performance.now(),dur:reduced?250:(dist<1?700:Math.min(4200,1400+dist*6+t*220)),tier:t,done,fx:false};
+  document.body.classList.add("drilling");
 }
 function floatPts(n){
   const b=$("ansInput").getBoundingClientRect(), d=document.createElement("div");
