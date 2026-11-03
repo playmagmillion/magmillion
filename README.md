@@ -21,6 +21,10 @@ Looking for more games like Krillion? See [games like Krillion](https://playmagm
 
 After you answer, the panel slides away and the whole screen shows the drill boring down to your new depth. Rarer answers get bigger effects: dust for Topsoil, rock chips for Bedrock, gold sparkles and a flash for Ore seam, a magma eruption for Deep vein, and a full crystal burst with rings, a rainbow banner, and an erupting volcano for One in a Magmillion.
 
+## Sound
+
+All sounds are synthesized live with the Web Audio API, so there are no audio files. Typing clicks, a rising chime for "Did you mean...?", a buzz for a wrong answer, countdown beeps in the last 5 seconds, a drill engine whose pitch climbs with rarity, impact sounds that grow from a dull thud (Dud) to a full fanfare with a boom (One in a Magmillion), a low volcanic drone that deepens as you dig, and a finish jingle. The speaker button in the top bar mutes everything and remembers your choice.
+
 ## Where you landed
 
 After all 7 prompts, the results screen shows a score distribution with your score marked and the share of players you beat. There's no server collecting real scores yet, so the chart comes from a simulation of 20,000 players on that day's prompts, and the game says so on screen.
