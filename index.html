@@ -110,7 +110,7 @@ form.ans input{flex:1;min-width:0;font:inherit;font-size:18px;padding:11px 12px;
 .confirm .q{flex:1;min-width:160px;font-size:16px}
 .confirm .q b{font-family:var(--pixel);font-size:20px;color:var(--gold)}
 .confirm button{padding:7px 12px;font-size:15px}
-.float{position:fixed;z-index:5;font-family:var(--pixel);font-size:30px;color:var(--gold);pointer-events:none;text-shadow:3px 3px 0 #000;animation:rise 1.1s ease-out forwards}
+.float{position:fixed;z-index:5;font-family:var(--pixel);font-size:30px;color:var(--gold);pointer-events:none;text-shadow:3px 3px 0 #000;animation:rise .65s ease-out forwards}
 @keyframes rise{from{opacity:1;transform:translateY(0)}to{opacity:0;transform:translateY(-60px)}}
 
 /* Reveal lists */
@@ -164,7 +164,7 @@ a.btnlink.off{opacity:.45;pointer-events:none}
 @keyframes misprint{0%,100%{text-shadow:2px 0 0 #ff4b2b,-2px 0 0 #6fe3d2}50%{text-shadow:-2px 0 0 #ff4b2b,2px 0 0 #6fe3d2}}
 .panel.jolt{animation:jolt .28s steps(4,end)}
 @keyframes jolt{0%{transform:translate(0)}25%{transform:translate(-6px)}50%{transform:translate(6px)}75%{transform:translate(-3px)}100%{transform:translate(0)}}
-.pop{animation:pop .45s steps(4,end)}
+.pop{animation:pop .25s steps(3,end)}
 @keyframes pop{0%{transform:scale(.4)}50%{transform:scale(1.3)}100%{transform:scale(1)}}
 .heat{position:fixed;inset:0;z-index:1;pointer-events:none;opacity:0;background:none;box-shadow:inset 0 0 0 6px rgba(255,90,30,.8)}
 body.urgent .heat{animation:heat 1s step-end infinite}
@@ -205,8 +205,8 @@ p,li{font-size:21px}
 .cat{font-family:var(--pixel);font-weight:400;text-transform:uppercase;font-size:clamp(40px,6vw,56px);line-height:.9;color:var(--text)}
 .ask{font-size:19px}
 .bigtitle{display:flex;flex-wrap:wrap;gap:1px;font-family:var(--pixel);font-size:clamp(40px,5.4vw,66px);line-height:.9;color:var(--text);letter-spacing:.06em;margin:2px 0 4px}
-.bigtitle span{display:inline-block;animation:letterbob 2.6s ease-in-out infinite;text-shadow:3px 3px 0 #ff6a2b,6px 6px 0 #03060c}
-@keyframes letterbob{0%,100%{transform:translateY(0)}50%{transform:translateY(-6px)}}
+.bigtitle span{display:inline-block;animation:letterbob 1.6s steps(6,end) infinite;text-shadow:3px 3px 0 #ff6a2b,6px 6px 0 #03060c}
+@keyframes letterbob{0%,30%,100%{transform:translateY(0)}12%{transform:translateY(-7px)}}
 button,a.btnlink{font-family:var(--pixel);font-weight:400;text-transform:uppercase;letter-spacing:.1em;font-size:24px;border:2px solid var(--edge);border-radius:0;background:#0a1323;color:var(--soft);box-shadow:none;padding:8px 16px}
 button:hover{color:var(--text);border-color:#3a5a88}
 button.go,a.btnlink.go{background:#101d33;color:var(--text);border:0;box-shadow:0 0 0 3px var(--night),0 0 0 6px var(--accent),0 6px 0 6px #5a2a12;margin:6px;filter:none}
@@ -256,16 +256,16 @@ pre.share{border:2px solid var(--edge);border-radius:0;background:var(--night);f
 .live{border-radius:0;box-shadow:none;width:10px;height:10px}
 .heat{background:none;box-shadow:inset 0 0 0 8px #ff5a1e,inset 0 0 0 16px rgba(255,90,30,.35)}
 /* full-screen drilling */
-.stage{transition:opacity .2s steps(2,end)}
+.stage{transition:opacity .1s steps(2,end)}
 body.drilling .stage{opacity:0;pointer-events:none}
 body.drilling .hud .brand{opacity:.4}
 #flash{position:fixed;inset:0;z-index:4;pointer-events:none;opacity:0}
-#flash.on{animation:flash .7s steps(5,end) forwards}
-#flash.on.t6{animation:flash6 1.4s steps(8,end) forwards}
+#flash.on{animation:flash .35s steps(4,end) forwards}
+#flash.on.t6{animation:flash6 .75s steps(6,end) forwards}
 @keyframes flash{0%{opacity:var(--fo)}100%{opacity:0}}
 @keyframes flash6{0%{opacity:.95;background:#fff}25%{opacity:.6;background:#6fe3d2}50%{opacity:.5;background:#fff}100%{opacity:0;background:#6fe3d2}}
 #strikeBanner{position:fixed;left:50%;top:22%;z-index:5;transform:translate(-50%,-50%) scale(0);display:flex;flex-direction:column;align-items:center;gap:4px;pointer-events:none;font-family:var(--pixel);text-align:center}
-#strikeBanner.on{animation:sbIn .5s steps(5,end) forwards}
+#strikeBanner.on{animation:sbIn .22s steps(4,end) forwards}
 #strikeBanner img{width:96px;height:68px;image-rendering:pixelated}
 #strikeBanner b{font-weight:400;font-size:44px;letter-spacing:.12em;color:var(--text);text-shadow:3px 3px 0 #03060c;white-space:nowrap}
 #strikeBanner span{font-size:72px;line-height:.9;color:var(--gold);text-shadow:4px 4px 0 #5a2a12,8px 8px 0 #03060c}
@@ -274,7 +274,7 @@ body.drilling .hud .brand{opacity:.4}
 #strikeBanner.t5 b{color:#ffb347;animation:kmis .6s steps(3,end) infinite}
 #strikeBanner.t6 b{font-size:54px;animation:rainbow .48s steps(6,end) infinite}
 #strikeBanner.t6 span{font-size:96px;color:#b9fff6;text-shadow:4px 4px 0 #2a9d8f,8px 8px 0 #03060c}
-#strikeBanner.t6.on{animation:sbIn6 .9s steps(7,end) forwards}
+#strikeBanner.t6.on{animation:sbIn6 .45s steps(6,end) forwards}
 @keyframes sbIn{0%{transform:translate(-50%,-50%) scale(.2)}60%{transform:translate(-50%,-50%) scale(1.25)}100%{transform:translate(-50%,-50%) scale(1)}}
 @keyframes sbIn6{0%{transform:translate(-50%,-50%) scale(.1) rotate(-12deg)}40%{transform:translate(-50%,-50%) scale(1.5) rotate(6deg)}70%{transform:translate(-50%,-50%) scale(.95) rotate(-2deg)}100%{transform:translate(-50%,-50%) scale(1.1) rotate(0)}}
 @keyframes rainbow{0%{color:#6fe3d2}17%{color:#ffffff}33%{color:#ffd166}50%{color:#ff6b8a}67%{color:#b98cff}83%{color:#7ee2a8}100%{color:#6fe3d2}}
@@ -300,7 +300,7 @@ body.drilling .hud .brand{opacity:.4}
 @keyframes kmis{0%,100%{text-shadow:2px 0 0 #ff4b2b,-2px 0 0 #6fe3d2}50%{text-shadow:-2px 0 0 #ff4b2b,2px 0 0 #6fe3d2}}
 .panel.jolt{animation:kjolt .28s steps(4,end)}
 @keyframes kjolt{25%{transform:translate(-6px)}50%{transform:translate(6px)}75%{transform:translate(-3px)}}
-.pop{animation:kpop .45s steps(4,end)}
+.pop{animation:kpop .25s steps(3,end)}
 @keyframes kpop{0%{transform:scale(.4)}50%{transform:scale(1.3)}100%{transform:scale(1)}}
 body.urgent .heat{animation:kheat 1s step-end infinite}
 @keyframes kheat{0%{opacity:1}55%{opacity:.2}}
@@ -331,7 +331,7 @@ body.urgent .heat{animation:kheat 1s step-end infinite}
 <div class="panel">
 
   <section id="startScreen">
-    <div class="bigtitle" aria-label="Magmillion"><span style="animation-delay:0.00s">M</span><span style="animation-delay:0.18s">A</span><span style="animation-delay:0.36s">G</span><span style="animation-delay:0.54s">M</span><span style="animation-delay:0.72s">I</span><span style="animation-delay:0.90s">L</span><span style="animation-delay:1.08s">L</span><span style="animation-delay:1.26s">I</span><span style="animation-delay:1.44s">O</span><span style="animation-delay:1.62s">N</span></div>
+    <div class="bigtitle" aria-label="Magmillion"><span style="animation-delay:0.00s">M</span><span style="animation-delay:0.07s">A</span><span style="animation-delay:0.14s">G</span><span style="animation-delay:0.21s">M</span><span style="animation-delay:0.28s">I</span><span style="animation-delay:0.35s">L</span><span style="animation-delay:0.42s">L</span><span style="animation-delay:0.49s">I</span><span style="animation-delay:0.56s">O</span><span style="animation-delay:0.63s">N</span></div>
     <div class="eyebrow"><span class="live" aria-hidden="true"></span>the daily dig<span class="cursor" aria-hidden="true"></span></div>
     <h2>Name the answer nobody else thinks of.</h2>
     <p class="dim">7 prompts a day · 25 seconds each · the rarer your answer, the deeper you drill</p>
@@ -6249,7 +6249,7 @@ function frame(){
   tick++;
   const moving=Math.abs(targetY-drillY)>0.4;
   if(DESC){
-    const pr=Math.min(1,(performance.now()-DESC.t0)/DESC.dur), e=pr<.5?4*pr*pr*pr:1-Math.pow(-2*pr+2,3)/2;
+    const pr=Math.min(1,(performance.now()-DESC.t0)/DESC.dur), e=1-Math.pow(1-pr,3);
     drillY=DESC.from+(DESC.to-DESC.from)*e; targetY=drillY;
     const t=DESC.tier;
     if(!reduced&&pr<1){ // trail grows with rarity
@@ -6258,7 +6258,7 @@ function frame(){
       if(tick%(t>=4?1:2)===0) spray(n,col,{v:t>=5?1.8:1.2,life:t>=5?22:16,lift:.9});
       if(t>=4) shakeT=Math.max(shakeT,t>=6?4:2);
     }
-    if(pr>=1&&!DESC.fx){DESC.fx=true; impact(t);}
+    if(pr>=1&&!DESC.fx){DESC.fx=true; DESC.landed=performance.now(); impact(t);}
   } else drillY+=(targetY-drillY)*0.05;
   if(moving&&!reduced&&tick%2===0) sparks.push({x:drillX()+(Math.random()<.5?-2:2),y:drillY+4,vx:(Math.random()-.5)*1.6,vy:-Math.random()*1.2,l:14});
   const focus=DESC?0.45:(mobile?0.16:0.42), camY=Math.max(0,Math.min(WORLD_H-H,Math.round(drillY-H*focus)));
@@ -6853,8 +6853,8 @@ function score(e, raw, timedOut, why){
   startDescent(km, tier, reveal);
 }
 const IMPACT=[
-  {hold:1000,quake:6},{hold:1100,quake:0},{hold:1200,quake:3},{hold:1300,quake:8},
-  {hold:1600,quake:12,flash:"#ffd166",fo:.3},{hold:2100,quake:18,flash:"#ff7a3d",fo:.45},{hold:2900,quake:28,flash:"#ffffff",fo:.9}];
+  {hold:420,quake:6},{hold:420,quake:0},{hold:460,quake:4},{hold:520,quake:9},
+  {hold:700,quake:13,flash:"#ffd166",fo:.3},{hold:900,quake:18,flash:"#ff7a3d",fo:.45},{hold:1300,quake:26,flash:"#ffffff",fo:.9}];
 function impact(t){
   const fx=IMPACT[t];
   SFX.impact(t); SFX.depth(curKm);
@@ -6872,18 +6872,28 @@ function impact(t){
   const bn=$("strikeBanner"), tt=TIERS[t];
   $("sbImg").src=BADGE[t]; $("sbName").textContent=t===6?"ONE IN A MAGMILLION":tt.name.toUpperCase(); $("sbPts").textContent="+"+tt.pts;
   bn.className="t"+t; void bn.offsetWidth; bn.className="on t"+t;
-  setTimeout(()=>{bn.className="t"+t; document.body.classList.remove("drilling"); const d=DESC&&DESC.done; DESC=null; if(d) d();}, reduced?400:fx.hold);
+  DESC.end=()=>{clearTimeout(DESC.hold); bn.className="t"+t; document.body.classList.remove("drilling"); const d=DESC&&DESC.done; DESC=null; if(d) d();};
+  DESC.hold=setTimeout(DESC.end, reduced?300:fx.hold);
 }
+// Tap, click, or press any key to skip straight to the result.
+function skipFx(){
+  if(!DESC) return false;
+  if(!DESC.fx){DESC.t0=performance.now()-DESC.dur; return true;}   // land now; the impact still plays
+  if(DESC.end && performance.now()-DESC.landed>150){DESC.end(); return true;}
+  return false;
+}
+addEventListener("pointerdown",()=>{if(document.body.classList.contains("drilling")) skipFx();});
+addEventListener("keydown",e=>{if(document.body.classList.contains("drilling")&&(e.key===" "||e.key==="Enter"||e.key==="Escape")){e.preventDefault(); e.stopImmediatePropagation(); skipFx();}},true);
 function startDescent(km,t,done){
   const from=drillY, to=kmToY(km), dist=Math.abs(to-from);
-  DESC={from,to,t0:performance.now(),dur:reduced?250:(dist<1?700:Math.min(4200,1400+dist*6+t*220)),tier:t,done,fx:false};
+  DESC={from,to,t0:performance.now(),dur:reduced?200:(dist<1?280:Math.min(1250,420+dist*1.6+t*70)),tier:t,done,fx:false};
   if(dist>=1) SFX.drill(DESC.dur/1000,t);
   document.body.classList.add("drilling");
 }
 function floatPts(n){
   const b=$("ansInput").getBoundingClientRect(), d=document.createElement("div");
   d.className="float"; d.textContent="+"+n; d.style.left=(b.left+b.width/2-24)+"px"; d.style.top=(b.top-34)+"px";
-  document.body.appendChild(d); setTimeout(()=>d.remove(),1200);
+  document.body.appendChild(d); setTimeout(()=>d.remove(),700);
 }
 function esc(s){return String(s).replace(/[&<>"]/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c]));}
 function li(t,name,right,def,cls){return `<li class="${cls||""}">${typeof t==="number"?badge(t):`<span class="rk">${t}</span>`}<span class="nm">${esc(name)}</span><span class="pts">${right}</span>${def?`<span class="def">${esc(def)}</span>`:""}</li>`;}
@@ -7005,7 +7015,7 @@ function drawDistribution(g){
 }
 function countUp(el, km){
   if(reduced){el.textContent=fmtKm(km); return;}
-  const t0=performance.now(), dur=1400;
+  const t0=performance.now(), dur=650;
   const step=now=>{const f=Math.min(1,(now-t0)/dur), e=1-Math.pow(1-f,3); el.textContent=fmtKm(km*Math.round(e*20)/20); if(f<1) requestAnimationFrame(step); else el.textContent=fmtKm(km);};
   requestAnimationFrame(step);
 }
