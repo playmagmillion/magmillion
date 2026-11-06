@@ -309,9 +309,43 @@ body.urgent .heat{animation:kheat 1s step-end infinite}
 @keyframes kheat{0%{opacity:1}55%{opacity:.2}}
 @media (prefers-reduced-motion:reduce){.bigtitle span,#btnDaily,.misprint,.panel.jolt,.pop,body.urgent .heat{animation:none}}
 
+
+/* ---- Centered layout over the scene, outlined two-color title, thin double borders, scanlines ---- */
+.stage{justify-content:center;padding:34vh 14px 40px}
+.panel{max-width:620px;background:rgba(9,6,10,.95);border:2px solid #3a2430;box-shadow:0 0 0 3px #05070f,0 0 0 5px rgba(255,122,61,.55);padding:18px 22px}
+body.home .stage{padding-top:6vh}
+body.home .panel{background:transparent;border:0;box-shadow:none;text-align:center;padding:0 6px}
+body.home #notes{display:none}
+body.home .panel{max-width:960px}
+body.home .hud .brand,body.home .hud .pods,body.home .hud .hud-dots{visibility:hidden}
+.ktitle{margin:0 auto;white-space:nowrap;font-family:var(--pixel);font-weight:400;font-size:clamp(42px,11vw,128px);line-height:.95;letter-spacing:.06em;color:#140806;-webkit-text-stroke:2px #fff3e0;text-shadow:-5px 0 #ff4d2b,5px 0 #ffd166}
+.ktitle span{display:inline-block;animation:letterbob 1.6s steps(6,end) infinite}
+.ksub{font-family:var(--pixel);font-size:clamp(20px,2.6vw,30px);letter-spacing:.5em;color:#ffb347;margin:6px 0 4px;text-shadow:2px 0 #05070f,-2px 0 #05070f,0 2px #05070f,0 -2px #05070f}
+.ktag{margin:0;font-family:var(--pixel);font-size:clamp(16px,1.9vw,21px);letter-spacing:.14em;color:#fff3e0;text-shadow:2px 0 #05070f,-2px 0 #05070f,0 2px #05070f,0 -2px #05070f}
+.kgap{height:24vh}
+body.home button.big-btn{max-width:600px;margin:6px auto;display:flex;letter-spacing:.24em}
+.krow{display:flex;justify-content:space-between;align-items:center;gap:10px;flex-wrap:wrap;max-width:600px;margin:14px auto 0}
+.kstat{font-family:var(--pixel);font-size:17px;letter-spacing:.18em;color:#fff3e0;text-shadow:2px 0 #05070f,-2px 0 #05070f,0 2px #05070f,0 -2px #05070f}
+.kbtns{display:flex;gap:8px}
+button.sm{font-size:17px;padding:6px 12px;letter-spacing:.16em;background:rgba(9,6,10,.85);border:2px solid #5a3426;color:#ffd9b8}
+button.sm:hover{border-color:#ffb347;color:#fff3e0}
+.kline{min-height:1em;text-shadow:2px 2px 0 #05070f}
+.khow{max-width:600px;margin:14px auto 0;text-align:left;background:rgba(9,6,10,.9);border:2px solid #3a2430;box-shadow:0 0 0 3px #05070f}
+.khow summary{cursor:pointer;list-style:none;font-family:var(--pixel);font-size:18px;letter-spacing:.24em;text-transform:uppercase;color:#ffb347;padding:8px 14px}
+.khow summary::-webkit-details-marker{display:none}
+.khow summary::before{content:"▸ "}
+.khow[open] summary::before{content:"▾ "}
+.khow>*:not(summary){margin-left:14px;margin-right:14px}
+.khow>*:last-child{margin-bottom:14px}
+#scan{position:fixed;inset:0;z-index:1;pointer-events:none;image-rendering:pixelated;opacity:.55}
+.panel>section:not(.hidden){animation:kin .16s steps(3,end)}
+@keyframes kin{from{transform:translateY(14px);opacity:.4}to{transform:none;opacity:1}}
+@media (max-width:760px){.ktitle{-webkit-text-stroke:1.5px #fff3e0;text-shadow:-3px 0 #ff4d2b,3px 0 #ffd166}.kgap{height:22vh}.ksub{letter-spacing:.32em}.krow{justify-content:center}.kstat{width:100%;text-align:center}body.home button.big-btn{letter-spacing:.06em;font-size:24px}}
+@media (prefers-reduced-motion:reduce){.ktitle span,.panel>section:not(.hidden){animation:none}}
 </style>
 </head>
-<body>
+<body class="home">
+<div id="scan" aria-hidden="true"></div>
 <canvas id="world" aria-hidden="true"></canvas>
 <div class="heat" aria-hidden="true"></div>
 <div id="notes" aria-hidden="true"></div>
@@ -334,13 +368,20 @@ body.urgent .heat{animation:kheat 1s step-end infinite}
 <div class="panel">
 
   <section id="startScreen">
-    <div class="bigtitle" aria-label="Magmillion"><span style="animation-delay:0.00s">M</span><span style="animation-delay:0.07s">A</span><span style="animation-delay:0.14s">G</span><span style="animation-delay:0.21s">M</span><span style="animation-delay:0.28s">I</span><span style="animation-delay:0.35s">L</span><span style="animation-delay:0.42s">L</span><span style="animation-delay:0.49s">I</span><span style="animation-delay:0.56s">O</span><span style="animation-delay:0.63s">N</span></div>
-    <div class="eyebrow"><span class="live" aria-hidden="true"></span>the daily eruption<span class="cursor" aria-hidden="true"></span></div>
-    <h2>Name the answer nobody else thinks of.</h2>
-    <p class="dim">7 prompts a day · 25 seconds each · the rarer your answer, the higher you erupt</p>
-    <div class="example">"Name a fruit" → Apple <b>+10</b> · Miracle fruit <b>+100</b></div>
-    <button class="go big-btn" id="btnDaily">Erupt ▲ <small id="digBtnSub">Eruption #1 · press Enter</small></button>
-    <h3>How it works</h3>
+    <h1 class="ktitle" aria-label="Magmillion"><span style="animation-delay:0.00s">M</span><span style="animation-delay:0.07s">A</span><span style="animation-delay:0.14s">G</span><span style="animation-delay:0.21s">M</span><span style="animation-delay:0.28s">I</span><span style="animation-delay:0.35s">L</span><span style="animation-delay:0.42s">L</span><span style="animation-delay:0.49s">I</span><span style="animation-delay:0.56s">O</span><span style="animation-delay:0.63s">N</span></h1>
+    <div class="ksub">THE DAILY ERUPTION</div>
+    <p class="ktag">7 prompts · 25 seconds each · rarer answers erupt higher</p>
+    <div class="kgap" aria-hidden="true"></div>
+    <button class="go big-btn" id="btnDaily">▲ Begin eruption ▲ <small id="digBtnSub">Eruption #1 · press Enter</small></button>
+    <div class="krow">
+      <span class="kstat" id="kStat">ERUPTION #1 · STREAK 0</span>
+      <span class="kbtns"><button class="ghost sm" id="btnArch">Archive</button><button class="ghost sm" id="btnFree">Play again ∞</button></span>
+    </div>
+    <span class="hidden" id="freeLeft"></span>
+    <p class="small dim kline" id="streakLine"></p>
+    <details class="khow">
+      <summary>How to play</summary>
+      <div class="example">"Name a fruit" → Apple <b>+10</b> · Miracle fruit <b>+100</b></div>
     <ul class="how">
       <li>Seven prompts, the same for everyone today, with new ones every day.</li>
       <li>Type any real thing that fits. If it isn't on our list, the game checks Wikipedia, Wikidata, Wiktionary, WordNet, and ConceptNet, and it counts if any of them back you up. Spelling is forgiven: the game asks "Did you mean...?" If an answer doesn't fit, you get one more try.</li>
@@ -350,15 +391,12 @@ body.urgent .heat{animation:kheat 1s step-end infinite}
     </ul>
     <h3>The ranks</h3>
     <div class="ranks" id="ranks"></div>
-    <div class="row" style="margin-top:16px">
-      <button class="ghost" id="btnArch">Archive</button>
-      <button class="ghost" id="btnFree">Play again</button>
-      <span class="small dim" id="freeLeft"></span>
-    </div>
-    <p class="small dim" id="streakLine" style="margin-top:12px"></p>
-    <h3>What is Magmillion?</h3>
-    <p class="small dim">Magmillion is a free daily word game where the rarest answer wins. Every day everyone gets the same seven prompts, like "Name a fruit" or "Name a knot." Common answers barely move the magma, and the ones nobody else thinks of blast you out of the volcano and up toward space. After each prompt you see the rarest answers you missed, so you learn a new word or two every day.</p>
-    <p class="small dim">If you like Krillion, Cosmillion, or Moonshot, Magmillion plays the same way, with an erupting volcano instead of the ocean or space. <a href="games-like-krillion.html" style="color:var(--gold)">More games like Krillion</a></p>
+      <h3>The ranks</h3>
+      <div class="ranks" id="ranks"></div>
+      <h3>What is Magmillion?</h3>
+      <p class="small dim">Magmillion is a free daily word game where the rarest answer wins. Every day everyone gets the same seven prompts, like "Name a fruit" or "Name a knot." Common answers barely move the magma, and the ones nobody else thinks of blast you out of the volcano and up toward space. After each prompt you see the rarest answers you missed, so you learn a new word or two every day.</p>
+      <p class="small dim">If you like Krillion, Cosmillion, or Moonshot, Magmillion plays the same way, with an erupting volcano instead of the ocean or space. <a href="games-like-krillion.html" style="color:var(--gold)">More games like Krillion</a></p>
+    </details>
   </section>
 
   <section id="playScreen" class="hidden">
@@ -6053,14 +6091,14 @@ const BAYER=[[0,8,2,10],[12,4,14,6],[3,11,1,9],[15,7,13,5]];
 const dith=(x,y,t)=>t*16>BAYER[y&3][x&3];
 let S=3,W=400,H=260,PXP=1.6,BOT=90,TOPM=160,WORLD_H=1800,world=null,mobile=false,tick=0;
 let moleText="pop!";
-let bubbles=[], drillY=0,targetY=0,curKm=-8,sparks=[],embers=[],smoke=[],shakeT=0,twinkle=[],lavaPx=[],chamberPx=[],meteors=[],moleSay=0;
+let camF=0.46, pops=[], squashT=0, bubbles=[], drillY=0,targetY=0,curKm=-8,sparks=[],embers=[],smoke=[],shakeT=0,twinkle=[],lavaPx=[],chamberPx=[],meteors=[],moleSay=0;
 function hash(x,y){let h=x*374761393+y*668265263;h=(h^(h>>>13))*1274126177;return((h^(h>>>16))>>>0)/4294967296;}
 function hex(c){return [parseInt(c.slice(1,3),16),parseInt(c.slice(3,5),16),parseInt(c.slice(5,7),16)];}
 const yOfPts=p=>Math.round(WORLD_H-BOT-p*PXP);
 const ptsOfY=y=>(WORLD_H-BOT-y)/PXP;
 function kmToY(km){curKm=km; return yOfPts(ptsOfAlt(km));}
 function yOfKm(km){return yOfPts(ptsOfAlt(km));}
-function drillX(){return Math.round(W*(mobile?0.5:0.3));}
+function drillX(){return Math.round(W*0.5);}
 function volX(){return drillX();}
 const GROUND_PTS=150;                                  // the land around the volcano
 // half-width of the lava inside the volcano: wide magma chamber at the bottom, narrow at the crater
@@ -6068,7 +6106,7 @@ function lavaHalf(p){const top=Math.round(W*0.07), base=top+W*0.41*Math.pow(Math
   if(p>=12) return Math.round(base); const k=(12-p)/26; return k>=1?-1:Math.round(base*Math.sqrt(1-k*k));}
 const coneHalf=p=>p<GROUND_PTS?W:Math.round(Math.round(W*0.07)+9+(W*0.62)*Math.pow((CRATER_PTS-p)/(CRATER_PTS-GROUND_PTS),1.15));
 // lava gets hotter, and brighter, the deeper you go
-const LAVASTOPS=[[-14,"#fff6d8"],[10,"#fff0bd"],[45,"#ffd166"],[85,"#ffb347"],[125,"#ff8a3d"],[160,"#e8601f"],[185,"#c24a1a"],[194,"#8a3416"]].map(([p,c])=>[p,hex(c)]);
+const LAVASTOPS=[[-14,"#ffd98a"],[10,"#ffc061"],[45,"#ff9f3d"],[85,"#f2792a"],[125,"#d9581f"],[160,"#b2401a"],[185,"#8a3016"],[194,"#5e2212"]].map(([p,c])=>[p,hex(c)]);
 function lavaCol(p,x,y){for(let i=0;i<LAVASTOPS.length-1;i++){const [p0,c0]=LAVASTOPS[i],[p1,c1]=LAVASTOPS[i+1]; if(p<=p1){const t=Math.max(0,(p-p0)/(p1-p0)); return dith(x,y,t)?c1:c0;}} return LAVASTOPS[LAVASTOPS.length-1][1];}
 const SKYSTOPS=[[140,"#6a2c34"],[175,"#55263c"],[210,"#43224a"],[260,"#33205a"],[330,"#26225a"],[400,"#1c2352"],[460,"#141c44"],[520,"#0f1636"],[580,"#0b1029"],[640,"#080b1e"],[700,"#05070f"],[900,"#020308"]];
 const SKYC=SKYSTOPS.map(([p,c])=>[p,hex(c)]);
@@ -6169,7 +6207,7 @@ function resize(){
   mobile=innerWidth<=760;
   S=Math.max(2,innerWidth/400); W=Math.ceil(innerWidth/S); H=Math.ceil(innerHeight/S);
   cv.width=W; cv.height=H;
-  PXP=Math.max(1.5,H*0.5/100); BOT=Math.round(H*(mobile?0.8:0.45)); TOPM=Math.round(H*0.75);
+  PXP=Math.max(1.5,H*0.5/100); BOT=Math.round(H*0.84); TOPM=Math.round(H*0.75);
   WORLD_H=Math.round(BOT+PEAK*PXP+TOPM);
   world=buildWorld(); buildNotes();
   targetY=kmToY(curKm); drillY=targetY;
@@ -6217,7 +6255,7 @@ function placeNotes(camY){
     if(y<84||y>innerHeight+40){el.style.display="none";continue;}
     el.style.display="";
     if(el.classList.contains("L")){el.style.right=(innerWidth-xs+22)+"px"; el.style.left=""; el.style.maxWidth=Math.max(80,xs-30)+"px";}
-    else {el.style.left=(xs+22)+"px"; el.style.right=""; el.style.maxWidth=Math.max(80,panelLeft-xs-34)+"px";}
+    else {el.style.left=(xs+22)+"px"; el.style.right=""; el.style.maxWidth=Math.max(80,innerWidth-xs-40)+"px";}
     el.style.transform=`translateY(${Math.round(y-8)}px)`;
   }
 }
@@ -6225,7 +6263,11 @@ function placeNotes(camY){
 const ROCKP={p:{a:"#b4ada5",b:"#8a827a",c:"#615a53",d:"#2a2420",e:"#ffffff",k:"#111111",o:"#ff8a3d",y:"#ffd166"},
  m:["...dddd...","..dabbbdd.",".dabbbbbcd","dabekbbekd","dbbkkbbkkd","dbbbbbbbcd","dcbbobbccd",".dcboycccd","..dcccccd.","...ddddd.."]};
 const ROCK_UP={p:ROCKP.p,m:["...dddd...","..dabekdd.",".dabkkbbcd","dabbbbekcd","dbbbbbkkcd","dbbbbbbbcd","dcbbobbccd",".dcboycccd","..dcccccd.","...ddddd.."]};
+function spriteS(spr,cxp,cyp,sx,sy){const w=spr.m[0].length, h=spr.m.length; const x0=cxp-w*sx/2, y0=cyp-h*sy/2+ (sy<1?h*(1-sy)/2:0);
+  spr.m.forEach((row,j)=>{for(let i=0;i<w;i++){const ch=row[i]; if(ch==="."||!spr.p[ch]) continue; cx.fillStyle=spr.p[ch]; cx.fillRect(Math.round(x0+i*sx),Math.round(y0+j*sy),Math.ceil(sx),Math.ceil(sy));}});}
 function sprite(spr,x,y,flip){spr.m.forEach((row,j)=>{for(let i=0;i<row.length;i++){const ch=row[flip?row.length-1-i:i]; if(ch==="."||!spr.p[ch]) continue; cx.fillStyle=spr.p[ch]; cx.fillRect(x+i,y+j,1,1);}});}
+const DIG={"+":["...",".a.","aaa",".a.","..."],"0":["aaa","a.a","a.a","a.a","aaa"],"1":[".a.","aa.",".a.",".a.","aaa"],"2":["aaa","..a","aaa","a..","aaa"],"3":["aaa","..a",".aa","..a","aaa"],"4":["a.a","a.a","aaa","..a","..a"],"5":["aaa","a..","aaa","..a","aaa"],"6":["aaa","a..","aaa","a.a","aaa"],"7":["aaa","..a",".a.",".a.",".a."],"8":["aaa","a.a","aaa","a.a","aaa"],"9":["aaa","a.a","aaa","..a","aaa"]};
+function pixText(t,x,y,z,col){let ox=x; for(const ch of t){const g=DIG[ch]; if(g){for(let j=0;j<5;j++) for(let i=0;i<3;i++) if(g[j][i]==="a"){cx.fillStyle="#05070f"; cx.fillRect(ox+i*z+1,y+j*z+1,z,z);} for(let j=0;j<5;j++) for(let i=0;i<3;i++) if(g[j][i]==="a"){cx.fillStyle=col; cx.fillRect(ox+i*z,y+j*z,z,z);}} ox+=4*z;}}
 function quake(n){if(!reduced) shakeT=Math.max(shakeT,n);}
 let rings=[], erupt=0, DESC=null;
 function ring(color,speed,max){if(!reduced) rings.push({r:2,v:speed,max,color});}
@@ -6249,7 +6291,9 @@ function frame(){
     if(pr>=1&&!DESC.fx){DESC.fx=true; DESC.landed=performance.now(); impact(t);}
   } else drillY+=(targetY-drillY)*0.08;
   const X=drillX(), rising=!!DESC&&!DESC.fx;
-  const focus=mobile?(DESC?0.5:0.26):(DESC?0.58:0.55), camY=Math.max(0,Math.min(WORLD_H-H,Math.round(drillY-H*focus)));
+  const want=DESC?0.52:document.body.classList.contains("home")?(mobile?0.355:0.46):0.2;
+  camF+=(want-camF)*(reduced?1:0.14);
+  const camY=Math.max(0,Math.min(WORLD_H-H,Math.round(drillY-H*camF)));
   let ox=0,oy=0; if(shakeT>0){shakeT--; ox=(tick%2?1:-1)*(shakeT>6?2:1); oy=(tick%3)-1;}
   cx.setTransform(1,0,0,1,ox,oy);
   cx.drawImage(world,0,camY,W,H,0,0,W,H);
@@ -6292,11 +6336,18 @@ function frame(){
   for(const s of smoke){s.x+=s.vx; s.y+=s.vy; s.l--; if(s.l%40===0) s.s++; cx.fillStyle=s.l>100?"#4a4366":s.l>50?"#3a3456":"#2a2640"; const z=s.s; cx.fillRect(Math.round(s.x),Math.round(s.y-camY),z,z); cx.fillRect(Math.round(s.x)+z,Math.round(s.y-camY)+1,z-1,z-1);}
   embers=embers.filter(e=>e.l>0);
   for(const e of embers){e.x+=e.vx; e.y+=e.vy; e.vy+=.012; e.l--; cx.fillStyle=e.l>45?"#ffe9a8":e.l>20?"#ff8a3d":"#8a3a2a"; cx.fillRect(Math.round(e.x),Math.round(e.y-camY),1,1);}
-  // the blob
+  // speed lines while rising
+  if(rising&&!reduced){const inLava=drillY>yCrater; for(let i=0;i<7;i++){const sx=X+(Math.random()<.5?-1:1)*(8+Math.random()*Math.min(70,W*.2)), sy=Math.random()*H, len=6+Math.random()*14; cx.fillStyle=inLava?(i%2?"#ffe2a0":"#ffc070"):(i%2?"#e8f1ff":"#9aa8d8"); cx.fillRect(Math.round(sx),Math.round(sy),1,Math.round(len));}}
+  // the rock
   const bob=(!moving&&!reduced&&((tick>>4)%2))?1:0, by=Math.round(drillY-camY)-bob;
-  sprite(rising?ROCK_UP:ROCKP,X-5,by-5);
+  if(squashT>0) squashT--;
+  const sy=rising&&!reduced?1.3:(squashT>0?0.7+0.3*(1-squashT/8):1), sxs=rising&&!reduced?0.85:(squashT>0?1.25-0.25*(1-squashT/8):1);
+  spriteS(rising?ROCK_UP:ROCKP,X,by,sxs,sy);
   if(!reduced&&!rising&&(tick>>6)%9===0){cx.fillStyle="#8a827a"; cx.fillRect(X-2,by-2,2,2); cx.fillRect(X+2,by-2,2,2);}  // blink
   if(moleSay>0){moleSay--; cx.fillStyle="#fff6e0"; cx.font="8px VT323, monospace"; cx.fillText(moleText,X+7,by-6);}
+  // "+points" pops
+  pops=pops.filter(q=>q.l>0);
+  for(const q of pops){q.l--; q.y-=q.l>30?1.1:0.3; if(q.l<10&&(q.l&1)) continue; pixText(q.t,Math.round(X-q.t.length*4.5),Math.round(q.y-camY),2,q.c);}
   // rings and sparks
   rings=rings.filter(r=>r.r<r.max);
   for(const r of rings){r.r+=r.v; cx.fillStyle=r.color; const steps=Math.max(16,Math.round(r.r*4)); for(let i=0;i<steps;i++){const a=i/steps*Math.PI*2; cx.fillRect(Math.round(X+Math.cos(a)*r.r),Math.round(drillY-camY+Math.sin(a)*r.r*.8),1,1);}}
@@ -6306,6 +6357,8 @@ function frame(){
   requestAnimationFrame(frame);
 }
 addEventListener("resize",resize);
+(function(){const c=document.createElement("canvas"); c.width=1; c.height=4; const g=c.getContext("2d"); g.fillStyle="rgba(0,0,0,0.32)"; g.fillRect(0,3,1,1);
+  const el=document.getElementById("scan"); if(el){el.style.backgroundImage="url("+c.toDataURL()+")"; el.style.backgroundSize="1px 4px";}})();
 resize(); requestAnimationFrame(frame);
 
 
@@ -6409,7 +6462,7 @@ document.addEventListener("click",e=>{const b=e.target.closest("button,a.btnlink
 /* ---------- Game (Cosmillion format: 7 prompts, 25 seconds, one answer each) ---------- */
 const $=id=>document.getElementById(id);
 const SCREENS=["startScreen","playScreen","revealScreen","endScreen","archiveScreen"];
-function show(id){SCREENS.forEach(s=>$(s).classList.toggle("hidden",s!==id)); scrollTo({top:0}); if(id==="startScreen"||id==="archiveScreen") setTopLine();}
+function show(id){SCREENS.forEach(s=>$(s).classList.toggle("hidden",s!==id)); document.body.classList.toggle("home",id==="startScreen"); scrollTo({top:0}); if(id==="startScreen"||id==="archiveScreen") setTopLine();}
 /* Top-left line under the logo: the daily eruption number, or which Play again game this is. */
 function playLabel(g){return "Play again #"+(g.num||1);}
 function setTopLine(g){
@@ -6457,7 +6510,7 @@ function ask(){
   $("qText").textContent=p.q;
   $("ansInput").value=""; $("ansInput").disabled=false;
   fb("","");
-  show("playScreen"); $("ansInput").focus(); updateHud();
+  show("playScreen"); $("ansInput").focus({preventScroll:true}); updateHud();
   saveRun(G.qi,true);   // a refresh from here counts this question as no answer
   G.deadline=performance.now()+QTIME*1000;
   cancelAnimationFrame(raf);
@@ -6800,7 +6853,7 @@ function secondTry(msg,entry,raw){
     SFX.wrong();
     G.tries=1;
     fb('"'+raw+'" doesn\'t seem to fit this category. '+msg+" You get one more try.","bad");
-    $("ansInput").value=""; $("ansInput").focus();
+    $("ansInput").value=""; $("ansInput").focus({preventScroll:true});
     return true;
   }
   return false;
@@ -6849,11 +6902,11 @@ function score(e, raw, timedOut, why){
   startDescent(km, tier, reveal);
 }
 const IMPACT=[
-  {hold:420,quake:6},{hold:420,quake:0},{hold:460,quake:4},{hold:520,quake:9},
-  {hold:700,quake:13,flash:"#ffd166",fo:.3},{hold:900,quake:18,flash:"#ff7a3d",fo:.45},{hold:1300,quake:26,flash:"#ffffff",fo:.9}];
+  {hold:360,quake:6},{hold:360,quake:3},{hold:380,quake:5},{hold:430,quake:9},
+  {hold:580,quake:13,flash:"#ffd166",fo:.3},{hold:760,quake:18,flash:"#ff7a3d",fo:.45},{hold:1080,quake:26,flash:"#ffffff",fo:.9}];
 function impact(t){
   const fx=IMPACT[t];
-  SFX.impact(t); SFX.depth(curKm);
+  SFX.impact(t); SFX.depth(curKm); squashT=8; if(TIERS[t].pts) pops.push({t:"+"+TIERS[t].pts,y:drillY-12,l:46,c:["#ffffff","#d9c2a8","#e8b48a","#d8d2cc","#ffd166","#ff9a3d","#6fe3d2"][t]});
   quake(fx.quake);
   if(t===0){spray(16,["#6b625a","#4a4642","#8a8079"],{v:.8,life:20,grav:.05}); moleSay=70; moleText="hm.";}
   if(t===1) spray(22,["#8a6a4f","#5a4330","#a07d5e"],{v:1.2,size:1});
@@ -6882,7 +6935,7 @@ addEventListener("pointerdown",()=>{if(document.body.classList.contains("drillin
 addEventListener("keydown",e=>{if(document.body.classList.contains("drilling")&&(e.key===" "||e.key==="Enter"||e.key==="Escape")){e.preventDefault(); e.stopImmediatePropagation(); skipFx();}},true);
 function startDescent(km,t,done){
   const from=drillY, to=kmToY(km), dist=Math.abs(to-from);
-  DESC={from,to,t0:performance.now(),dur:reduced?200:(dist<1?280:Math.min(1250,420+dist*1.6+t*70)),tier:t,done,fx:false};
+  DESC={from,to,t0:performance.now(),dur:reduced?200:(dist<1?240:Math.min(980,300+dist*1.25+t*55)),tier:t,done,fx:false};
   if(dist>=1) SFX.drill(DESC.dur/1000,t);
   document.body.classList.add("drilling");
 }
@@ -6936,7 +6989,7 @@ function reveal(){
   $("btnNext").textContent=G.qi<NQ-1?"Keep rising":"See how high you got";
   $("sWord").classList.toggle("misprint", r.tier>=5);
   $("sPts").classList.toggle("misprint", r.tier>=5);
-  show("revealScreen"); $("btnNext").focus();
+  show("revealScreen"); $("btnNext").focus({preventScroll:true});
   const bd=$("sBadge"); bd.classList.remove("pop"); void bd.offsetWidth; bd.classList.add("pop");
 }
 function next(){G.qi++; if(G.qi<NQ) ask(); else finish();}
@@ -7063,8 +7116,7 @@ function openArchive(){
 function nextPlayNum(){const n=(load("quarrillion3:playCount")||0)+1; save("quarrillion3:playCount",n); return n;}
 function refreshFree(){
   const el=$("freeLeft"); if(!el) return;
-  $("btnFree").textContent=getRun("free")?"Continue extra game":"Play again";
-  el.textContent="7 random prompts, unlimited and free";
+  el.textContent="7 random prompts, unlimited and free"; $("btnFree").textContent=getRun("free")?"Continue extra game":"Play again ∞";
 }
 function playUnlimited(){
   const run=getRun("free"); if(run){resumeRun(run);return;}   // refreshing resumes the same game
@@ -7081,10 +7133,11 @@ function startDaily(){
 /* ---------- Wiring ---------- */
 $("dateLine").textContent="THE DAILY ERUPTION · #"+(DAY+1);
 $("digBtnSub").textContent="Eruption #"+(DAY+1)+" · press Enter";
+{const st=load("quarrillion3:streak"); const n=st&&st.n&&(st.last===DAY||st.last===DAY-1)?st.n:0; $("kStat").textContent="ERUPTION #"+(DAY+1)+" · STREAK "+n;}
 $("ranks").innerHTML=TIERS.slice(1).map((t,i)=>`<div class="rank">${badge(i+1)}<span><b>${t.name}.</b> <span class="dim">${t.line}</span></span><span class="pts">+${t.pts}</span></div>`).join("");
 $("ansForm").addEventListener("submit",e=>{e.preventDefault(); submit();});
 $("btnYes").onclick=()=>{if(pending&&!locked) score(pending,$("ansInput").value.trim());};
-$("btnNo").onclick=()=>{pending=null; $("confirmBox").classList.add("hidden"); resumeTimer(); fb("Okay. Fix the spelling, then press Enter.",""); $("ansInput").focus(); $("ansInput").select();};
+$("btnNo").onclick=()=>{pending=null; $("confirmBox").classList.add("hidden"); resumeTimer(); fb("Okay. Fix the spelling, then press Enter.",""); $("ansInput").focus({preventScroll:true}); $("ansInput").select();};
 $("ansInput").addEventListener("input",()=>{if(pending){pending=null;$("confirmBox").classList.add("hidden"); resumeTimer();}});
 addEventListener("keydown",e=>{
   if(e.key==="Escape"&&pending) $("btnNo").click();
