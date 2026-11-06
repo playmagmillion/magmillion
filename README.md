@@ -14,12 +14,12 @@ Looking for more games like Krillion? See [games like Krillion](https://playmagm
 - Misspelled answers are corrected before the web check, using Wikipedia's "did you mean" and Datamuse's spell matcher, and answers that are another name for something (napoleon for mille-feuille) are matched through Wikipedia redirects, article text, and Wikidata aliases.
 - An answer that doesn't fit gets one more try before it counts as a Dud. Duds show a link that opens a GitHub issue, so a missed answer can be added to the list.
 - You start as a rock sunk in the lava 8 km down inside a volcano. Rarer answers push you up through the lava. "Name a fruit": Apple is +10, Miracle fruit is +100.
-- 200 points bursts you out of the crater. Seven perfect answers (700 points) reach the Kármán line, where space begins, 100 km up, past real landmarks like Mount Everest, the stratosphere, and the Hunga Tonga eruption plume.
+- Only a near-perfect game breaks free: 650 points bursts you out of the lava. Seven perfect answers (700 points) reach the Kármán line, where space begins, 100 km up, past real landmarks like Mount Everest, the stratosphere, and the Hunga Tonga eruption plume.
 - One daily eruption a day counts toward your streak. Share your height. Missed a day? Play it from the Archive. Play again is free and unlimited: each one starts over from the bottom of the volcano with 7 random prompts. If you refresh in the middle of the daily game, it picks up where you left off.
 
 ## The eruption
 
-The scene is a cut-away of a volcano filled with lava. You start as a rock in the magma chamber and rise through the conduit and the lava lake, past drifting crystals and gas bubbles, and once you pass 200 points the eruption column launches you out of the crater into the sky: the ash plume, the cloud layer, the stratosphere, and the mesosphere, with stars, meteors, and noctilucent clouds near the top. After you answer, the panel slides away and the whole screen follows your rise. Rarer answers get bigger effects, up to rings, a rainbow banner, and a full eruption for One in a Magmillion. Tap or press Enter to skip ahead.
+The scene is a cut-away of a volcano filled with lava. You start as a rock in the magma chamber and rise through the conduit and the lava lake, past drifting crystals and gas bubbles, and only a near-perfect game, 650 points, launches you out of the lava into the sky: the ash plume, the cloud layer, the stratosphere, and the mesosphere, with stars, meteors, and noctilucent clouds near the top. After you answer, the panel slides away and the whole screen follows your rise. Rarer answers get bigger effects, up to rings, a rainbow banner, and a full eruption for One in a Magmillion. Tap or press Enter to skip ahead.
 
 ## Sound
 
