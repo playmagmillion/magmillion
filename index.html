@@ -344,7 +344,7 @@ body.urgent .heat{animation:kheat 1s step-end infinite}
     <ul class="how">
       <li>Seven prompts, the same for everyone today, with new ones every day.</li>
       <li>Type any real thing that fits. If it isn't on our list, the game checks Wikipedia, Wikidata, Wiktionary, WordNet, and ConceptNet, and it counts if any of them back you up. Spelling is forgiven: the game asks "Did you mean...?" If an answer doesn't fit, you get one more try.</li>
-      <li>You start as magma deep under a volcano. Rarer answers push you higher. Common ones barely bubble.</li>
+      <li>You start as a rock sunk in the lava deep inside a volcano. Rarer answers push you up through the lava. Common ones barely bubble.</li>
       <li>200 points bursts you out of the crater and into the sky. Seven perfect answers, 700 points, reach the edge of space, 100 km up.</li>
       <li>One daily eruption counts toward your streak. Play again as much as you like, free.</li>
     </ul>
@@ -5898,7 +5898,7 @@ PROMPTS.push(...MORE);
 
 /* ---------- Tiers and badges ---------- */
 const TIERS = [
-  {name:"Dud", pts:0, color:"#4a3f37", sq:"⬛", line:"The magma didn't budge."},
+  {name:"Dud", pts:0, color:"#4a3f37", sq:"⬛", line:"The rock didn't budge."},
   {name:"Simmer", pts:10, color:"#8a6a4f", sq:"🟫", line:"Everyone said this one."},
   {name:"Bubble", pts:15, color:"#b07a52", sq:"🟤", line:"Solid and familiar."},
   {name:"Rumble", pts:30, color:"#9a948d", sq:"⬜", line:"Took a second thought."},
@@ -6018,12 +6018,13 @@ function load(k){try{return JSON.parse(localStorage.getItem(k));}catch(e){return
 function save(k,v){try{localStorage.setItem(k,JSON.stringify(v));}catch(e){}}
 
 /* ---------- Eruption model ----------
-   You start as a blob of magma deep under the volcano. Points push you up the vent;
+   You start as a rock sunk in the lava deep inside the volcano. Points push you up through the lava;
    200 points bursts you out of the crater, and 700 reaches the edge of space (100 km). */
 const PEAK=700, CRATER_PTS=200;
 const SEGS=[
-  {p0:0,  p1:100,a0:-8, a1:-3, name:"Magma chamber"},
-  {p0:100,p1:200,a0:-3, a1:0,  name:"Volcano vent"},
+  {p0:0,  p1:90, a0:-8, a1:-4, name:"Magma chamber"},
+  {p0:90, p1:160,a0:-4, a1:-1, name:"Conduit"},
+  {p0:160,p1:200,a0:-1, a1:0,  name:"Lava lake"},
   {p0:200,p1:330,a0:0,  a1:3,  name:"Ash plume"},
   {p0:330,p1:460,a0:3,  a1:12, name:"Cloud layer"},
   {p0:460,p1:580,a0:12, a1:50, name:"Stratosphere"},
@@ -6052,7 +6053,7 @@ const BAYER=[[0,8,2,10],[12,4,14,6],[3,11,1,9],[15,7,13,5]];
 const dith=(x,y,t)=>t*16>BAYER[y&3][x&3];
 let S=3,W=400,H=260,PXP=1.6,BOT=90,TOPM=160,WORLD_H=1800,world=null,mobile=false,tick=0;
 let moleText="pop!";
-let drillY=0,targetY=0,curKm=-8,sparks=[],embers=[],smoke=[],shakeT=0,twinkle=[],lavaPx=[],chamberPx=[],meteors=[],moleSay=0;
+let bubbles=[], drillY=0,targetY=0,curKm=-8,sparks=[],embers=[],smoke=[],shakeT=0,twinkle=[],lavaPx=[],chamberPx=[],meteors=[],moleSay=0;
 function hash(x,y){let h=x*374761393+y*668265263;h=(h^(h>>>13))*1274126177;return((h^(h>>>16))>>>0)/4294967296;}
 function hex(c){return [parseInt(c.slice(1,3),16),parseInt(c.slice(3,5),16),parseInt(c.slice(5,7),16)];}
 const yOfPts=p=>Math.round(WORLD_H-BOT-p*PXP);
@@ -6062,7 +6063,13 @@ function yOfKm(km){return yOfPts(ptsOfAlt(km));}
 function drillX(){return Math.round(W*(mobile?0.5:0.3));}
 function volX(){return drillX();}
 const GROUND_PTS=150;                                  // the land around the volcano
-const coneHalf=p=>p<GROUND_PTS?W:Math.round(9+(W*0.62)*Math.pow((CRATER_PTS-p)/(CRATER_PTS-GROUND_PTS),1.15));
+// half-width of the lava inside the volcano: wide magma chamber at the bottom, narrow at the crater
+function lavaHalf(p){const top=Math.round(W*0.07), base=top+W*0.41*Math.pow(Math.max(0,Math.min(1,(CRATER_PTS-p)/(CRATER_PTS-12))),1.2);
+  if(p>=12) return Math.round(base); const k=(12-p)/26; return k>=1?-1:Math.round(base*Math.sqrt(1-k*k));}
+const coneHalf=p=>p<GROUND_PTS?W:Math.round(Math.round(W*0.07)+9+(W*0.62)*Math.pow((CRATER_PTS-p)/(CRATER_PTS-GROUND_PTS),1.15));
+// lava gets hotter, and brighter, the deeper you go
+const LAVASTOPS=[[-14,"#fff6d8"],[10,"#fff0bd"],[45,"#ffd166"],[85,"#ffb347"],[125,"#ff8a3d"],[160,"#e8601f"],[185,"#c24a1a"],[194,"#8a3416"]].map(([p,c])=>[p,hex(c)]);
+function lavaCol(p,x,y){for(let i=0;i<LAVASTOPS.length-1;i++){const [p0,c0]=LAVASTOPS[i],[p1,c1]=LAVASTOPS[i+1]; if(p<=p1){const t=Math.max(0,(p-p0)/(p1-p0)); return dith(x,y,t)?c1:c0;}} return LAVASTOPS[LAVASTOPS.length-1][1];}
 const SKYSTOPS=[[140,"#6a2c34"],[175,"#55263c"],[210,"#43224a"],[260,"#33205a"],[330,"#26225a"],[400,"#1c2352"],[460,"#141c44"],[520,"#0f1636"],[580,"#0b1029"],[640,"#080b1e"],[700,"#05070f"],[900,"#020308"]];
 const SKYC=SKYSTOPS.map(([p,c])=>[p,hex(c)]);
 function skyCol(p,x,y){
@@ -6071,6 +6078,10 @@ function skyCol(p,x,y){
 }
 const SPR={
   crystal:{p:{a:"#ffe9a8",b:"#ff9a4a"},m:[".a.","aba",".b."]},
+  olivine:{p:{a:"#c8f07a",b:"#8cc63f",c:"#4e7a1e"},m:[".a.","abc","bbc",".c."]},
+  feldspar:{p:{a:"#ffffff",b:"#e6e0d4",c:"#a89f90"},m:["ab.","bbc",".cc"]},
+  xeno:{p:{a:"#8a817b",b:"#5e5650",c:"#2e2a27"},m:[".cc.","cabc","cbbc",".cc."]},
+  pumice:{p:{a:"#e2dccf",b:"#b8b0a0",c:"#7a7266"},m:[".aab.","abcab","bacbc",".bbc."]},
   gemP:{p:{a:"#e0c8ff",b:"#b98cff",c:"#6a4aa8"},m:[".a.","abc",".c."]},
   stone:{p:{a:"#4a3236",b:"#3a262a",c:"#2a1b1e"},m:[".aab.","abbbc","bbbcc",".ccc."]},
   bubble:{p:{a:"#ffe9a8",b:"#ffb347"},m:[".a.","a.b",".b."]},
@@ -6087,51 +6098,47 @@ function buildWorld(){
   const g=c.getContext("2d"), img=g.createImageData(W,WORLD_H), d=img.data;
   const put=(x,y,col)=>{if(x<0||x>=W||y<0||y>=WORLD_H) return; const o=(y*W+x)*4; d[o]=col[0];d[o+1]=col[1];d[o+2]=col[2];d[o+3]=255;};
   const X=drillX();
-  const chTop=yOfPts(82), chBot=yOfPts(-14), chCy=(chTop+chBot)/2, chRy=(chBot-chTop)/2, chRx=Math.min(W*0.46,Math.max(70,chRy*1.6));
   const yGround=yOfPts(GROUND_PTS), yCrater=yOfPts(CRATER_PTS);
-  const ROCK=["#2a1a1e","#24161a","#2e1c20","#261719"].map(hex), WARM=hex("#4a1f16"), RIM=hex("#5a2414");
-  const MAG=["#fff0bd","#ffd166","#ffb347","#ff7a3d","#c94a1a"].map(hex);
-  const CONE_L=[hex("#3a2232"),hex("#35202f")], CONE_R=hex("#271826"), CONE_EDGE=hex("#4a2a3a"), CONDUIT=hex("#1a0b0b"), CONDUIT_W=hex("#3a1410");
+  const ROCK=["#2a1a1e","#24161a","#2e1c20","#261719"].map(hex);
+  const WALL=[hex("#3a2226"),hex("#33201f")], WALL_HOT=hex("#7a2a14"), WALL_GLOW=hex("#b8401a");
+  const CONE_L=[hex("#3a2232"),hex("#35202f")], CONE_R=hex("#271826"), CONE_EDGE=hex("#4a2a3a");
+  const CRUST=hex("#24120e"), CRUST2=hex("#331a12"), CRACK=hex("#ff7a3d");
   const far=x=>yGround-14-Math.round(7*Math.sin(x*.035)+5*Math.sin(x*.09+1)+3*Math.sin(x*.21));
   const near=x=>yGround-5-Math.round(4*Math.sin(x*.05+2)+3*Math.sin(x*.13));
   chamberPx=[];
   for(let y=0;y<WORLD_H;y++){
     const p=ptsOfY(y);
+    const jl=Math.round(3*Math.sin(y*.11)+2*Math.sin(y*.27+1)), jr=Math.round(3*Math.sin(y*.13+2)+2*Math.sin(y*.23));
     for(let x=0;x<W;x++){
-      let col;
+      let col=null;
       const dx=x-X, ax=Math.abs(dx);
-      if(p>=GROUND_PTS || y<yGround){            // above ground: sky, hills, and the cone
+      const lh0=p<CRATER_PTS?lavaHalf(p):-1, lh=lh0>0?lh0+(dx<0?jl:jr):-1;
+      if(lh>0&&ax<=lh){                            // inside the volcano: lava
+        if(p>CRATER_PTS-8){ col=hash(x,y)>.82||((x*7+y*3)%23===0)?CRACK:(dith(x,y,.5)?CRUST:CRUST2); if(p<CRATER_PTS-6.5) col=dith(x,y,.5)?CRACK:CRUST2; }
+        else { col=lavaCol(p+3.5*Math.sin(x*.06+p*.25),x,y); if(hash(Math.floor(x/7),Math.floor(y/2))>.965) col=col.map(v=>Math.max(0,v-26)); if(hash(x,y)>.975) chamberPx.push([x,y]); }
+        if(ax>=lh-1) col=WALL_GLOW;
+      } else if(lh>0&&ax<=lh+8){                   // the volcano's inner wall
+        col=ax<=lh+2?WALL_HOT:WALL[dith(x,y,.5)?0:1];
+        if(hash(x,y)>.97) col=col.map(v=>Math.min(255,v+20));
+      } else if(p>=GROUND_PTS || y<yGround){       // outside, above ground: sky, hills, and the cone
         col=skyCol(p,x,y);
         if(p<CRATER_PTS+40){ if(y>far(x)) col=hex("#140f22"); if(y===far(x)+1) col=hex("#1c1530"); if(y>near(x)) col=hex("#100c1a"); }
         const hw=coneHalf(p);
-        if(p<CRATER_PTS && ax<=hw){
-          col=dx<0?CONE_L[dith(x,y,.5)?0:1]:CONE_R;
-          if(ax>=hw-1) col=CONE_EDGE;
-          const n=hash(x,y); if(n>.985) col=col.map(v=>Math.min(255,v+18));
-          if(ax<=3) col=ax===3?CONDUIT_W:CONDUIT;
-        }
-        if(Math.abs(y-yCrater)<=1&&ax<=9&&ax>3) col=hex(y===yCrater-1?"#6a2b24":"#4a2a3a");
+        if(p<CRATER_PTS && ax<=hw){ col=dx<0?CONE_L[dith(x,y,.5)?0:1]:CONE_R; if(ax>=hw-1) col=CONE_EDGE; if(hash(x,y)>.985) col=col.map(v=>Math.min(255,v+18)); }
       } else {                                     // underground
         const wob=Math.round(2*Math.sin(x*.045)+Math.sin(x*.13)), band=Math.floor((y+wob)/14);
         col=ROCK[((band%4)+4)%4];
-        const ex=dx/chRx, ey=(y-chCy)/chRy, e=Math.max(0,Math.sqrt(ex*ex+ey*ey)+0.05*Math.sin(x*.21+y*.13));
-        if(e<1.35&&e>=1){ if(dith(x,y,(1.35-e)/0.35)) col=WARM; }
-        if(e<1){
-          const k=Math.min(4,Math.floor(e*4.6)), t=e*4.6-k;
-          col=MAG[dith(x,y,t>0.7?(t-0.7)/0.3:0)?Math.min(4,k+1):k];
-          if(e>0.96) col=RIM;
-          if(hash(x,y)>.93) chamberPx.push([x,y,k]);
-        } else if(ax<=3 && y<chCy) col=ax===3?CONDUIT_W:CONDUIT;
-        const n=hash(x,y); if(e>=1){ if(n>.985) col=col.map(v=>Math.min(255,v+16)); else if(n<.012) col=col.map(v=>Math.max(0,v-14)); }
+        const n=hash(x,y); if(n>.985) col=col.map(v=>Math.min(255,v+16)); else if(n<.012) col=col.map(v=>Math.max(0,v-14));
         if(y===yGround) col=hex("#2a1f2e");
       }
       put(x,y,col);
     }
   }
   const r=mulberry32(4242), N=k=>Math.max(1,Math.round(k*W/400));
-  // rock detail underground
-  for(let i=0;i<N(70);i++){const x=Math.floor(r()*W), y=yGround+4+Math.floor(r()*(chBot-yGround)); const ex=(x-X)/chRx, ey=(y-chCy)/chRy; if(ex*ex+ey*ey<1.5||Math.abs(x-X)<8) continue; stamp(img,W,i%5===0?SPR.crystal:i%7===0?SPR.gemP:SPR.stone,x,y);}
-  for(let i=0;i<N(26);i++){const x=Math.floor(r()*W), y=chBot+6+Math.floor(r()*Math.max(4,WORLD_H-chBot-10)); stamp(img,W,SPR.stone,x,y);}
+  // things floating in the lava: olivine and feldspar crystals, xenoliths, pumice
+  for(let i=0;i<N(90);i++){const p=4+r()*(CRATER_PTS-16), y=yOfPts(p), lh=lavaHalf(p)-5, x=Math.round(X+(r()*2-1)*lh); if(Math.abs(x-X)<9) continue;
+    stamp(img,W,i%4===0?SPR.olivine:i%4===1?SPR.feldspar:i%4===2?SPR.xeno:SPR.pumice,x,y);}
+  for(let i=0;i<N(40);i++){const x=Math.floor(r()*W), y=yGround+4+Math.floor(r()*(WORLD_H-yGround-8)); const p=ptsOfY(y); if(p<CRATER_PTS&&Math.abs(x-X)<=lavaHalf(p)+10) continue; stamp(img,W,SPR.stone,x,y);}
   // clouds: dark ash clouds near the crater, moonlit clouds higher, thin wisps in the stratosphere
   const cloud=(cxp,cyp,w,h,top,body,shade)=>{const k=3+Math.floor(r()*3); for(let n=0;n<k;n++){const ox=cxp+(n-(k-1)/2)*w*0.42, oy=cyp+(r()-.5)*h*.5, rw=w*(.32+r()*.18), rh=h*(.55+r()*.3);
     for(let y=Math.floor(oy-rh);y<=oy+rh;y++) for(let x=Math.floor(ox-rw);x<=ox+rw;x++){const q=((x-ox)/rw)**2+((y-oy)/rh)**2; if(q>1) continue; put(x,y,q>.8&&y>oy?shade:(y<oy-rh*.4?top:body));}}};
@@ -6150,7 +6157,7 @@ function buildWorld(){
   g.putImageData(img,0,0);
   // lava that spills down the cone, stored so it can flicker each frame
   lavaPx=[];
-  [[-1,.75],[1,.55]].forEach(([dir,len])=>{let x=X+dir*5, y=yCrater+1; const end=yCrater+Math.round((yGround-yCrater)*len);
+  [[-1,.75],[1,.55]].forEach(([dir,len])=>{let x=X+dir*(lavaHalf(CRATER_PTS-1)+6), y=yCrater+1; const end=yCrater+Math.round((yGround-yCrater)*len);
     while(y<end){lavaPx.push([x,y]); y++; const hw=coneHalf(ptsOfY(y)); if(hash(x,y)>.35) x+=dir; if(Math.abs(x-X)>hw-2) x-=dir;}});
   // stars, thicker as you climb
   twinkle=[];
@@ -6162,19 +6169,23 @@ function resize(){
   mobile=innerWidth<=760;
   S=Math.max(2,innerWidth/400); W=Math.ceil(innerWidth/S); H=Math.ceil(innerHeight/S);
   cv.width=W; cv.height=H;
-  PXP=Math.max(1.5,H*0.5/100); BOT=Math.round(H*(mobile?0.45:0.45)); TOPM=Math.round(H*0.75);
+  PXP=Math.max(1.5,H*0.5/100); BOT=Math.round(H*(mobile?0.8:0.45)); TOPM=Math.round(H*0.75);
   WORLD_H=Math.round(BOT+PEAK*PXP+TOPM);
   world=buildWorld(); buildNotes();
   targetY=kmToY(curKm); drillY=targetY;
 }
 /* Height notes along the eruption, like a field guide */
 const NOTES=[
-  [-7.2,"L","the magma chamber: rock melted at over 1,000 °C"],
-  [-5,"R","gas bubbles in the magma push it upward"],
-  [-3,"L","THE VENT · a pipe of magma through solid rock",1],
-  [-1.5,"R","ground level around the volcano"],
-  [-0.6,"L","obsidian forms where lava cools too fast to crystallize"],
-  [0,"R","THE CRATER · the eruption breaks out",1],
+  [-7.6,"L","THE MAGMA CHAMBER · 8 km under the crater",1],
+  [-6.6,"R","basalt magma is about 1,200 °C"],
+  [-5.4,"L","green olivine crystals grow as the magma cools"],
+  [-4,"L","THE CONDUIT · magma forces its way up",1],
+  [-3,"R","gas bubbles swell as the pressure drops"],
+  [-2,"L","xenoliths: chunks of wall rock carried up"],
+  [-1,"L","THE LAVA LAKE",1],
+  [-0.55,"R","pumice is so full of gas bubbles it floats on water"],
+  [-0.15,"L","the lake's surface cools into a black crust"],
+  [0,"R","THE CRATER · now you're a volcanic bomb",1],
   [0.83,"L","the Burj Khalifa, the tallest building: 0.83 km"],
   [2,"R","ash from the plume can travel hundreds of kilometers"],
   [8.85,"L","the summit of Mount Everest: 8.8 km"],
@@ -6210,10 +6221,10 @@ function placeNotes(camY){
     el.style.transform=`translateY(${Math.round(y-8)}px)`;
   }
 }
-/* the player: a blob of magma with a face */
-const BLOB={p:{a:"#fff0bd",b:"#ffd166",c:"#ff9a3d",d:"#5a1a0a",e:"#2a0f08",w:"#ffffff"},
- m:["...ddd...","..dcccd..",".dcbbbcd.","dcbwbbbcd","dcbebebcd","dcbbbbbcd","dcbbabbcd",".dcbbbcd.","..ddcdd..","....d...."]};
-const BLOB_UP={p:BLOB.p,m:["....d....","...dcd...","..dcbcd..",".dcbwbcd.","dcbebebcd","dcbbbbbcd","dcbbabbcd",".dcbbbcd.","..dcccd..","...ddd..."]};
+/* the player: a lump of rock with a face, glowing where the lava heats it */
+const ROCKP={p:{a:"#b4ada5",b:"#8a827a",c:"#615a53",d:"#2a2420",e:"#ffffff",k:"#111111",o:"#ff8a3d",y:"#ffd166"},
+ m:["...dddd...","..dabbbdd.",".dabbbbbcd","dabekbbekd","dbbkkbbkkd","dbbbbbbbcd","dcbbobbccd",".dcboycccd","..dcccccd.","...ddddd.."]};
+const ROCK_UP={p:ROCKP.p,m:["...dddd...","..dabekdd.",".dabkkbbcd","dabbbbekcd","dbbbbbkkcd","dbbbbbbbcd","dcbbobbccd",".dcboycccd","..dcccccd.","...ddddd.."]};
 function sprite(spr,x,y,flip){spr.m.forEach((row,j)=>{for(let i=0;i<row.length;i++){const ch=row[flip?row.length-1-i:i]; if(ch==="."||!spr.p[ch]) continue; cx.fillStyle=spr.p[ch]; cx.fillRect(x+i,y+j,1,1);}});}
 function quake(n){if(!reduced) shakeT=Math.max(shakeT,n);}
 let rings=[], erupt=0, DESC=null;
@@ -6232,7 +6243,7 @@ function frame(){
     if(!reduced&&pr<1){ // lava trail grows with rarity
       const n=t>=6?6:t>=5?4:t>=4?3:t>=2?2:1;
       const col=[["#c94a1a"],["#ff7a3d","#c94a1a"],["#ff9a3d","#ffd166"],["#ffb347","#ffd166"],["#ffd166","#fff0bd"],["#ff7a3d","#ffb347","#fff0bd"],["#6fe3d2","#ffffff","#ffd166","#ff6b8a"]][t];
-      if(tick%(t>=4?1:2)===0) for(let i=0;i<n;i++) sparks.push({x:drillX()+(Math.random()-.5)*5,y:drillY+6,vx:(Math.random()-.5)*(t>=5?1.6:.9),vy:.4+Math.random()*.8,l:(t>=5?22:15)+Math.random()*10|0,c:col[i%col.length],s:t>=5&&Math.random()<.3?2:1,g:.05});
+      if(tick%(t>=4?1:2)===0) for(let i=0;i<n;i++) if(drillY>yOfPts(CRATER_PTS)) bubbles.push({x:drillX()+(Math.random()-.5)*6,y:drillY+7,v:.15+Math.random()*.3,s:Math.random()<.3?2:1,ph:Math.random()*6}); else sparks.push({x:drillX()+(Math.random()-.5)*5,y:drillY+6,vx:(Math.random()-.5)*(t>=5?1.6:.9),vy:.4+Math.random()*.8,l:(t>=5?22:15)+Math.random()*10|0,c:col[i%col.length],s:t>=5&&Math.random()<.3?2:1,g:.05});
       if(t>=4) shakeT=Math.max(shakeT,t>=6?4:2);
     }
     if(pr>=1&&!DESC.fx){DESC.fx=true; DESC.landed=performance.now(); impact(t);}
@@ -6249,11 +6260,17 @@ function frame(){
   if(!reduced&&yMet>-60&&yMet<H+60&&Math.random()<.03) meteors.push({x:Math.random()*W,y:yOfKm(80+Math.random()*15),l:22});
   meteors=meteors.filter(m=>m.l>0);
   for(const m of meteors){m.x+=2.2; m.y+=1.1; m.l--; for(let k=0;k<6;k++){cx.fillStyle=k===0?"#ffffff":k<3?"#ffd166":"#6a5a8a"; cx.fillRect(Math.round(m.x-k*2.2),Math.round(m.y-camY-k*1.1),1,1);}}
-  // magma chamber shimmer and the glowing vent below the blob
-  const yCrater=yOfPts(CRATER_PTS), chTop=yOfPts(82);
-  if(!reduced) for(let i=0;i<30&&chamberPx.length;i++){const [x,y,k]=chamberPx[(Math.random()*chamberPx.length)|0]; const yy=y-camY; if(yy<0||yy>H) continue; cx.fillStyle=k<=1?"#ffffff":k===2?"#fff0bd":"#ffd166"; cx.fillRect(x,yy,1,1);}
-  const top=Math.max(Math.round(drillY)+4,yCrater);
-  for(let y=Math.max(top,camY);y<Math.min(chTop+6,camY+H);y++){const f=reduced?1:((y+(tick>>1))%9); for(let x=-2;x<=2;x++){cx.fillStyle=Math.abs(x)===2?"#c94a1a":f<2?"#fff0bd":f<5?"#ffd166":"#ff9a3d"; cx.fillRect(X+x,y-camY,1,1);}}
+  // lava: shimmer, slow currents, and gas bubbles rising to the surface
+  const yCrater=yOfPts(CRATER_PTS);
+  if(!reduced) for(let i=0;i<40&&chamberPx.length;i++){const [x,y]=chamberPx[(Math.random()*chamberPx.length)|0]; const yy=y-camY; if(yy<0||yy>H) continue; cx.fillStyle=ptsOfY(y)<90?"#ffffff":"#ffe9a8"; cx.fillRect(x,yy,1,1);}
+  if(!reduced&&tick%3===0&&camY+H>yCrater){ for(let k=0;k<2;k++){const y=camY+H+4-Math.random()*20, p=ptsOfY(y); if(p>=CRATER_PTS-8) continue; const lh=lavaHalf(p)-4; if(lh<4) continue; bubbles.push({x:X+(Math.random()*2-1)*lh,y,v:.25+Math.random()*.45,s:Math.random()<.25?2:1,ph:Math.random()*6});} }
+  bubbles=bubbles.filter(b=>b.y>yCrater+7&&b.y>camY-10);
+  for(const b of bubbles){b.y-=b.v; b.x+=Math.sin((b.y+b.ph*20)*.08)*.15; const p=ptsOfY(b.y), lh=lavaHalf(p); if(Math.abs(b.x-X)>lh-2) b.x=X+Math.sign(b.x-X)*(lh-2);
+    const bx=Math.round(b.x), by=Math.round(b.y-camY); if(by<-4||by>H+4) continue; cx.fillStyle="#fff6d8";
+    if(b.s===1){cx.fillRect(bx,by-1,1,1); cx.fillRect(bx-1,by,1,1); cx.fillRect(bx+1,by,1,1); cx.fillRect(bx,by+1,1,1);}
+    else {for(let i=-1;i<=1;i++){cx.fillRect(bx+i,by-2,1,1); cx.fillRect(bx+i,by+2,1,1); cx.fillRect(bx-2,by+i,1,1); cx.fillRect(bx+2,by+i,1,1);} cx.fillStyle="#ffffff"; cx.fillRect(bx-1,by-1,1,1);}}
+  // pops on the lava lake's crust
+  if(!reduced&&tick%14===0&&yCrater+8-camY>0&&yCrater-camY<H){const lh=lavaHalf(CRATER_PTS-4); const x=Math.round(X+(Math.random()*2-1)*lh); for(let i=0;i<5;i++) sparks.push({x,y:yCrater+6,vx:(Math.random()-.5)*.8,vy:-.6-Math.random()*.6,l:14+Math.random()*8|0,c:i%2?"#ffd166":"#ff7a3d",g:.06});}
   // above the crater: the eruption column holds the blob up, lava spills down the cone
   const above=drillY<yCrater-2;
   if(above){
@@ -6263,8 +6280,8 @@ function frame(){
   if(yCrater-camY>-40&&yCrater-camY<H+40){
     const live=above||erupt>0;
     for(const [x,y] of lavaPx){const f=reduced?0:((y+(tick>>2))%7); cx.fillStyle=live?(f===0?"#ffd166":f<3?"#ff8a3d":"#ff6a2b"):(f===0?"#8a3a2a":"#5a2a22"); cx.fillRect(x,y-camY,1,1);}
-    const gr=9+(reduced?0:((tick>>4)%2)); cx.fillStyle="#ff7a3d";
-    for(let y=-gr;y<=1;y++) for(let x=-gr;x<=gr;x++){if(x*x+y*y*2.2>gr*gr) continue; if(((x+y)&1)===0&&hash(x+X,y+tick>>3)>.55) cx.fillRect(X+x,yCrater-camY+y-1,1,1);}
+    const gr=Math.round(W*0.07)+6+(reduced?0:((tick>>4)%2)); cx.fillStyle="#ff7a3d";
+    for(let y=-gr;y<=1;y++) for(let x=-gr;x<=gr;x++){if(x*x+y*y*2.2>gr*gr) continue; if(((x+y)&1)===0&&hash(x+X,y+tick>>3)>.8) cx.fillRect(X+x,yCrater-camY+y-1,1,1);}
     if(!reduced){
       if(tick%(above?4:9)===0) smoke.push({x:X+(Math.random()*6-3),y:yCrater-3,vx:.12+Math.random()*.15,vy:-.22-Math.random()*.12,l:170,s:2});
       if(tick%5===0) embers.push({x:X+(Math.random()*6-3),y:yCrater,vx:(Math.random()-.5)*.5,vy:-.6-Math.random()*.6,l:50+Math.random()*30|0});
@@ -6277,8 +6294,8 @@ function frame(){
   for(const e of embers){e.x+=e.vx; e.y+=e.vy; e.vy+=.012; e.l--; cx.fillStyle=e.l>45?"#ffe9a8":e.l>20?"#ff8a3d":"#8a3a2a"; cx.fillRect(Math.round(e.x),Math.round(e.y-camY),1,1);}
   // the blob
   const bob=(!moving&&!reduced&&((tick>>4)%2))?1:0, by=Math.round(drillY-camY)-bob;
-  sprite(rising?BLOB_UP:BLOB,X-4,by-5);
-  if(!reduced&&!rising&&(tick>>6)%9===0){cx.fillStyle="#d2501c"; cx.fillRect(X-1,by-1,1,1); cx.fillRect(X+1,by-1,1,1);}  // blink
+  sprite(rising?ROCK_UP:ROCKP,X-5,by-5);
+  if(!reduced&&!rising&&(tick>>6)%9===0){cx.fillStyle="#8a827a"; cx.fillRect(X-2,by-2,2,2); cx.fillRect(X+2,by-2,2,2);}  // blink
   if(moleSay>0){moleSay--; cx.fillStyle="#fff6e0"; cx.font="8px VT323, monospace"; cx.fillText(moleText,X+7,by-6);}
   // rings and sparks
   rings=rings.filter(r=>r.r<r.max);
@@ -6898,7 +6915,7 @@ function reveal(){
   let note="";
   if(r.nope) note=r.nope;
   else if(!r.raw) note="The clock ran out before you typed anything.";
-  else if(!r.tier) note=(r.why?r.why+" ":"That isn't on the list for this prompt. ")+"The magma didn't move.";
+  else if(!r.tier) note=(r.why?r.why+" ":"That isn't on the list for this prompt. ")+"Your rock didn't move.";
   else if(r.web) note=(r.web.def?r.web.def+" ":"")+"Checked on the web ("+r.web.src+").";
   else {const e=p.answers.find(a=>a.name===r.name); if(e&&e.def) note=e.def;}
   $("sNote").textContent=note;
@@ -6941,7 +6958,7 @@ function renderEnd(g){
   $("endLabel").textContent = g.mode==="free" ? playLabel(g)+" complete" : "Eruption #"+(g.day+1)+" complete · "+dayLabel(g.day);
   countUp($("endKm"), km);
   $("endLine").textContent = g.total>=700 ? "A perfect 700. You erupted all the way to the edge of space."
-    : km<0 ? g.total+" of 700 points. Your magma stalled in the "+layerAt(km).toLowerCase()+", "+fmtKm(-km)+" below the crater."
+    : km<0 ? g.total+" of 700 points. Your rock is still in the "+layerAt(km).toLowerCase()+", "+fmtKm(-km)+" below the crater."
     : g.total+" of 700 points. Your eruption reached the "+layerAt(km).toLowerCase()+".";
   $("endLog").innerHTML=g.res.map(r=>li(r.tier, PROMPTS[r.p].q, "+"+r.pts, (r.raw?r.name:"No answer")+" · "+TIERS[r.tier].name)).join("");
   const passed=MARKS.filter(m=>km>=m.km);
