@@ -6482,7 +6482,7 @@ function dayLabel(d){return dayDate(d).toLocaleDateString(undefined,{weekday:"sh
    page resumes the same game, and a question that was open when the page went
    away counts as no answer. Free games are charged when they start. */
 const RUNKEY=(mode,day)=>mode==="free"?"quarrillion3:freeRun":"quarrillion3:run:"+day;
-function saveRun(qi,open){save(RUNKEY(G.mode,G.day),{mode:G.mode,day:G.day,set:G.set,res:G.res,total:G.total,qi,open,num:G.num});}
+function saveRun(qi,open){if(G.mode==="free") return; save(RUNKEY(G.mode,G.day),{mode:G.mode,day:G.day,set:G.set,res:G.res,total:G.total,qi,open,num:G.num});}
 function clearRun(g){try{localStorage.removeItem(RUNKEY(g.mode,g.day));}catch(e){}}
 function getRun(mode,day){const r=load(RUNKEY(mode,day)); return r&&Array.isArray(r.set)&&Array.isArray(r.res)?r:null;}
 function resumeRun(r){
@@ -6497,6 +6497,7 @@ function resumeRun(r){
 function newGame(mode, day, num){
   const set = mode==="free" ? shuffled(PROMPTS.length,(Math.random()*1e9)|0).slice(0,NQ) : dailyCats(day);
   G={mode, day, set, qi:0, total:0, res:[], num};
+  sparks=[]; pops=[]; rings=[]; embers=[]; erupt=0; squashT=0; camF=0.2;   // clean start at the bottom
   setDepth(altOf(0),true); updateHud();
   ask();
 }
@@ -7116,10 +7117,10 @@ function openArchive(){
 function nextPlayNum(){const n=(load("quarrillion3:playCount")||0)+1; save("quarrillion3:playCount",n); return n;}
 function refreshFree(){
   const el=$("freeLeft"); if(!el) return;
-  el.textContent="7 random prompts, unlimited and free"; $("btnFree").textContent=getRun("free")?"Continue extra game":"Play again ∞";
+  el.textContent="7 random prompts, unlimited and free"; $("btnFree").textContent="Play again ∞";
 }
 function playUnlimited(){
-  const run=getRun("free"); if(run){resumeRun(run);return;}   // refreshing resumes the same game
+  clearRun({mode:"free"});                 // Play again always starts over, from the bottom of the volcano
   newGame("free",undefined,nextPlayNum());
 }
 function startDaily(){

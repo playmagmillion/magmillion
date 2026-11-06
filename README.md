@@ -15,7 +15,7 @@ Looking for more games like Krillion? See [games like Krillion](https://playmagm
 - An answer that doesn't fit gets one more try before it counts as a Dud. Duds show a link that opens a GitHub issue, so a missed answer can be added to the list.
 - You start as a rock sunk in the lava 8 km down inside a volcano. Rarer answers push you up through the lava. "Name a fruit": Apple is +10, Miracle fruit is +100.
 - 200 points bursts you out of the crater. Seven perfect answers (700 points) reach the Kármán line, where space begins, 100 km up, past real landmarks like Mount Everest, the stratosphere, and the Hunga Tonga eruption plume.
-- One daily eruption a day counts toward your streak. Share your height. Missed a day? Play it from the Archive. Play again is free and unlimited, with 7 random prompts each time. A game in progress picks up where it left off if you refresh.
+- One daily eruption a day counts toward your streak. Share your height. Missed a day? Play it from the Archive. Play again is free and unlimited: each one starts over from the bottom of the volcano with 7 random prompts. If you refresh in the middle of the daily game, it picks up where you left off.
 
 ## The eruption
 
