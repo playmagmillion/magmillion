@@ -6197,7 +6197,7 @@ function resize(){
 }
 /* Height notes along the eruption, like a field guide */
 const NOTES=[
-  [-7.6,"L","THE MAGMA CHAMBER · 8 km under the crater",1],
+  [-7.6,"L","THE MAGMA CHAMBER · 8 km under the surface",1],
   [-6.8,"R","basalt magma is about 1,200 °C"],
   [-5.7,"L","green olivine crystals grow as the magma cools"],
   [-5,"L","THE CONDUIT · magma forces its way up",1],
@@ -6995,7 +6995,7 @@ function renderEnd(g){
   $("endLabel").textContent = g.mode==="free" ? playLabel(g)+" complete" : "Eruption #"+(g.day+1)+" complete · "+dayLabel(g.day);
   countUp($("endKm"), km);
   $("endLine").textContent = g.total>=700 ? "A perfect 700. You erupted all the way to the edge of space."
-    : km<0 ? g.total+" of 700 points. Your rock is still in the "+layerAt(km).toLowerCase()+", "+fmtKm(-km)+" below the crater."
+    : km<0 ? g.total+" of 700 points. Your rock is still in the "+layerAt(km).toLowerCase()+", "+fmtKm(-km)+" below the surface."
     : g.total+" of 700 points. Your eruption reached the "+layerAt(km).toLowerCase()+".";
   $("endLog").innerHTML=g.res.map(r=>li(r.tier, PROMPTS[r.p].q, "+"+r.pts, (r.raw?r.name:"No answer")+" · "+TIERS[r.tier].name)).join("");
   const passed=MARKS.filter(m=>km>=m.km);
@@ -7067,7 +7067,7 @@ function untilMidnight(){const n=new Date(), m=new Date(n.getFullYear(),n.getMon
 function shareString(g){
   const km=altOf(g.total);
   const head = g.mode==="free" ? "Magmillion extra game" : "Magmillion #"+(g.day+1);
-  const where = g.total>=700 ? "100 km up, edge of space" : km<0 ? fmtKm(-km)+" below the crater" : fmtKm(km)+" up, "+layerAt(km).toLowerCase();
+  const where = g.total>=700 ? "100 km up, edge of space" : km<0 ? fmtKm(-km)+" below the surface" : fmtKm(km)+" up, "+layerAt(km).toLowerCase();
   return head+"\n"+g.res.map(r=>TIERS[r.tier].sq).join("")+"\n"+where+" ("+g.total+"/700)";
 }
 function setDepth(km,instant){
