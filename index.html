@@ -3,33 +3,33 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>Magmillion · the daily dig, a rare-answer word game like Krillion</title>
-<meta name="description" content="Magmillion is a free daily word game where the rarest answer wins. Seven prompts a day, 25 seconds each, and rarer answers drill you deeper toward the center of the Earth. A game like Krillion, Cosmillion, and Moonshot.">
+<title>Magmillion · the daily eruption, a rare-answer word game like Krillion</title>
+<meta name="description" content="Magmillion is a free daily word game where the rarest answer wins. Seven prompts a day, 25 seconds each, and rarer answers erupt you higher, out of the volcano and up toward space. A game like Krillion, Cosmillion, and Moonshot.">
 <link rel="canonical" href="https://playmagmillion.github.io/magmillion/">
 <meta name="theme-color" content="#050a14">
 <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns=%27http://www.w3.org/2000/svg%27 viewBox=%270 0 15 12%27 shape-rendering=%27crispEdges%27%3E%3Cpath fill=%27%23ff6a2b%27 d=%27M6 0h3v1H6zM5 1h1v1H5zM9 1h1v1H9z%27/%3E%3Cpath fill=%27%23ffd166%27 d=%27M7 2h1v1H7z%27/%3E%3Cpath fill=%27%233a2232%27 d=%27M6 3h3v1H6zM5 4h5v1H5zM4 5h7v1H4zM3 6h9v1H3zM2 7h11v1H2zM1 8h13v1H1zM0 9h15v1H0z%27/%3E%3Cpath fill=%27%23ff6a2b%27 d=%27M7 4h1v2H7zM8 6h1v2H8z%27/%3E%3Cpath fill=%27%235b3f2b%27 d=%27M0 10h15v2H0z%27/%3E%3C/svg%3E">
 <meta property="og:type" content="website">
 <meta property="og:site_name" content="Magmillion">
-<meta property="og:title" content="Magmillion · the daily dig">
-<meta property="og:description" content="Seven prompts a day. Rare answers drill deeper. How far down can you get?">
+<meta property="og:title" content="Magmillion · the daily eruption">
+<meta property="og:description" content="Seven prompts a day. Rare answers erupt higher. How high can you get?">
 <meta property="og:url" content="https://playmagmillion.github.io/magmillion/">
 <meta property="og:image" content="https://playmagmillion.github.io/magmillion/og.png">
 <meta property="og:image:width" content="1200">
 <meta property="og:image:height" content="630">
-<meta property="og:image:alt" content="Magmillion · the daily dig">
+<meta property="og:image:alt" content="Magmillion · the daily eruption">
 <meta name="twitter:card" content="summary_large_image">
-<meta name="twitter:title" content="Magmillion · the daily dig">
-<meta name="twitter:description" content="Seven prompts a day. Rare answers drill deeper. How far down can you get?">
+<meta name="twitter:title" content="Magmillion · the daily eruption">
+<meta name="twitter:description" content="Seven prompts a day. Rare answers erupt higher. How high can you get?">
 <meta name="twitter:image" content="https://playmagmillion.github.io/magmillion/og.png">
 <script type="application/ld+json">
-{"@context":"https://schema.org","@type":"VideoGame","name":"Magmillion","alternateName":"Magmillion daily dig","url":"https://playmagmillion.github.io/magmillion/","description":"A free daily word game where the rarest answer wins. Seven prompts a day, 25 seconds each. Rarer answers drill deeper toward the center of the Earth.","genre":["Word game","Trivia","Puzzle"],"gamePlatform":"Web browser","applicationCategory":"Game","operatingSystem":"Any","inLanguage":"en","isAccessibleForFree":true,"offers":{"@type":"Offer","price":"0","priceCurrency":"USD"},"image":"https://playmagmillion.github.io/magmillion/og.png"}
+{"@context":"https://schema.org","@type":"VideoGame","name":"Magmillion","alternateName":"Magmillion daily eruption","url":"https://playmagmillion.github.io/magmillion/","description":"A free daily word game where the rarest answer wins. Seven prompts a day, 25 seconds each. Rarer answers erupt higher, from deep under a volcano up toward space.","genre":["Word game","Trivia","Puzzle"],"gamePlatform":"Web browser","applicationCategory":"Game","operatingSystem":"Any","inLanguage":"en","isAccessibleForFree":true,"offers":{"@type":"Offer","price":"0","priceCurrency":"USD"},"image":"https://playmagmillion.github.io/magmillion/og.png"}
 </script>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=VT323&display=swap" rel="stylesheet">
 <style>
 :root{
-  /* Pixel night sky over a cut-away Earth. The scene fills the window, the dig log floats over it. */
+  /* Pixel cut-away of a volcano and the sky above it. The scene fills the window, the game panel floats over it. */
   --night:#070b1f;
   --panel:rgba(10,9,20,.90);
   --edge:#2b2747;
@@ -322,7 +322,7 @@ body.urgent .heat{animation:kheat 1s step-end infinite}
   <div class="brand"><svg class="vol" viewBox="0 0 15 12" shape-rendering="crispEdges" aria-hidden="true"><path fill="#ff6a2b" d="M6 0h3v1H6zM5 1h1v1H5zM9 1h1v1H9z"/><path fill="#ffd166" d="M7 2h1v1H7z"/><path fill="#3a2232" d="M6 3h3v1H6zM5 4h5v1H5zM4 5h7v1H4zM3 6h9v1H3zM2 7h11v1H2zM1 8h13v1H1zM0 9h15v1H0z"/><path fill="#ff6a2b" d="M7 4h1v2H7zM8 6h1v2H8z"/><path fill="#5b3f2b" d="M0 10h15v2H0z"/></svg><span>MAGMILLION<small id="dateLine">THE DAILY DIG</small></span></div>
   <div class="hud-dots" id="hudDots" aria-hidden="true"><i></i><i></i><i></i><i></i><i></i><i></i><i></i></div>
   <div class="pods" aria-live="polite">
-    <div class="pod"><span class="label">DEPTH</span><b id="kmOut">0 km</b><span id="layerOut">Surface</span></div>
+    <div class="pod"><span class="label">HEIGHT</span><b id="kmOut">-8.0 km</b><span id="layerOut">Magma chamber</span></div>
     <div class="pod"><span class="label">SCORE</span><b id="ptsOut">0</b><span>of 700</span></div>
   </div>
   <span id="comboOut" class="combo hidden">COMBO x1.5</span>
@@ -335,18 +335,18 @@ body.urgent .heat{animation:kheat 1s step-end infinite}
 
   <section id="startScreen">
     <div class="bigtitle" aria-label="Magmillion"><span style="animation-delay:0.00s">M</span><span style="animation-delay:0.07s">A</span><span style="animation-delay:0.14s">G</span><span style="animation-delay:0.21s">M</span><span style="animation-delay:0.28s">I</span><span style="animation-delay:0.35s">L</span><span style="animation-delay:0.42s">L</span><span style="animation-delay:0.49s">I</span><span style="animation-delay:0.56s">O</span><span style="animation-delay:0.63s">N</span></div>
-    <div class="eyebrow"><span class="live" aria-hidden="true"></span>the daily dig<span class="cursor" aria-hidden="true"></span></div>
+    <div class="eyebrow"><span class="live" aria-hidden="true"></span>the daily eruption<span class="cursor" aria-hidden="true"></span></div>
     <h2>Name the answer nobody else thinks of.</h2>
-    <p class="dim">7 prompts a day · 25 seconds each · the rarer your answer, the deeper you drill</p>
+    <p class="dim">7 prompts a day · 25 seconds each · the rarer your answer, the higher you erupt</p>
     <div class="example">"Name a fruit" → Apple <b>+10</b> · Miracle fruit <b>+100</b></div>
-    <button class="go big-btn" id="btnDaily">Dig ▼ <small id="digBtnSub">Dig #1 · press Enter</small></button>
+    <button class="go big-btn" id="btnDaily">Erupt ▲ <small id="digBtnSub">Eruption #1 · press Enter</small></button>
     <h3>How it works</h3>
     <ul class="how">
       <li>Seven prompts, the same for everyone today, with new ones every day.</li>
-      <li>Type any real thing that fits. If it isn't on our list, the game checks Wikipedia, Wikidata, Wiktionary, WordNet, and ConceptNet, and it counts if any of them back you up. Spelling is forgiven: the drill asks "Did you mean...?" If an answer doesn't fit, you get one more try.</li>
-      <li>Rarer answers drill deeper. Common ones barely scratch the surface.</li>
-      <li>Seven perfect answers reach the center of the Earth, 6,371 km down. That's 700 points.</li>
-      <li>One logged dig a day. Share your depth and keep the streak.</li>
+      <li>Type any real thing that fits. If it isn't on our list, the game checks Wikipedia, Wikidata, Wiktionary, WordNet, and ConceptNet, and it counts if any of them back you up. Spelling is forgiven: the game asks "Did you mean...?" If an answer doesn't fit, you get one more try.</li>
+      <li>You start as magma deep under a volcano. Rarer answers push you higher. Common ones barely bubble.</li>
+      <li>200 points bursts you out of the crater and into the sky. Seven perfect answers, 700 points, reach the edge of space, 100 km up.</li>
+      <li>One daily eruption counts toward your streak. Play again as much as you like, free.</li>
     </ul>
     <h3>The ranks</h3>
     <div class="ranks" id="ranks"></div>
@@ -357,18 +357,18 @@ body.urgent .heat{animation:kheat 1s step-end infinite}
     </div>
     <p class="small dim" id="streakLine" style="margin-top:12px"></p>
     <h3>What is Magmillion?</h3>
-    <p class="small dim">Magmillion is a free daily word game where the rarest answer wins. Every day everyone gets the same seven prompts, like "Name a fruit" or "Name a knot." Common answers barely scratch the surface, and the ones nobody else thinks of send your drill past the mantle toward the core. After each prompt you see the rarest answers you missed, so you learn a new word or two every day.</p>
-    <p class="small dim">If you like Krillion, Cosmillion, or Moonshot, Magmillion plays the same way, with a volcano and a drill instead of the ocean or space. <a href="games-like-krillion.html" style="color:var(--gold)">More games like Krillion</a></p>
+    <p class="small dim">Magmillion is a free daily word game where the rarest answer wins. Every day everyone gets the same seven prompts, like "Name a fruit" or "Name a knot." Common answers barely move the magma, and the ones nobody else thinks of blast you out of the volcano and up toward space. After each prompt you see the rarest answers you missed, so you learn a new word or two every day.</p>
+    <p class="small dim">If you like Krillion, Cosmillion, or Moonshot, Magmillion plays the same way, with an erupting volcano instead of the ocean or space. <a href="games-like-krillion.html" style="color:var(--gold)">More games like Krillion</a></p>
   </section>
 
   <section id="playScreen" class="hidden">
-    <div class="top"><div class="eyebrow" id="qMode">Dig #1</div><div class="eyebrow" style="color:var(--dim)"><span id="qNum">1 / 7</span> · <span id="qTime">25s</span></div></div>
+    <div class="top"><div class="eyebrow" id="qMode">Eruption #1</div><div class="eyebrow" style="color:var(--dim)"><span id="qNum">1 / 7</span> · <span id="qTime">25s</span></div></div>
     <div class="cat" id="qText"></div>
     <div class="timer" id="timer"><div id="timerBar"></div></div>
     <form class="ans" id="ansForm" autocomplete="off">
       <label for="ansInput" class="hidden">Your answer</label>
       <input id="ansInput" type="text" placeholder="Type one answer" autocapitalize="off" autocorrect="off" spellcheck="false" maxlength="60">
-      <button class="go" type="submit">Drill</button>
+      <button class="go" type="submit">Erupt</button>
     </form>
     <div class="confirm hidden" id="confirmBox" role="alertdialog" aria-labelledby="confirmQ">
       <div class="q" id="confirmQ">Did you mean <b id="confirmWord"></b>? <span class="dim small">(clock paused)</span></div>
@@ -379,7 +379,7 @@ body.urgent .heat{animation:kheat 1s step-end infinite}
   </section>
 
   <section id="revealScreen" class="hidden">
-    <div class="top"><div class="eyebrow">Core sample</div><div class="eyebrow" style="color:var(--dim)" id="rNum">1 / 7</div></div>
+    <div class="top"><div class="eyebrow">Result</div><div class="eyebrow" style="color:var(--dim)" id="rNum">1 / 7</div></div>
     <div class="cat" id="rText" style="font-size:26px"></div>
     <div class="strike" id="strike">
       <img id="sBadge" alt="">
@@ -390,14 +390,14 @@ body.urgent .heat{animation:kheat 1s step-end infinite}
     <p class="small"><a id="reportLink" class="hidden" href="#" target="_blank" rel="noopener" style="color:var(--gold)">Think this should count? Report it and it gets added.</a></p>
     <div id="sameWrap" class="hidden"><h3 id="sameH"></h3><div class="chips" id="sameList"></div></div>
     <p class="small" id="rCommon"></p>
-    <h3>Rarest finds in this seam</h3>
+    <h3>Rarest answers for this prompt</h3>
     <ul class="list" id="finds"></ul>
-    <div class="row" style="margin-top:16px"><button class="go" id="btnNext">Keep drilling</button></div>
+    <div class="row" style="margin-top:16px"><button class="go" id="btnNext">Keep rising</button></div>
   </section>
 
   <section id="endScreen" class="hidden">
-    <div class="eyebrow" id="endLabel">Dig complete</div>
-    <div class="big" id="endKm">0 km</div>
+    <div class="eyebrow" id="endLabel">Eruption complete</div>
+    <div class="big" id="endKm">-8.0 km</div>
     <p style="margin-top:8px" id="endLine"></p>
     <p class="small dim" id="endStreak"></p>
     <div class="dist" id="distWrap">
@@ -406,49 +406,26 @@ body.urgent .heat{animation:kheat 1s step-end infinite}
       <p class="small dim" id="distNote"></p>
     </div>
     <div class="row">
-      <button class="go" id="btnShare">Share depth</button>
+      <button class="go" id="btnShare">Share height</button>
       <button class="ghost" id="btnAgain">Play again</button>
       <button class="ghost" id="btnArch2">Archive</button>
       <span class="toast" id="toast"></span>
     </div>
     <pre class="share hidden" id="shareText"></pre>
     <p class="small dim" id="endNext" style="margin-top:10px"></p>
-    <h3>Your dig</h3>
+    <h3>Your eruption</h3>
     <ul class="list" id="endLog"></ul>
     <h3>Landmarks you passed</h3>
     <ul class="list" id="endMarks"></ul>
     <h3>One in a Magmillion finds from today</h3>
     <ul class="list" id="endGems"></ul>
-    <p class="legal">Listed answers use hand-made rarity tiers. Other answers are checked against Wikipedia, Wikidata, Wiktionary, WordNet, and ConceptNet, and count if any of them confirm the answer fits. Their rarity comes from Wikipedia views in the last 30 days or word frequency, and tops out at Deep vein. Depth: 700 points equals Earth's radius, so each point is about 9.1 km.</p>
+    <p class="legal">Listed answers use hand-made rarity tiers. Other answers are checked against Wikipedia, Wikidata, Wiktionary, WordNet, and ConceptNet, and count if any of them confirm the answer fits. Their rarity comes from Wikipedia views in the last 30 days or word frequency, and tops out at Sky-high. Height: you start 8 km under the crater, 200 points reaches the crater, and 700 points reaches the edge of space at 100 km.</p>
   </section>
 
-  <section id="payScreen" class="hidden">
-    <div class="eyebrow">Play again</div>
-    <h2>You've used your 2 free extra games.</h2>
-    <p>Today's daily dig stays free forever. Pay once to play again with 7 random prompts as many times as you want.</p>
-    <div class="price"><b>$5</b> <span class="dim">one-time · no account · works on this device</span></div>
-    <ul class="how">
-      <li>Play again as often as you like, 7 random prompts each time</li>
-      <li>All 116 categories, shuffled every time</li>
-      <li>No daily limit</li>
-    </ul>
-    <div class="row" style="margin-top:16px">
-      <a class="btnlink go" id="payLink" href="#" target="_blank" rel="noopener">Unlock for $5</a>
-      <button class="ghost" id="btnPayBack" type="button">Back</button>
-    </div>
-    <p class="small dim" id="payNote" style="margin-top:10px"></p>
-    <h3>Already paid?</h3>
-    <form class="ans" id="codeForm" autocomplete="off">
-      <label for="codeInput" class="hidden">Unlock code</label>
-      <input id="codeInput" type="text" placeholder="Enter your unlock code" autocapitalize="characters" spellcheck="false" maxlength="40">
-      <button class="ghost" type="submit">Unlock</button>
-    </form>
-    <div class="feedback" id="codeMsg"></div>
-  </section>
 
   <section id="archiveScreen" class="hidden">
     <div class="eyebrow">Archive</div>
-    <h2>Every daily dig so far</h2>
+    <h2>Every daily eruption so far</h2>
     <p class="small dim">Play any past day you missed. Each day has its own seven prompts.</p>
     <ul class="list arch" id="archList"></ul>
     <div class="row" style="margin-top:16px"><button class="ghost" id="btnArchBack">Back</button></div>
@@ -5921,13 +5898,13 @@ PROMPTS.push(...MORE);
 
 /* ---------- Tiers and badges ---------- */
 const TIERS = [
-  {name:"Dud", pts:0, color:"#4a3f37", sq:"⬛", line:"Not in the sample."},
-  {name:"Topsoil", pts:10, color:"#8a6a4f", sq:"🟫", line:"Everyone dug here first."},
-  {name:"Clay", pts:15, color:"#b07a52", sq:"🟤", line:"Solid and familiar."},
-  {name:"Bedrock", pts:30, color:"#9a948d", sq:"⬜", line:"Took a second thought."},
-  {name:"Ore seam", pts:60, color:"#e5b54a", sq:"🟨", line:"Uncommon. Worth refining."},
-  {name:"Deep vein", pts:85, color:"#ff7a3d", sq:"🟧", line:"Almost nobody drills this far."},
-  {name:"One in a Magmillion", pts:100, color:"#6fe3d2", sq:"💎", line:"The rarest find in the rock."}
+  {name:"Dud", pts:0, color:"#4a3f37", sq:"⬛", line:"The magma didn't budge."},
+  {name:"Simmer", pts:10, color:"#8a6a4f", sq:"🟫", line:"Everyone said this one."},
+  {name:"Bubble", pts:15, color:"#b07a52", sq:"🟤", line:"Solid and familiar."},
+  {name:"Rumble", pts:30, color:"#9a948d", sq:"⬜", line:"Took a second thought."},
+  {name:"Lava fountain", pts:60, color:"#e5b54a", sq:"🟨", line:"Uncommon. Worth the heat."},
+  {name:"Sky-high", pts:85, color:"#ff7a3d", sq:"🟧", line:"Almost nobody gets this high."},
+  {name:"One in a Magmillion", pts:100, color:"#6fe3d2", sq:"💎", line:"The rarest answer of all."}
 ];
 /* Pixel badges, flat colors */
 const SPRITES = [
@@ -6040,22 +6017,31 @@ function dailyCats(day){
 function load(k){try{return JSON.parse(localStorage.getItem(k));}catch(e){return null;}}
 function save(k,v){try{localStorage.setItem(k,JSON.stringify(v));}catch(e){}}
 
-/* ---------- Earth model ---------- */
-const R_EARTH=6371, KM_PER_PT=6371/700;
-const SEG_KM=[0,4,12.262,35,410,660,2891,5150,6371];
-const SEG_NAMES=["Crust","Crust","Crust","Upper mantle","Transition zone","Lower mantle","Outer core","Inner core"];
-const MARKS=[
-  {km:4,label:"Mponeng gold mine, the deepest mine on Earth (about 4 km)"},
-  {km:12.262,label:"Kola Superdeep Borehole, the deepest hole humans have drilled (12.3 km)"},
-  {km:35,label:"The Moho, where the crust ends (about 35 km under continents)"},
-  {km:410,label:"410 km discontinuity, top of the transition zone"},
-  {km:660,label:"660 km discontinuity, start of the lower mantle"},
-  {km:2891,label:"Gutenberg discontinuity, the core-mantle boundary (2,891 km)"},
-  {km:5150,label:"Lehmann discontinuity, where the solid inner core begins (5,150 km)"},
-  {km:6371,label:"The center of the Earth (6,371 km)"}
+/* ---------- Eruption model ----------
+   You start as a blob of magma deep under the volcano. Points push you up the vent;
+   200 points bursts you out of the crater, and 700 reaches the edge of space (100 km). */
+const PEAK=700, CRATER_PTS=200;
+const SEGS=[
+  {p0:0,  p1:100,a0:-8, a1:-3, name:"Magma chamber"},
+  {p0:100,p1:200,a0:-3, a1:0,  name:"Volcano vent"},
+  {p0:200,p1:330,a0:0,  a1:3,  name:"Ash plume"},
+  {p0:330,p1:460,a0:3,  a1:12, name:"Cloud layer"},
+  {p0:460,p1:580,a0:12, a1:50, name:"Stratosphere"},
+  {p0:580,p1:700,a0:50, a1:100,name:"Mesosphere"}
 ];
-function layerAt(km){if(km<=0)return "Surface"; if(km>R_EARTH) return "Past the center"; for(let i=0;i<8;i++) if(km<=SEG_KM[i+1]) return SEG_NAMES[i]; return "Inner core";}
-function fmtKm(km){return (km<100?km.toFixed(km<10?1:0):Math.round(km).toLocaleString("en-US"))+" km";}
+function altOf(pts){pts=Math.max(0,Math.min(PEAK,pts)); for(const s of SEGS) if(pts<=s.p1) return s.a0+(s.a1-s.a0)*(pts-s.p0)/(s.p1-s.p0); return 100;}
+function ptsOfAlt(km){if(km<=-8) return 0; for(const s of SEGS) if(km<=s.a1) return s.p0+(s.p1-s.p0)*(km-s.a0)/(s.a1-s.a0); return PEAK+(km-100)*1.2;}
+function layerAt(km){if(km>=99.95) return "Edge of space"; for(const s of SEGS) if(km<s.a1) return s.name; return "Edge of space";}
+function fmtKm(km){const a=Math.abs(km), s=(a<10?a.toFixed(1):Math.round(a).toLocaleString("en-US"))+" km"; return km<-0.04?"-"+s:s;}
+const MARKS=[
+  {km:0,label:"Burst out of the crater"},
+  {km:0.83,label:"Higher than the Burj Khalifa, the tallest building (0.83 km)"},
+  {km:8.85,label:"Higher than the summit of Mount Everest (8.8 km)"},
+  {km:12,label:"Into the stratosphere (about 12 km up)"},
+  {km:39,label:"Higher than Felix Baumgartner's 2012 skydive (39 km)"},
+  {km:57,label:"Higher than the Hunga Tonga plume of 2022, the tallest eruption plume ever measured (57 km)"},
+  {km:100,label:"The Kármán line, where space begins (100 km)"}
+];
 
 /* ---------- Pixel world, flat colors only ----------
    Drawn at a low resolution (about 400 pixels wide) and scaled up with crisp edges.
@@ -6064,47 +6050,33 @@ const cv=document.getElementById("world"), cx=cv.getContext("2d");
 const reduced=matchMedia("(prefers-reduced-motion: reduce)").matches;
 const BAYER=[[0,8,2,10],[12,4,14,6],[3,11,1,9],[15,7,13,5]];
 const dith=(x,y,t)=>t*16>BAYER[y&3][x&3];
-let S=3,W=400,H=260,SKY=110,SEG_H=170,WORLD_H=1800,world=null,mobile=false,tick=0;
-let moleText="dig!";
-let drillY=110,targetY=110,curKm=0,sparks=[],embers=[],smoke=[],shakeT=0,twinkle=[],lavaPx=[],moleSay=0;
+let S=3,W=400,H=260,PXP=1.6,BOT=90,TOPM=160,WORLD_H=1800,world=null,mobile=false,tick=0;
+let moleText="pop!";
+let drillY=0,targetY=0,curKm=-8,sparks=[],embers=[],smoke=[],shakeT=0,twinkle=[],lavaPx=[],chamberPx=[],meteors=[],moleSay=0;
 function hash(x,y){let h=x*374761393+y*668265263;h=(h^(h>>>13))*1274126177;return((h^(h>>>16))>>>0)/4294967296;}
 function hex(c){return [parseInt(c.slice(1,3),16),parseInt(c.slice(3,5),16),parseInt(c.slice(5,7),16)];}
-function kmToY(km){
-  curKm=km;
-  if(km<=0) return SKY;
-  for(let i=0;i<8;i++) if(km<=SEG_KM[i+1]) return SKY+(i+(km-SEG_KM[i])/(SEG_KM[i+1]-SEG_KM[i]))*SEG_H;
-  return Math.min(WORLD_H-20, SKY+8*SEG_H+(km-R_EARTH)/R_EARTH*SEG_H);
+const yOfPts=p=>Math.round(WORLD_H-BOT-p*PXP);
+const ptsOfY=y=>(WORLD_H-BOT-y)/PXP;
+function kmToY(km){curKm=km; return yOfPts(ptsOfAlt(km));}
+function yOfKm(km){return yOfPts(ptsOfAlt(km));}
+function drillX(){return Math.round(W*(mobile?0.5:0.3));}
+function volX(){return drillX();}
+const GROUND_PTS=150;                                  // the land around the volcano
+const coneHalf=p=>p<GROUND_PTS?W:Math.round(9+(W*0.62)*Math.pow((CRATER_PTS-p)/(CRATER_PTS-GROUND_PTS),1.15));
+const SKYSTOPS=[[140,"#6a2c34"],[175,"#55263c"],[210,"#43224a"],[260,"#33205a"],[330,"#26225a"],[400,"#1c2352"],[460,"#141c44"],[520,"#0f1636"],[580,"#0b1029"],[640,"#080b1e"],[700,"#05070f"],[900,"#020308"]];
+const SKYC=SKYSTOPS.map(([p,c])=>[p,hex(c)]);
+function skyCol(p,x,y){
+  for(let i=0;i<SKYC.length-1;i++){const [p0,c0]=SKYC[i],[p1,c1]=SKYC[i+1]; if(p<=p1){const t=Math.max(0,(p-p0)/(p1-p0)); return dith(x,y,t)?c1:c0;}}
+  return SKYC[SKYC.length-1][1];
 }
-function yOfKm(km){const k=curKm, y=kmToY(km); curKm=k; return y;}
-function drillX(){return Math.round(W*0.5);}
-function volX(){return Math.round(W*(mobile?0.82:0.11));}
-/* flat banded palettes per segment: [colors], band height in px */
-const BANDS=[
-  [["#5b3f2b","#4f3626","#634530","#55392a","#4a3324"],22],
-  [["#5e5550","#544c47","#4a433f"],40],
-  [["#3a3331","#332d2b","#2c2725"],40],
-  [["#5e2512","#6a2a14","#77301a","#6a2a14"],34],
-  [["#82361a","#8c3a18","#96401a"],40],
-  [["#9a4319","#a24719","#ab4d1b","#b5541c"],36],
-  [["#c65e1b","#d06a20","#da7624","#e2832a"],30],
-  [["#f0b142","#f5c45a","#fad877","#ffe7a0","#fff0bd"],34]
-];
-const SKYB=["#050a14","#07101f","#0a1427","#0e172f","#151a36","#1f1b3a","#2b1d3a","#3a1f38"];
 const SPR={
-  fossil:{p:{a:"#d8c3a0",b:"#a8916e"},m:[".aaa.","a...a","a.aa.","a.a..",".a..."]},
-  bone:{p:{a:"#e9dcc3",b:"#b8a98e"},m:["a.....a","aaaaaaa","a.....a"]},
-  skull:{p:{a:"#e9dcc3",b:"#b8a98e",k:"#2a1d14"},m:["..aaaaa...",".aaaaaaaa.","aakaaaaaab","aaaaaaaaab",".bab.bab..","..a...a..."]},
-  gemC:{p:{a:"#b9fff6",b:"#6fe3d2",c:"#2a9d8f"},m:[".a.","abc",".c."]},
+  crystal:{p:{a:"#ffe9a8",b:"#ff9a4a"},m:[".a.","aba",".b."]},
   gemP:{p:{a:"#e0c8ff",b:"#b98cff",c:"#6a4aa8"},m:[".a.","abc",".c."]},
-  gemG:{p:{a:"#fff1b0",b:"#ffd166",c:"#a8781f"},m:[".a.","abc",".c."]},
-  gemR:{p:{a:"#ffc0cb",b:"#ff6b8a",c:"#a83250"},m:[".a.","abc",".c."]},
-  pebble:{p:{a:"#8d6b4c",b:"#6e523a"},m:[".aa.","abbb",".bb."]},
-  stone:{p:{a:"#8a817b",b:"#6a625d",c:"#4c4642"},m:[".aab.","abbbc","bbbcc",".ccc."]},
-  magma:{p:{a:"#ffe9a8",b:"#ffb347",c:"#ff7a3d",d:"#c94a1a"},m:["..dd..",".dccd.","dcbbcd","dcbacd",".dccd.","..dd.."]},
-  ringw:{p:{a:"#9ff0e0",b:"#4fb3a6"},m:[".a.","aba",".a."]},
-  root:{p:{a:"#3a2a1d"},m:["a..","a..",".a.",".a.","..a"]},
-  worm:{p:{a:"#e88a9a",b:"#c06070"},m:["ab..","..ab"]},
-  crystal:{p:{a:"#ffffff",b:"#fff0bd"},m:[".a.","aba",".a."]}
+  stone:{p:{a:"#4a3236",b:"#3a262a",c:"#2a1b1e"},m:[".aab.","abbbc","bbbcc",".ccc."]},
+  bubble:{p:{a:"#ffe9a8",b:"#ffb347"},m:[".a.","a.b",".b."]},
+  plane:{p:{a:"#c9cfe6",b:"#8f97b8",r:"#ff6b8a"},m:["......a...","r....aa...","aaaaaaaaab",".bbbbaabb.","......b..."]},
+  balloon:{p:{a:"#e8e6d8",b:"#b8b5a4",c:"#6a6f96"},m:[".aaa.","aaaab","aaaab",".aab.","..c..","..c..",".bcb."]},
+  moon:{p:{a:"#f2efe0",b:"#d6d2bd",c:"#b8b39c"},m:["...aaaa...",".aaaaabaa.",".aabaaaaaa","aaaaaacaab","aaacaaaaab","aaaaaaaabb","aaaaabaabb",".aaaaaabb.",".abaaabbb.","...bbbb..."]}
 };
 function stamp(img,W2,spr,x,y){
   const d=img.data;
@@ -6113,106 +6085,107 @@ function stamp(img,W2,spr,x,y){
 function buildWorld(){
   const c=document.createElement("canvas"); c.width=W; c.height=WORLD_H;
   const g=c.getContext("2d"), img=g.createImageData(W,WORLD_H), d=img.data;
-  const put=(x,y,col)=>{const o=(y*W+x)*4; d[o]=col[0];d[o+1]=col[1];d[o+2]=col[2];d[o+3]=255;};
-  const skyC=SKYB.map(hex), bandsC=BANDS.map(([cs,h])=>[cs.map(hex),h]);
-  const vx=volX(), hv=Math.min(64,Math.round(SKY*0.52)), hw=Math.min(62,Math.round(W*0.15)), cw=6;
-  const far=x=>SKY-22-Math.round(9*Math.sin(x*.035)+6*Math.sin(x*.09+1)+3*Math.sin(x*.21));
-  const near=x=>SKY-10-Math.round(6*Math.sin(x*.05+2)+4*Math.sin(x*.13));
+  const put=(x,y,col)=>{if(x<0||x>=W||y<0||y>=WORLD_H) return; const o=(y*W+x)*4; d[o]=col[0];d[o+1]=col[1];d[o+2]=col[2];d[o+3]=255;};
+  const X=drillX();
+  const chTop=yOfPts(82), chBot=yOfPts(-14), chCy=(chTop+chBot)/2, chRy=(chBot-chTop)/2, chRx=Math.min(W*0.46,Math.max(70,chRy*1.6));
+  const yGround=yOfPts(GROUND_PTS), yCrater=yOfPts(CRATER_PTS);
+  const ROCK=["#2a1a1e","#24161a","#2e1c20","#261719"].map(hex), WARM=hex("#4a1f16"), RIM=hex("#5a2414");
+  const MAG=["#fff0bd","#ffd166","#ffb347","#ff7a3d","#c94a1a"].map(hex);
+  const CONE_L=[hex("#3a2232"),hex("#35202f")], CONE_R=hex("#271826"), CONE_EDGE=hex("#4a2a3a"), CONDUIT=hex("#1a0b0b"), CONDUIT_W=hex("#3a1410");
+  const far=x=>yGround-14-Math.round(7*Math.sin(x*.035)+5*Math.sin(x*.09+1)+3*Math.sin(x*.21));
+  const near=x=>yGround-5-Math.round(4*Math.sin(x*.05+2)+3*Math.sin(x*.13));
+  chamberPx=[];
   for(let y=0;y<WORLD_H;y++){
+    const p=ptsOfY(y);
     for(let x=0;x<W;x++){
       let col;
-      if(y<SKY){
-        const f=y/SKY*(skyC.length-1), i=Math.floor(f), t=f-i;
-        col=skyC[Math.min(skyC.length-1, dith(x,y,t)?i+1:i)];
-        if(y>far(x)) col=hex("#0e1426");
-        if(y===far(x)+1&&y>0) col=hex("#161d36");
-        if(y>near(x)) col=hex("#141a30");
-        // volcano: lit left face, shaded right face, crater at the top
-        const dx=x-vx, ax=Math.abs(dx);
-        if(ax<=hw){
-          const top=ax<=cw?SKY-hv+Math.round((cw-ax)*.4):SKY-Math.round(hv*Math.pow((hw-ax)/(hw-cw),1.25));
-          if(y>=top){
-            col=hex(dx<0?(dith(x,y,.5)?"#3a2232":"#35202f"):"#271826");
-            if(y===top) col=hex(ax<=cw?"#6a2b24":"#4a2a3a");
-            if(ax<=cw-2&&y<=top+1) col=hex(y===top?"#ffd166":"#ff6a2b");
-          }
+      const dx=x-X, ax=Math.abs(dx);
+      if(p>=GROUND_PTS || y<yGround){            // above ground: sky, hills, and the cone
+        col=skyCol(p,x,y);
+        if(p<CRATER_PTS+40){ if(y>far(x)) col=hex("#140f22"); if(y===far(x)+1) col=hex("#1c1530"); if(y>near(x)) col=hex("#100c1a"); }
+        const hw=coneHalf(p);
+        if(p<CRATER_PTS && ax<=hw){
+          col=dx<0?CONE_L[dith(x,y,.5)?0:1]:CONE_R;
+          if(ax>=hw-1) col=CONE_EDGE;
+          const n=hash(x,y); if(n>.985) col=col.map(v=>Math.min(255,v+18));
+          if(ax<=3) col=ax===3?CONDUIT_W:CONDUIT;
         }
-      } else {
-        const s=Math.min(8,Math.floor((y-SKY)/SEG_H)), ly=y-SKY-s*SEG_H;
-        if(s>=8){col=hex(dith(x,y,.5)?"#fff6d8":"#fff0bd");}
-        else{
-          const [cs,bh]=bandsC[s], wob=Math.round(2*Math.sin(x*.045+s)+Math.sin(x*.13+s*2));
-          const p=(ly+wob)/bh, i=Math.floor(p), t=p-i, edge=t>0.78?(t-0.78)/0.22:0;
-          const ii=((i%cs.length)+cs.length)%cs.length, jj=(ii+1)%cs.length;
-          col=cs[dith(x,y,edge)?jj:ii];
-          const n=hash(x,y);
-          if(n>.985) col=col.map(v=>Math.min(255,v+22)); else if(n<.015) col=col.map(v=>Math.max(0,v-22));
-          if(ly===0&&s>0) col=col.map(v=>Math.min(255,v+40));
-          if(s===2&&(x+Math.floor(ly/18)*7)%23===0) col=col.map(v=>Math.max(0,v-18)); // basalt columns
-        }
-        if(y-SKY<2) col=hex(y-SKY===0?"#4f8a3a":"#2f5a2c");
-        else if(y-SKY<4) col=hex(dith(x,y,.5)?"#2f5a2c":"#3b2a1e");
+        if(Math.abs(y-yCrater)<=1&&ax<=9&&ax>3) col=hex(y===yCrater-1?"#6a2b24":"#4a2a3a");
+      } else {                                     // underground
+        const wob=Math.round(2*Math.sin(x*.045)+Math.sin(x*.13)), band=Math.floor((y+wob)/14);
+        col=ROCK[((band%4)+4)%4];
+        const ex=dx/chRx, ey=(y-chCy)/chRy, e=Math.max(0,Math.sqrt(ex*ex+ey*ey)+0.05*Math.sin(x*.21+y*.13));
+        if(e<1.35&&e>=1){ if(dith(x,y,(1.35-e)/0.35)) col=WARM; }
+        if(e<1){
+          const k=Math.min(4,Math.floor(e*4.6)), t=e*4.6-k;
+          col=MAG[dith(x,y,t>0.7?(t-0.7)/0.3:0)?Math.min(4,k+1):k];
+          if(e>0.96) col=RIM;
+          if(hash(x,y)>.93) chamberPx.push([x,y,k]);
+        } else if(ax<=3 && y<chCy) col=ax===3?CONDUIT_W:CONDUIT;
+        const n=hash(x,y); if(e>=1){ if(n>.985) col=col.map(v=>Math.min(255,v+16)); else if(n<.012) col=col.map(v=>Math.max(0,v-14)); }
+        if(y===yGround) col=hex("#2a1f2e");
       }
       put(x,y,col);
     }
   }
-  // grass tufts
-  for(let x=0;x<W;x+=3) if(hash(x,1)>.55){put(x,SKY-1,hex("#4f8a3a")); if(hash(x,2)>.7) put(x,SKY-2,hex("#6bbf59"));}
-  const r=mulberry32(777), at=(seg,pad)=>SKY+seg*SEG_H+pad+Math.floor(r()*(SEG_H-pad*2));
-  const N=k=>Math.max(1,Math.round(k*W/400));
-  for(let i=0;i<N(18);i++) stamp(img,W,SPR.root,Math.floor(r()*W),SKY+3+Math.floor(r()*8));
-  for(let i=0;i<N(5);i++) stamp(img,W,SPR.worm,Math.floor(r()*W),SKY+8+Math.floor(r()*20));
-  for(let i=0;i<N(40);i++) stamp(img,W,SPR.pebble,Math.floor(r()*W),at(0,6));
-  for(let i=0;i<N(9);i++) stamp(img,W,SPR.fossil,Math.floor(r()*W),at(0,20));
-  for(let i=0;i<N(5);i++) stamp(img,W,SPR.bone,Math.floor(r()*W),at(0,20));
-  stamp(img,W,SPR.skull,Math.floor(W*.7),SKY+Math.floor(SEG_H*.62));
-  for(let i=0;i<N(40);i++) stamp(img,W,SPR.stone,Math.floor(r()*W),at(1,6));
-  const gems=[SPR.gemC,SPR.gemP,SPR.gemG,SPR.gemR];
-  for(let i=0;i<N(22);i++) stamp(img,W,gems[i%4],Math.floor(r()*W),at(1,8));
-  for(let i=0;i<N(26);i++) stamp(img,W,gems[(i+1)%4],Math.floor(r()*W),at(2,8));
-  for(let s=3;s<6;s++) for(let i=0;i<N(9+s);i++) stamp(img,W,SPR.magma,Math.floor(r()*W),at(s,8));
-  for(let i=0;i<N(30);i++) stamp(img,W,SPR.ringw,Math.floor(r()*W),at(4,6));
-  for(let i=0;i<N(40);i++) stamp(img,W,SPR.crystal,Math.floor(r()*W),at(7,6));
+  const r=mulberry32(4242), N=k=>Math.max(1,Math.round(k*W/400));
+  // rock detail underground
+  for(let i=0;i<N(70);i++){const x=Math.floor(r()*W), y=yGround+4+Math.floor(r()*(chBot-yGround)); const ex=(x-X)/chRx, ey=(y-chCy)/chRy; if(ex*ex+ey*ey<1.5||Math.abs(x-X)<8) continue; stamp(img,W,i%5===0?SPR.crystal:i%7===0?SPR.gemP:SPR.stone,x,y);}
+  for(let i=0;i<N(26);i++){const x=Math.floor(r()*W), y=chBot+6+Math.floor(r()*Math.max(4,WORLD_H-chBot-10)); stamp(img,W,SPR.stone,x,y);}
+  // clouds: dark ash clouds near the crater, moonlit clouds higher, thin wisps in the stratosphere
+  const cloud=(cxp,cyp,w,h,top,body,shade)=>{const k=3+Math.floor(r()*3); for(let n=0;n<k;n++){const ox=cxp+(n-(k-1)/2)*w*0.42, oy=cyp+(r()-.5)*h*.5, rw=w*(.32+r()*.18), rh=h*(.55+r()*.3);
+    for(let y=Math.floor(oy-rh);y<=oy+rh;y++) for(let x=Math.floor(ox-rw);x<=ox+rw;x++){const q=((x-ox)/rw)**2+((y-oy)/rh)**2; if(q>1) continue; put(x,y,q>.8&&y>oy?shade:(y<oy-rh*.4?top:body));}}};
+  const cl=(p0,p1,n,cols,wmul)=>{for(let i=0;i<N(n);i++){const p=p0+r()*(p1-p0), x=Math.floor(r()*W); if(Math.abs(x-X)<16) continue; cloud(x,yOfPts(p),(26+r()*30)*wmul,6+r()*5,...cols.map(hex));}};
+  cl(215,300,5,["#4a4366","#3e3858","#322d4a"],1);
+  cl(345,450,9,["#8a95c0","#6a76a4","#4e5986"],1.1);
+  for(let i=0;i<N(14);i++){const y=yOfPts(470+r()*100), x0=Math.floor(r()*W), len=20+Math.floor(r()*50); for(let x=x0;x<x0+len;x++) if((x+i)%5) put(x,y+(x%17===0?1:0),hex("#26306a"));}
+  // noctilucent clouds near 80 km
+  { const y0=yOfKm(82); for(let i=0;i<N(10);i++){const y=y0+Math.floor((r()-.5)*14), x0=Math.floor(r()*W), len=24+Math.floor(r()*40); for(let x=x0;x<x0+len;x++) if(hash(x,y)>.25) put(x,y,hex(hash(x,y+1)>.6?"#7fd8ff":"#3a8fbf"));} }
+  // landmarks in the sky
+  stamp(img,W,SPR.plane,Math.floor(W*(mobile?0.12:0.16)),yOfKm(11)-2);
+  stamp(img,W,SPR.balloon,Math.floor(W*(mobile?0.78:0.72)),yOfKm(39)-7);
+  stamp(img,W,SPR.moon,Math.floor(W*0.18),yOfPts(PEAK+70));
+  // the Kármán line
+  { const y=yOfPts(PEAK); for(let x=0;x<W;x++) if(x%4<2) put(x,y,hex("#6fe3d2")); }
   g.putImageData(img,0,0);
-  // lava flows down the volcano, stored so they can flicker each frame
+  // lava that spills down the cone, stored so it can flicker each frame
   lavaPx=[];
-  [[-1,.5],[1,.75]].forEach(([dir,len])=>{let x=vx+dir*3, y=SKY-hv+2; const end=SKY-hv+Math.round(hv*len);
-    while(y<end){lavaPx.push([x,y]); y++; if(hash(x,y)>.45) x+=dir*(hash(y,x)>.3?1:0);}});
-  // stars
-  twinkle=[]; for(let i=0;i<Math.round(W/5);i++){const sx=Math.floor(hash(i,3)*W), sy=Math.floor(hash(i,5)*(SKY-34)); twinkle.push([sx,sy,hash(i,9)]); g.fillStyle=hash(i,9)>.7?"#eef0fa":"#6a7096"; g.fillRect(sx,sy,1,1);}
+  [[-1,.75],[1,.55]].forEach(([dir,len])=>{let x=X+dir*5, y=yCrater+1; const end=yCrater+Math.round((yGround-yCrater)*len);
+    while(y<end){lavaPx.push([x,y]); y++; const hw=coneHalf(ptsOfY(y)); if(hash(x,y)>.35) x+=dir; if(Math.abs(x-X)>hw-2) x-=dir;}});
+  // stars, thicker as you climb
+  twinkle=[];
+  const yStars=yOfPts(420);
+  for(let i=0;i<Math.round(W*1.4);i++){const sx=Math.floor(hash(i,3)*W), sy=Math.floor(hash(i,5)*yStars); const p=ptsOfY(sy); if(hash(i,7)>(p-400)/250) continue; twinkle.push([sx,sy,hash(i,9)]); g.fillStyle=hash(i,9)>.7?"#eef0fa":"#6a7096"; g.fillRect(sx,sy,1,1);}
   return c;
 }
 function resize(){
   mobile=innerWidth<=760;
   S=Math.max(2,innerWidth/400); W=Math.ceil(innerWidth/S); H=Math.ceil(innerHeight/S);
   cv.width=W; cv.height=H;
-  SKY=Math.round(mobile?H*0.24:Math.max(110,H*0.46)); SEG_H=Math.round(Math.max(150,H*0.5));
-  WORLD_H=SKY+9*SEG_H;
+  PXP=Math.max(1.5,H*0.5/100); BOT=Math.round(H*(mobile?0.45:0.45)); TOPM=Math.round(H*0.75);
+  WORLD_H=Math.round(BOT+PEAK*PXP+TOPM);
   world=buildWorld(); buildNotes();
   targetY=kmToY(curKm); drillY=targetY;
 }
-/* Depth notes along the shaft, like a field guide */
+/* Height notes along the eruption, like a field guide */
 const NOTES=[
-  [0.02,"L","roots, worms, and buried bones"],
-  [1,"R","fossils from ancient seas"],
-  [2.2,"L","Veryovkina, the deepest known cave: 2.2 km"],
-  [4,"R","Mponeng gold mine, the deepest mine: 4 km"],
-  [6,"L","the rock is hot enough to boil water"],
-  [12.262,"R","Kola Superdeep Borehole: 12.3 km. humans stopped here"],
-  [25,"L","the continental crust is ending"],
-  [35,"L","THE MOHO · the mantle begins",1],
-  [120,"R","the rock flows like very slow putty"],
-  [175,"L","diamonds form around here"],
-  [410,"R","THE TRANSITION ZONE · 410 km",1],
-  [530,"L","ringwoodite here may hold oceans of water"],
-  [660,"L","THE LOWER MANTLE · 660 km",1],
-  [1500,"R","pressure: over 600,000x the surface"],
-  [2200,"L","bridgmanite, the most common mineral on Earth"],
-  [2891,"R","THE OUTER CORE · liquid iron",1],
-  [4000,"L","this churning iron makes the magnetic field"],
-  [5150,"L","THE INNER CORE · solid iron",1],
-  [5600,"R","about as hot as the surface of the Sun"],
-  [6371,"R","THE CENTER OF THE EARTH · a perfect dig ends here",1]
+  [-7.2,"L","the magma chamber: rock melted at over 1,000 °C"],
+  [-5,"R","gas bubbles in the magma push it upward"],
+  [-3,"L","THE VENT · a pipe of magma through solid rock",1],
+  [-1.5,"R","ground level around the volcano"],
+  [-0.6,"L","obsidian forms where lava cools too fast to crystallize"],
+  [0,"R","THE CRATER · the eruption breaks out",1],
+  [0.83,"L","the Burj Khalifa, the tallest building: 0.83 km"],
+  [2,"R","ash from the plume can travel hundreds of kilometers"],
+  [8.85,"L","the summit of Mount Everest: 8.8 km"],
+  [11,"R","airliners cruise around here"],
+  [12,"L","THE STRATOSPHERE · about 12 km",1],
+  [25,"R","the ozone layer is thickest around here"],
+  [39,"L","Felix Baumgartner jumped from 39 km in 2012"],
+  [50,"R","THE MESOSPHERE · about 50 km",1],
+  [57,"L","the Hunga Tonga eruption plume reached 57 km in 2022"],
+  [82,"R","glowing noctilucent clouds and burning meteors"],
+  [100,"L","THE KÁRMÁN LINE · space begins. A perfect 700 ends here",1]
 ];
 let noteEls=[];
 function buildNotes(){
@@ -6230,17 +6203,17 @@ function placeNotes(camY){
   if(plTick--<=0||document.body.classList.contains("drilling")){const pn=document.querySelector(".panel"); const r=pn?pn.getBoundingClientRect():null; panelLeft=(r&&!mobile&&!document.body.classList.contains("drilling"))?r.left:innerWidth; plTick=30;}
   for(const [el,wy] of noteEls){
     const y=(wy-camY)*S;
-    if(y<-40||y>innerHeight+40){el.style.display="none";continue;}
+    if(y<84||y>innerHeight+40){el.style.display="none";continue;}
     el.style.display="";
-    if(el.classList.contains("L")){el.style.right=(innerWidth-xs+18)+"px"; el.style.left=""; el.style.maxWidth=Math.max(80,xs-30)+"px";}
-    else {el.style.left=(xs+18)+"px"; el.style.right=""; el.style.maxWidth=Math.max(80,panelLeft-xs-34)+"px";}
+    if(el.classList.contains("L")){el.style.right=(innerWidth-xs+22)+"px"; el.style.left=""; el.style.maxWidth=Math.max(80,xs-30)+"px";}
+    else {el.style.left=(xs+22)+"px"; el.style.right=""; el.style.maxWidth=Math.max(80,panelLeft-xs-34)+"px";}
     el.style.transform=`translateY(${Math.round(y-8)}px)`;
   }
 }
-const DRILL={p:{a:"#e8eaf2",b:"#b6bacb",c:"#7d829c",d:"#4a4f68",o:"#ff7a3d",y:"#ffd166"},
- m:["...dd...","...cd...","..abbc..",".abbbcd.",".ooooood",".abbbcd.",".abbbcd.",".abbbcd.","..abcd..","..bccd..","...bc...","...c...."]};
-const MOLE={p:{a:"#6a4a3a",b:"#4a3226",n:"#ff8aa0",e:"#111111",w:"#e8dcc8"},
- m:[".aaaa..","aaeaaa.","aaaaaan","baaaaa.",".bwbw.."]};
+/* the player: a blob of magma with a face */
+const BLOB={p:{a:"#fff0bd",b:"#ffd166",c:"#ff9a3d",d:"#5a1a0a",e:"#2a0f08",w:"#ffffff"},
+ m:["...ddd...","..dcccd..",".dcbbbcd.","dcbwbbbcd","dcbebebcd","dcbbbbbcd","dcbbabbcd",".dcbbbcd.","..ddcdd..","....d...."]};
+const BLOB_UP={p:BLOB.p,m:["....d....","...dcd...","..dcbcd..",".dcbwbcd.","dcbebebcd","dcbbbbbcd","dcbbabbcd",".dcbbbcd.","..dcccd..","...ddd..."]};
 function sprite(spr,x,y,flip){spr.m.forEach((row,j)=>{for(let i=0;i<row.length;i++){const ch=row[flip?row.length-1-i:i]; if(ch==="."||!spr.p[ch]) continue; cx.fillStyle=spr.p[ch]; cx.fillRect(x+i,y+j,1,1);}});}
 function quake(n){if(!reduced) shakeT=Math.max(shakeT,n);}
 let rings=[], erupt=0, DESC=null;
@@ -6256,58 +6229,60 @@ function frame(){
     const pr=Math.min(1,(performance.now()-DESC.t0)/DESC.dur), e=1-Math.pow(1-pr,3);
     drillY=DESC.from+(DESC.to-DESC.from)*e; targetY=drillY;
     const t=DESC.tier;
-    if(!reduced&&pr<1){ // trail grows with rarity
-      const n=t>=6?5:t>=5?4:t>=4?3:t>=2?2:1;
-      const col=[["#8a6a4f"],["#8a6a4f","#ffd166"],["#c58a5e","#ffd166"],["#a8a29b","#ffd166"],["#ffd166","#fff6c8"],["#ff7a3d","#ffb347","#ffe9a8"],["#6fe3d2","#ffffff","#b9fff6","#ffd166"]][t];
-      if(tick%(t>=4?1:2)===0) spray(n,col,{v:t>=5?1.8:1.2,life:t>=5?22:16,lift:.9});
+    if(!reduced&&pr<1){ // lava trail grows with rarity
+      const n=t>=6?6:t>=5?4:t>=4?3:t>=2?2:1;
+      const col=[["#c94a1a"],["#ff7a3d","#c94a1a"],["#ff9a3d","#ffd166"],["#ffb347","#ffd166"],["#ffd166","#fff0bd"],["#ff7a3d","#ffb347","#fff0bd"],["#6fe3d2","#ffffff","#ffd166","#ff6b8a"]][t];
+      if(tick%(t>=4?1:2)===0) for(let i=0;i<n;i++) sparks.push({x:drillX()+(Math.random()-.5)*5,y:drillY+6,vx:(Math.random()-.5)*(t>=5?1.6:.9),vy:.4+Math.random()*.8,l:(t>=5?22:15)+Math.random()*10|0,c:col[i%col.length],s:t>=5&&Math.random()<.3?2:1,g:.05});
       if(t>=4) shakeT=Math.max(shakeT,t>=6?4:2);
     }
     if(pr>=1&&!DESC.fx){DESC.fx=true; DESC.landed=performance.now(); impact(t);}
-  } else drillY+=(targetY-drillY)*0.05;
-  if(moving&&!reduced&&tick%2===0) sparks.push({x:drillX()+(Math.random()<.5?-2:2),y:drillY+4,vx:(Math.random()-.5)*1.6,vy:-Math.random()*1.2,l:14});
-  const focus=DESC?0.45:(mobile?0.16:0.42), camY=Math.max(0,Math.min(WORLD_H-H,Math.round(drillY-H*focus)));
+  } else drillY+=(targetY-drillY)*0.08;
+  const X=drillX(), rising=!!DESC&&!DESC.fx;
+  const focus=mobile?(DESC?0.5:0.26):(DESC?0.58:0.55), camY=Math.max(0,Math.min(WORLD_H-H,Math.round(drillY-H*focus)));
   let ox=0,oy=0; if(shakeT>0){shakeT--; ox=(tick%2?1:-1)*(shakeT>6?2:1); oy=(tick%3)-1;}
   cx.setTransform(1,0,0,1,ox,oy);
   cx.drawImage(world,0,camY,W,H,0,0,W,H);
   // twinkling stars
-  if(!reduced) for(const [sx,sy,ph] of twinkle){const y=sy-camY; if(y<0) continue; if(((tick>>3)+Math.floor(ph*40))%29<2){cx.fillStyle="#ffffff"; cx.fillRect(sx,y,1,1); cx.fillStyle="#8a90b8"; cx.fillRect(sx-1,y,1,1); cx.fillRect(sx+1,y,1,1); cx.fillRect(sx,y-1,1,1); cx.fillRect(sx,y+1,1,1);}}
-  // volcano: flickering lava, dithered glow, smoke, embers
-  const vx=volX(), hv=Math.min(64,Math.round(SKY*0.52)), py=SKY-hv-camY;
-  if(py>-40&&py<H){
-    for(const [x,y] of lavaPx){const f=reduced?0:((y+(tick>>2))%7); cx.fillStyle=f===0?"#ffd166":f<3?"#ff8a3d":"#ff6a2b"; cx.fillRect(x,y-camY,1,1);}
-    const gr=10+(reduced?0:((tick>>4)%2)); cx.fillStyle="#ff7a3d";
-    for(let y=-gr;y<=2;y++) for(let x=-gr;x<=gr;x++){if(x*x+y*y*2.2>gr*gr) continue; if(((x+y)&1)===0&&hash(x+vx,y+tick>>3)>.55) cx.fillRect(vx+x,py+y-1,1,1);}
+  if(!reduced) for(const [sx,sy,ph] of twinkle){const y=sy-camY; if(y<0||y>H) continue; if(((tick>>3)+Math.floor(ph*40))%29<2){cx.fillStyle="#ffffff"; cx.fillRect(sx,y,1,1); cx.fillStyle="#8a90b8"; cx.fillRect(sx-1,y,1,1); cx.fillRect(sx+1,y,1,1); cx.fillRect(sx,y-1,1,1); cx.fillRect(sx,y+1,1,1);}}
+  // meteors burning up high in the sky
+  const yMet=yOfKm(85)-camY;
+  if(!reduced&&yMet>-60&&yMet<H+60&&Math.random()<.03) meteors.push({x:Math.random()*W,y:yOfKm(80+Math.random()*15),l:22});
+  meteors=meteors.filter(m=>m.l>0);
+  for(const m of meteors){m.x+=2.2; m.y+=1.1; m.l--; for(let k=0;k<6;k++){cx.fillStyle=k===0?"#ffffff":k<3?"#ffd166":"#6a5a8a"; cx.fillRect(Math.round(m.x-k*2.2),Math.round(m.y-camY-k*1.1),1,1);}}
+  // magma chamber shimmer and the glowing vent below the blob
+  const yCrater=yOfPts(CRATER_PTS), chTop=yOfPts(82);
+  if(!reduced) for(let i=0;i<30&&chamberPx.length;i++){const [x,y,k]=chamberPx[(Math.random()*chamberPx.length)|0]; const yy=y-camY; if(yy<0||yy>H) continue; cx.fillStyle=k<=1?"#ffffff":k===2?"#fff0bd":"#ffd166"; cx.fillRect(x,yy,1,1);}
+  const top=Math.max(Math.round(drillY)+4,yCrater);
+  for(let y=Math.max(top,camY);y<Math.min(chTop+6,camY+H);y++){const f=reduced?1:((y+(tick>>1))%9); for(let x=-2;x<=2;x++){cx.fillStyle=Math.abs(x)===2?"#c94a1a":f<2?"#fff0bd":f<5?"#ffd166":"#ff9a3d"; cx.fillRect(X+x,y-camY,1,1);}}
+  // above the crater: the eruption column holds the blob up, lava spills down the cone
+  const above=drillY<yCrater-2;
+  if(above){
+    const yb=Math.round(drillY)+6;
+    for(let y=Math.max(yb,camY);y<=Math.min(yCrater,camY+H);y++){const f=reduced?1:((y+(tick>>1))%7), w=1+Math.round(Math.min(3,(y-yb)/40)); for(let x=-w;x<=w;x++){cx.fillStyle=Math.abs(x)===w?"#ff7a3d":f<2?"#fff0bd":"#ffd166"; cx.fillRect(X+x,y-camY,1,1);}}
+  }
+  if(yCrater-camY>-40&&yCrater-camY<H+40){
+    const live=above||erupt>0;
+    for(const [x,y] of lavaPx){const f=reduced?0:((y+(tick>>2))%7); cx.fillStyle=live?(f===0?"#ffd166":f<3?"#ff8a3d":"#ff6a2b"):(f===0?"#8a3a2a":"#5a2a22"); cx.fillRect(x,y-camY,1,1);}
+    const gr=9+(reduced?0:((tick>>4)%2)); cx.fillStyle="#ff7a3d";
+    for(let y=-gr;y<=1;y++) for(let x=-gr;x<=gr;x++){if(x*x+y*y*2.2>gr*gr) continue; if(((x+y)&1)===0&&hash(x+X,y+tick>>3)>.55) cx.fillRect(X+x,yCrater-camY+y-1,1,1);}
     if(!reduced){
-      if(tick%9===0) smoke.push({x:vx+(Math.random()*4-2),y:SKY-hv-3,vx:.12+Math.random()*.1,vy:-.18-Math.random()*.1,l:160,s:2});
-      if(tick%5===0) embers.push({x:vx+(Math.random()*6-3),y:SKY-hv,vx:(Math.random()-.5)*.5,vy:-.6-Math.random()*.6,l:50+Math.random()*30|0});
-      if(erupt>0){erupt--; for(let i=0;i<(erupt>120?5:3);i++) embers.push({x:vx+(Math.random()*8-4),y:SKY-hv,vx:(Math.random()-.5)*1.6,vy:-1.4-Math.random()*1.8,l:60+Math.random()*40|0});}
+      if(tick%(above?4:9)===0) smoke.push({x:X+(Math.random()*6-3),y:yCrater-3,vx:.12+Math.random()*.15,vy:-.22-Math.random()*.12,l:170,s:2});
+      if(tick%5===0) embers.push({x:X+(Math.random()*6-3),y:yCrater,vx:(Math.random()-.5)*.5,vy:-.6-Math.random()*.6,l:50+Math.random()*30|0});
     }
   }
+  if(!reduced&&erupt>0){erupt--; for(let i=0;i<(erupt>120?5:3);i++) embers.push({x:X+(Math.random()*8-4),y:Math.min(drillY+8,yCrater),vx:(Math.random()-.5)*1.8,vy:-1.2-Math.random()*1.8,l:60+Math.random()*40|0});}
   smoke=smoke.filter(s=>s.l>0);
-  for(const s of smoke){s.x+=s.vx; s.y+=s.vy; s.l--; if(s.l%40===0) s.s++; cx.fillStyle=s.l>100?"#3e3858":s.l>50?"#322d4a":"#26233b"; const z=s.s; cx.fillRect(Math.round(s.x),Math.round(s.y-camY),z,z); cx.fillRect(Math.round(s.x)+z,Math.round(s.y-camY)+1,z-1,z-1);}
+  for(const s of smoke){s.x+=s.vx; s.y+=s.vy; s.l--; if(s.l%40===0) s.s++; cx.fillStyle=s.l>100?"#4a4366":s.l>50?"#3a3456":"#2a2640"; const z=s.s; cx.fillRect(Math.round(s.x),Math.round(s.y-camY),z,z); cx.fillRect(Math.round(s.x)+z,Math.round(s.y-camY)+1,z-1,z-1);}
   embers=embers.filter(e=>e.l>0);
   for(const e of embers){e.x+=e.vx; e.y+=e.vy; e.vy+=.012; e.l--; cx.fillStyle=e.l>45?"#ffe9a8":e.l>20?"#ff8a3d":"#8a3a2a"; cx.fillRect(Math.round(e.x),Math.round(e.y-camY),1,1);}
-  // drilling rig
-  const X=drillX(), gy=SKY-camY;
-  if(gy>-40){
-    cx.fillStyle="#4a4f73"; for(let i=0;i<26;i++){cx.fillRect(X-7+Math.floor(i/4),gy-i,1,1); cx.fillRect(X+7-Math.floor(i/4),gy-i,1,1);}
-    for(let k=1;k<5;k++){const y=gy-k*5, w=7-Math.floor(k*5/4); for(let i=-w;i<=w;i++) if((i+k)%2===0) cx.fillRect(X+i,y,1,1);}
-    cx.fillStyle="#6a6f96"; cx.fillRect(X-3,gy-27,7,1);
-    cx.fillStyle=(reduced||(tick>>5)%2)?"#ff6a2b":"#5a2a1a"; cx.fillRect(X,gy-29,1,2);
-  }
-  // shaft and drill
-  const bob=(!moving&&!reduced&&((tick>>5)%2))?1:0, dy=Math.round(drillY-camY)-bob;
-  if(dy>gy){cx.fillStyle="#0b0705"; cx.fillRect(X-3,Math.max(gy,0),7,dy-Math.max(gy,0)-8); cx.fillStyle="#2a1a12"; cx.fillRect(X-3,Math.max(gy,0),1,dy-Math.max(gy,0)-8); cx.fillRect(X+3,Math.max(gy,0),1,dy-Math.max(gy,0)-8);}
-  sprite(DRILL,X-4,dy-11);
-  const spin=(tick>>(moving?1:3))%2; cx.fillStyle=spin?"#e8eaf2":"#7d829c"; cx.fillRect(X-1,dy-3,1,1); cx.fillRect(X+1,dy-2,1,1);
-  if(moving&&(tick&1)){cx.fillStyle="#ffd166"; cx.fillRect(X,dy+1,1,1);}
-  // mole friend riding along
-  const mx=X+8, my=dy-7+(reduced?0:((tick>>4)%2));
-  sprite(MOLE,mx,my);
-  if(moleSay>0){moleSay--; cx.fillStyle="#e8f1ff"; const t=moleText; cx.font="8px VT323, monospace"; cx.fillText(t,mx+6,my-2);}
-  // sparks
+  // the blob
+  const bob=(!moving&&!reduced&&((tick>>4)%2))?1:0, by=Math.round(drillY-camY)-bob;
+  sprite(rising?BLOB_UP:BLOB,X-4,by-5);
+  if(!reduced&&!rising&&(tick>>6)%9===0){cx.fillStyle="#d2501c"; cx.fillRect(X-1,by-1,1,1); cx.fillRect(X+1,by-1,1,1);}  // blink
+  if(moleSay>0){moleSay--; cx.fillStyle="#fff6e0"; cx.font="8px VT323, monospace"; cx.fillText(moleText,X+7,by-6);}
+  // rings and sparks
   rings=rings.filter(r=>r.r<r.max);
-  for(const r of rings){r.r+=r.v; cx.fillStyle=r.color; const steps=Math.max(16,Math.round(r.r*4)); for(let i=0;i<steps;i++){const a=i/steps*Math.PI*2; cx.fillRect(Math.round(drillX()+Math.cos(a)*r.r),Math.round(drillY-camY+Math.sin(a)*r.r*.8),1,1);}}
+  for(const r of rings){r.r+=r.v; cx.fillStyle=r.color; const steps=Math.max(16,Math.round(r.r*4)); for(let i=0;i<steps;i++){const a=i/steps*Math.PI*2; cx.fillRect(Math.round(X+Math.cos(a)*r.r),Math.round(drillY-camY+Math.sin(a)*r.r*.8),1,1);}}
   sparks=sparks.filter(s=>s.l>0);
   for(const s of sparks){s.x+=s.vx; s.y+=s.vy; s.vy+=(s.g===undefined?.08:s.g); s.l--; cx.fillStyle=s.c||(s.l>10?"#ffd166":"#ff7a3d"); const z=s.s||1; cx.fillRect(Math.round(s.x),Math.round(s.y-camY),z,z);}
   placeNotes(camY-oy);
@@ -6352,7 +6327,7 @@ const SFX=(()=>{
   }
   const N=n=>440*Math.pow(2,(n-69)/12);           // MIDI note to Hz
   function arp(notes,step,o){notes.forEach((n,i)=>tone(N(n),(o&&o.len)||step*1.6,Object.assign({},o,{at:((o&&o.at)||0)+i*step})));}
-  /* low volcanic drone that gets deeper as you dig */
+  /* low volcanic drone that rises as you climb */
   function ambient(on){
     if(!ctx()) return;
     if(!on){if(amb){amb.g.gain.setTargetAtTime(0.0001,now(),0.4); const a=amb; setTimeout(()=>{try{a.o1.stop();a.o2.stop();a.src.stop();}catch(e){}},1500); amb=null;} return;}
@@ -6366,7 +6341,7 @@ const SFX=(()=>{
     o1.start(); o2.start(); src.start();
     amb={o1,o2,src,f,g};
   }
-  function depth(km){ if(!amb) return; const f=Math.max(28,55-km/6371*25); amb.o1.frequency.setTargetAtTime(f,now(),1); amb.o2.frequency.setTargetAtTime(f*1.012,now(),1); amb.f.frequency.setTargetAtTime(180+km/6371*500,now(),1); }
+  function depth(km){ if(!amb) return; const h=Math.max(0,Math.min(1,ptsOfAlt(km)/700)), f=45+h*45; amb.o1.frequency.setTargetAtTime(f,now(),1); amb.o2.frequency.setTargetAtTime(f*1.012,now(),1); amb.f.frequency.setTargetAtTime(160+h*700,now(),1); }
   return {
     wake, depth,
     get muted(){return muted;},
@@ -6416,14 +6391,14 @@ document.addEventListener("click",e=>{const b=e.target.closest("button,a.btnlink
 
 /* ---------- Game (Cosmillion format: 7 prompts, 25 seconds, one answer each) ---------- */
 const $=id=>document.getElementById(id);
-const SCREENS=["startScreen","playScreen","revealScreen","endScreen","archiveScreen","payScreen"];
-function show(id){SCREENS.forEach(s=>$(s).classList.toggle("hidden",s!==id)); scrollTo({top:0}); if(id==="startScreen"||id==="archiveScreen"||id==="payScreen") setTopLine();}
-/* Top-left line under the logo: the daily dig number, or which Play again game this is. */
-function playLabel(g){return "Play again #"+(g.num||1)+(!isUnlocked()&&(g.num||1)<=FREE_UNLIMITED?" of "+FREE_UNLIMITED+" free":"");}
+const SCREENS=["startScreen","playScreen","revealScreen","endScreen","archiveScreen"];
+function show(id){SCREENS.forEach(s=>$(s).classList.toggle("hidden",s!==id)); scrollTo({top:0}); if(id==="startScreen"||id==="archiveScreen") setTopLine();}
+/* Top-left line under the logo: the daily eruption number, or which Play again game this is. */
+function playLabel(g){return "Play again #"+(g.num||1);}
 function setTopLine(g){
-  $("dateLine").textContent = !g ? "THE DAILY DIG · #"+(DAY+1)
+  $("dateLine").textContent = !g ? "THE DAILY ERUPTION · #"+(DAY+1)
     : g.mode==="free" ? playLabel(g).toUpperCase()
-    : g.mode==="daily" ? "THE DAILY DIG · #"+(g.day+1) : "ARCHIVE · DIG #"+(g.day+1);
+    : g.mode==="daily" ? "THE DAILY ERUPTION · #"+(g.day+1) : "ARCHIVE · ERUPTION #"+(g.day+1);
 }
 const QTIME=25, NQ=7;
 const KEY=d=>"quarrillion3:"+d;
@@ -6446,13 +6421,13 @@ function resumeRun(r){
     G.res.push({p:G.set[G.qi], raw:"", name:"", tier:0, pts:0, timedOut:true, nope:"", web:null, why:"Left the page"});
     G.qi++; saveRun(G.qi,false);
   }
-  setDepth(G.total*KM_PER_PT,true); updateHud(G.total);
+  setDepth(altOf(G.total),true); updateHud(G.total);
   if(G.qi<NQ) ask(); else finish();
 }
 function newGame(mode, day, num){
   const set = mode==="free" ? shuffled(PROMPTS.length,(Math.random()*1e9)|0).slice(0,NQ) : dailyCats(day);
   G={mode, day, set, qi:0, total:0, res:[], num};
-  setDepth(0,true); updateHud();
+  setDepth(altOf(0),true); updateHud();
   ask();
 }
 function ask(){
@@ -6460,7 +6435,7 @@ function ask(){
   pending=null; locked=false; G.tries=0; checking=false; timerPaused=false; $("timer").classList.remove("paused");
   $("confirmBox").classList.add("hidden");
   $("qNum").textContent=(G.qi+1)+" / "+NQ;
-  $("qMode").textContent=G.mode==="free"?playLabel(G):"Dig #"+(G.day+1);
+  $("qMode").textContent=G.mode==="free"?playLabel(G):"Eruption #"+(G.day+1);
   setTopLine(G);
   $("qText").textContent=p.q;
   $("ansInput").value=""; $("ansInput").disabled=false;
@@ -6487,7 +6462,7 @@ function fb(msg,cls){const f=$("feedback"); f.textContent=msg; f.className="feed
    Thing prompts search Wikipedia. The article must mention the category (the "any" words,
    plus every "all" word), and its views over the last 30 days set the rarity.
    "Word that means..." prompts ask the Datamuse dictionary for words with that meaning,
-   and word frequency sets the rarity. Web finds max out at Deep vein (85). */
+   and word frequency sets the rarity. Web finds max out at Sky-high (85). */
 const WEB={
 "Name a type of cloud":{h:"cloud",any:["cloud"]},
 "Name a bone in the human body":{h:"bone",any:["bone","skeleton","skeletal"]},
@@ -6852,7 +6827,7 @@ function score(e, raw, timedOut, why){
   G.res.push({p:G.set[G.qi], raw, name: e&&e.tier>0 ? e.name : raw, tier, pts, timedOut:!!timedOut, nope: e&&e.tier===0 ? e.name+": "+e.def : "", web: e&&e.web ? {def:e.def,src:e.src} : null, why: why||""});
   saveRun(G.qi+1,false);
   document.body.classList.remove("urgent");
-  const km=G.total*KM_PER_PT;
+  const km=altOf(G.total);
   $("kmOut").textContent=fmtKm(km); $("layerOut").textContent=layerAt(km); updateHud();
   startDescent(km, tier, reveal);
 }
@@ -6870,7 +6845,7 @@ function impact(t){
   if(t===4){spray(70,["#ffd166","#fff6c8","#e5b54a"],{v:2.2,life:34,grav:.03}); ring("#ffd166",1.5,40); setTimeout(()=>ring("#fff6c8",1.8,50),160);}
   if(t===5){spray(120,["#ff7a3d","#ffb347","#ffe9a8","#c94a1a"],{v:2.6,up:true,lift:1.6,life:40,size:2,grav:.07}); ring("#ff7a3d",1.8,60); setTimeout(()=>ring("#ffb347",2.2,80),180); erupt=140;}
   if(t===6){spray(200,["#6fe3d2","#ffffff","#b9fff6","#ffd166","#ff6b8a","#b98cff"],{v:3,life:52,size:2,grav:.02}); ring("#ffffff",2.2,90); setTimeout(()=>ring("#6fe3d2",2.4,110),150); setTimeout(()=>ring("#ffd166",2.6,130),300); setTimeout(()=>ring("#ff6b8a",2.8,150),450); erupt=260; moleText="WOW!";}
-  if(t>=1&&t<6) moleText="dig!";
+  if(t>=1&&t<6) moleText=["","pop!","blub!","whoosh!","wheee!","zoom!"][t];
   moleSay=Math.max(moleSay,80);
   if(fx.flash&&!reduced){const f=$("flash"); f.style.background=fx.flash; f.style.setProperty("--fo",fx.fo); f.className=""; void f.offsetWidth; f.className="on t"+t;}
   const bn=$("strikeBanner"), tt=TIERS[t];
@@ -6923,7 +6898,7 @@ function reveal(){
   let note="";
   if(r.nope) note=r.nope;
   else if(!r.raw) note="The clock ran out before you typed anything.";
-  else if(!r.tier) note=(r.why?r.why+" ":"That isn't in the core sample for this prompt. ")+"The drill didn't move.";
+  else if(!r.tier) note=(r.why?r.why+" ":"That isn't on the list for this prompt. ")+"The magma didn't move.";
   else if(r.web) note=(r.web.def?r.web.def+" ":"")+"Checked on the web ("+r.web.src+").";
   else {const e=p.answers.find(a=>a.name===r.name); if(e&&e.def) note=e.def;}
   $("sNote").textContent=note;
@@ -6941,7 +6916,7 @@ function reveal(){
   }
   $("rCommon").innerHTML="Most people said "+p.crowd.slice(0,3).map(e=>"<b>"+esc(e.name)+"</b>").join(", ")+".";
   $("finds").innerHTML=rareFinds(p,r.name,G.day||0).map(e=>li(e.tier,e.name,"+"+TIERS[e.tier].pts,e.def)).join("");
-  $("btnNext").textContent=G.qi<NQ-1?"Keep drilling":"See how deep you got";
+  $("btnNext").textContent=G.qi<NQ-1?"Keep rising":"See how high you got";
   $("sWord").classList.toggle("misprint", r.tier>=5);
   $("sPts").classList.toggle("misprint", r.tier>=5);
   show("revealScreen"); $("btnNext").focus();
@@ -6961,15 +6936,16 @@ function finish(){
   renderEnd(G); setTimeout(()=>SFX.finish(G.total),300);
 }
 function renderEnd(g){
-  const km=g.total*KM_PER_PT; setDepth(km); updateHud(g.total);
+  const km=altOf(g.total); setDepth(km); updateHud(g.total);
   if(g.mode==="free") setTopLine(g);
-  $("endLabel").textContent = g.mode==="free" ? playLabel(g)+" complete" : "Dig #"+(g.day+1)+" complete · "+dayLabel(g.day);
+  $("endLabel").textContent = g.mode==="free" ? playLabel(g)+" complete" : "Eruption #"+(g.day+1)+" complete · "+dayLabel(g.day);
   countUp($("endKm"), km);
-  $("endLine").textContent = g.total>=700 ? "A perfect 700. You broke through to the center of the Earth."
-    : g.total+" of 700 points. Your drill stopped in the "+layerAt(km).toLowerCase()+".";
+  $("endLine").textContent = g.total>=700 ? "A perfect 700. You erupted all the way to the edge of space."
+    : km<0 ? g.total+" of 700 points. Your magma stalled in the "+layerAt(km).toLowerCase()+", "+fmtKm(-km)+" below the crater."
+    : g.total+" of 700 points. Your eruption reached the "+layerAt(km).toLowerCase()+".";
   $("endLog").innerHTML=g.res.map(r=>li(r.tier, PROMPTS[r.p].q, "+"+r.pts, (r.raw?r.name:"No answer")+" · "+TIERS[r.tier].name)).join("");
   const passed=MARKS.filter(m=>km>=m.km);
-  $("endMarks").innerHTML=passed.length?passed.map(m=>li("▸",m.label,"")).join(""):li("▸","Nothing yet. Even 10 points carries you past the deepest hole ever drilled.","");
+  $("endMarks").innerHTML=passed.length?passed.map(m=>li("▸",m.label,"")).join(""):li("▸","Still inside the volcano. 200 points bursts you out of the crater.","");
   const gems=[]; g.res.forEach(r=>PROMPTS[r.p].answers.forEach(a=>{if(a.tier===6) gems.push(a);}));
   $("endGems").innerHTML=gems.map(e=>li(6,e.name,"",e.def)).join("");
   drawDistribution(g);
@@ -7029,15 +7005,16 @@ function drawDistribution(g){
 }
 function countUp(el, km){
   if(reduced){el.textContent=fmtKm(km); return;}
-  const t0=performance.now(), dur=650;
-  const step=now=>{const f=Math.min(1,(now-t0)/dur), e=1-Math.pow(1-f,3); el.textContent=fmtKm(km*Math.round(e*20)/20); if(f<1) requestAnimationFrame(step); else el.textContent=fmtKm(km);};
+  const t0=performance.now(), dur=650, p1=ptsOfAlt(km);
+  const step=now=>{const f=Math.min(1,(now-t0)/dur), e=1-Math.pow(1-f,3); el.textContent=fmtKm(altOf(p1*e)); if(f<1) requestAnimationFrame(step); else el.textContent=fmtKm(km);};
   requestAnimationFrame(step);
 }
 function untilMidnight(){const n=new Date(), m=new Date(n.getFullYear(),n.getMonth(),n.getDate()+1), s=Math.max(0,(m-n)/1000); return Math.floor(s/3600)+"h "+Math.floor(s%3600/60)+"m";}
 function shareString(g){
-  const km=g.total*KM_PER_PT;
+  const km=altOf(g.total);
   const head = g.mode==="free" ? "Magmillion extra game" : "Magmillion #"+(g.day+1);
-  return head+"\n"+g.res.map(r=>TIERS[r.tier].sq).join("")+"\n"+fmtKm(km)+" down ("+g.total+"/700), "+(g.total>=700?"center reached":layerAt(km).toLowerCase());
+  const where = g.total>=700 ? "100 km up, edge of space" : km<0 ? fmtKm(-km)+" below the crater" : fmtKm(km)+" up, "+layerAt(km).toLowerCase();
+  return head+"\n"+g.res.map(r=>TIERS[r.tier].sq).join("")+"\n"+where+" ("+g.total+"/700)";
 }
 function setDepth(km,instant){
   targetY=kmToY(km); if(instant) drillY=targetY;
@@ -7064,45 +7041,17 @@ function openArchive(){
   });
   show("archiveScreen");
 }
-/* ---------- Unlimited: 2 free digs, then a $5 unlock ----------
-   PAY_URL: your Stripe Payment Link (https://buy.stripe.com/...).
-   In the Payment Link's "After payment" settings, choose "Don't show confirmation
-   page" and redirect to https://playmagmillion.github.io/magmillion/#unlock-DEEPCORE5
-   so the game unlocks right away. Change UNLOCK_HASH if you change the code. */
-const PAY_URL = "";
-const FREE_UNLIMITED = 2;
-const UNLOCK_HASH = 266412929; // djb2 hash of the code DEEPCORE5
-function djb2(t){let h=5381; for(const c of t) h=((h<<5)+h+c.charCodeAt(0))>>>0; return h;}
-function isUnlocked(){return !!load("quarrillion3:unlocked");}
-function cookieNum(n){const m=document.cookie.match(new RegExp("(?:^|; )"+n+"=(\\d+)")); return m?+m[1]:0;}
-function freeUsed(){return Math.max(load("quarrillion3:freeUsed")||0, cookieNum("mm_free"));}
-// Every Play again game gets the next number: #1, #2, then #3 and up after paying.
-function nextPlayNum(){const n=Math.max((load("quarrillion3:playCount")||0), freeUsed()-1)+1; save("quarrillion3:playCount",n); return n;}
-function setFreeUsed(n){save("quarrillion3:freeUsed",n); try{document.cookie="mm_free="+n+"; max-age=63072000; path=/; SameSite=Lax";}catch(e){}}
+/* ---------- Play again: free and unlimited ----------
+   Each Play again game gets the next number. A game in progress resumes after a refresh. */
+function nextPlayNum(){const n=(load("quarrillion3:playCount")||0)+1; save("quarrillion3:playCount",n); return n;}
 function refreshFree(){
   const el=$("freeLeft"); if(!el) return;
   $("btnFree").textContent=getRun("free")?"Continue extra game":"Play again";
-  if(isUnlocked()) el.textContent="Play again as often as you like";
-  else {const left=Math.max(0,FREE_UNLIMITED-freeUsed()); el.textContent=left?left+" of "+FREE_UNLIMITED+" free games left, then $5 for unlimited":"Free games used. Unlimited play is $5.";}
+  el.textContent="7 random prompts, unlimited and free";
 }
 function playUnlimited(){
-  const run=getRun("free"); if(run){resumeRun(run);return;}   // refreshing resumes the same game, it doesn't hand out a new one
-  if(isUnlocked()){newGame("free",undefined,nextPlayNum());return;}
-  const used=freeUsed();
-  if(used<FREE_UNLIMITED){setFreeUsed(used+1); refreshFree(); newGame("free",undefined,nextPlayNum()); return;}
-  openPay();
-}
-function openPay(){
-  const a=$("payLink");
-  if(PAY_URL){a.href=PAY_URL; a.classList.remove("off"); a.textContent="Unlock for $5"; $("payNote").textContent="Checkout opens in a new tab. Payments are handled by the payment provider.";}
-  else {a.href="#"; a.classList.add("off"); a.textContent="Coming soon"; $("payNote").textContent="Paid unlimited play opens soon. Today's daily dig is free, and a new one drops every day.";}
-  $("codeMsg").textContent="";
-  show("payScreen");
-}
-function tryUnlock(code){
-  code=String(code||"").trim().toUpperCase();
-  if(code && djb2(code)===UNLOCK_HASH){save("quarrillion3:unlocked",true); refreshFree(); return true;}
-  return false;
+  const run=getRun("free"); if(run){resumeRun(run);return;}   // refreshing resumes the same game
+  newGame("free",undefined,nextPlayNum());
 }
 function startDaily(){
   SFX.wake(); SFX.start();
@@ -7113,8 +7062,8 @@ function startDaily(){
 }
 
 /* ---------- Wiring ---------- */
-$("dateLine").textContent="THE DAILY DIG · #"+(DAY+1);
-$("digBtnSub").textContent="Dig #"+(DAY+1)+" · press Enter";
+$("dateLine").textContent="THE DAILY ERUPTION · #"+(DAY+1);
+$("digBtnSub").textContent="Eruption #"+(DAY+1)+" · press Enter";
 $("ranks").innerHTML=TIERS.slice(1).map((t,i)=>`<div class="rank">${badge(i+1)}<span><b>${t.name}.</b> <span class="dim">${t.line}</span></span><span class="pts">+${t.pts}</span></div>`).join("");
 $("ansForm").addEventListener("submit",e=>{e.preventDefault(); submit();});
 $("btnYes").onclick=()=>{if(pending&&!locked) score(pending,$("ansInput").value.trim());};
@@ -7134,31 +7083,15 @@ $("btnArch").onclick=openArchive;
 $("btnAgain").onclick=playUnlimited;
 $("btnArch2").onclick=openArchive;
 $("btnArchBack").onclick=()=>show("startScreen");
-$("btnPayBack").onclick=()=>show("startScreen");
-$("codeForm").addEventListener("submit",e=>{e.preventDefault();
-  if(tryUnlock($("codeInput").value)){$("codeMsg").textContent="Done. You can play again as often as you like."; $("codeMsg").className="feedback ok"; setTimeout(()=>newGame("free",undefined,nextPlayNum()),900);}
-  else {$("codeMsg").textContent="That code didn't work. Check the code on your receipt and try again."; $("codeMsg").className="feedback bad";}
-});
-(function(){
-  const m=location.hash.match(/^#unlock-([A-Za-z0-9]+)$/);
-  if(m){ if(tryUnlock(m[1])) $("streakLine").textContent="Thanks for your purchase. You can play again as often as you like. To unlock another device, enter the code "+m[1].toUpperCase()+" on the payment screen."; history.replaceState(null,"",location.pathname+location.search); }
-  refreshFree();
-  // Checkout opens in a new tab. When that tab unlocks, update this one too.
-  addEventListener("storage",e=>{
-    if(e.key&&e.key.indexOf("unlocked")>-1&&isUnlocked()){
-      refreshFree();
-      if(!$("payScreen").classList.contains("hidden")){$("codeMsg").textContent="Payment received. You can play again as often as you like."; $("codeMsg").className="feedback ok"; setTimeout(()=>newGame("free",undefined,nextPlayNum()),900);}
-    }
-  });
-})();
+refreshFree();
 $("btnShare").onclick=async()=>{
   try{await navigator.clipboard.writeText(G.share); $("toast").textContent="Copied";}catch(e){$("toast").textContent="Copy blocked here. Select the text below.";}
   $("shareText").textContent=G.share; $("shareText").classList.remove("hidden");
 };
 (function(){
   const st=load("quarrillion3:streak");
-  if(load(KEY(DAY))) $("btnDaily").firstChild.textContent="See today's dig ";
-  else if(getRun("daily",DAY)) $("btnDaily").firstChild.textContent="Continue today's dig ";
+  if(load(KEY(DAY))) $("btnDaily").firstChild.textContent="See today's eruption ";
+  else if(getRun("daily",DAY)) $("btnDaily").firstChild.textContent="Continue today's eruption ";
   if(st&&st.n&&(st.last===DAY||st.last===DAY-1)) $("streakLine").textContent="Streak: "+st.n+" day"+(st.n===1?"":"s")+".";
   updateHud(0);
 })();
