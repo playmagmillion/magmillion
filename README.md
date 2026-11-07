@@ -19,7 +19,7 @@ Looking for more games like Krillion? See [games like Krillion](https://playmagm
 
 ## The eruption
 
-The scene is a cut-away of a volcano filled with lava. You start as a rock in the magma chamber and rise through the conduit and the lava lake, past drifting crystals and gas bubbles, and 450 points or more erupts you out of the volcano into the sky: the ash plume, the cloud layer, the stratosphere, and the mesosphere, with stars, meteors, and noctilucent clouds near the top. After you answer, the panel slides away and the whole screen follows your rise. Rarer answers get bigger effects, up to rings, a rainbow banner, and a full eruption for One in a Magmillion. Tap or press Enter to skip ahead.
+The scene is a cut-away of a volcano filled with lava. You start as a rock in the magma chamber and rise through the conduit and the lava lake, past drifting crystals and gas bubbles, and 450 points or more erupts you out of the volcano into the sky: the ash plume, the cloud layer, the stratosphere, and the mesosphere, with stars, meteors, and noctilucent clouds near the top. After you answer, the panel slides away and the whole screen follows your rise. Rarer answers get bigger effects, up to rings, a rainbow banner, and a full eruption for One in a Magmillion. Crossing 450 points gets its own eruption: pressure builds under the lava, then a flash, an ERUPTION! banner, shockwaves, and lava bombs as the view cuts outside to the volcano blowing its top and launches your rock out of the crater. After that the volcano stays below you in the background. Tap or press Enter to skip ahead.
 
 ## Sound
 
