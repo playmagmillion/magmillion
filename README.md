@@ -44,7 +44,7 @@ Rarity tiers are hand-made estimates, not live player data.
 
 ## New prompts every day
 
-There are 116 categories, and each one also comes in letter versions ("Name a fruit starting with P", "Name an animal with a Z in it", "Name a landform ending in O"), for 1,366 prompts in all. A letter version only exists when the answer list has enough answers that fit, and the game rejects answers that break the letter rule. From eruption #7 on, the daily schedule uses every prompt once before any comes back (about 196 days), each day has 7 different categories, and a category sits out at least 3 days between uses. Eruptions #1 to #6 keep the prompts people already played.
+There are 116 categories, and each one also comes in letter versions ("Name a fruit starting with P", "Name an animal with a Z in it", "Name a landform ending in O"). The letter versions are sprinkled in: most days have one, some have none, a few have two, and the rest are the regular prompts. A letter version only exists when the answer list has enough answers that fit, and the game rejects answers that break the letter rule. From eruption #7 on, every regular prompt is used before any comes back (at least 17 days apart), each day has 7 different categories, and a category sits out at least 3 days between uses. Eruptions #1 to #6 keep the prompts people already played.
 
 ## Adding categories
 

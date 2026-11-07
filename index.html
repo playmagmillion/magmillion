@@ -6104,29 +6104,45 @@ function legacyCats(day){
   }
   return SCHED[day];
 }
-/* From eruption #7 on, every prompt is used once before any prompt comes back.
-   Each day has 7 different categories, and a category sits out at least 3 days between uses. */
+/* From eruption #7 on: mostly regular prompts, with a letter prompt now and then.
+   Most days have 1 letter prompt, some have none, a few have 2. Regular prompts are all used
+   before any comes back, letter prompts likewise, each day has 7 different categories,
+   and a category sits out at least 3 days between uses. */
 const NEWSCHED=[];
-let NS_used=null, NS_order=null, NS_pos=0, NS_cycle=0;
-function nsReset(keep){
-  NS_cycle++; NS_used=new Set(keep||[]);
-  const r=mulberry32(2026*NS_cycle+11); NS_order=[...Array(PROMPTS.length).keys()];
-  for(let i=NS_order.length-1;i>0;i--){const j=Math.floor(r()*(i+1)); [NS_order[i],NS_order[j]]=[NS_order[j],NS_order[i]];}
+function makeQueue(ids,seed,protect){
+  const q={ids,seed,protect,cycle:0,used:new Set(),order:[]};
+  q.reset=keep=>{q.cycle++; q.used=new Set(keep||[]); const r=mulberry32(q.seed*7+q.cycle*104729); q.order=[...q.ids];
+    for(let i=q.order.length-1;i>0;i--){const j=Math.floor(r()*(i+1)); [q.order[i],q.order[j]]=[q.order[j],q.order[i]];}};
+  q.take=(n,blockedBases,recentBases,todayBases)=>{
+    const out=[];
+    for(let round=0;round<3&&out.length<n;round++){
+      for(const i of q.order){ if(out.length>=n) break; const bi=baseOf(i);
+        if(q.used.has(i)||todayBases.has(bi)||(round===0&&recentBases.has(bi))) continue;
+        out.push(i); todayBases.add(bi); }
+      if(out.length<n&&round>=1){ const keep=[...out]; NEWSCHED.slice(-q.protect).forEach(d=>d.forEach(i=>keep.push(i))); q.reset(keep); }
+    }
+    out.forEach(i=>q.used.add(i)); return out;
+  };
+  q.reset([]); return q;
 }
+let QB=null, QL=null;
+function letterCount(r){const x=r(); return x<0.15?0:x<0.85?1:2;}
 function dailyCats(day){
   day=Math.max(0,day);
   if(day<LEGACY_DAYS) return legacyCats(day);
-  if(!NS_used){ const keep=[]; for(let d=0;d<LEGACY_DAYS;d++) keep.push(...legacyCats(d)); nsReset(keep); }
+  if(!QB){
+    const ids=[...Array(PROMPTS.length).keys()];
+    QB=makeQueue(ids.filter(i=>PROMPTS[i].baseIdx===undefined),31,16);
+    QL=makeQueue(ids.filter(i=>PROMPTS[i].baseIdx!==undefined),97,60);
+    const played=[]; for(let d=0;d<LEGACY_DAYS;d++) played.push(...legacyCats(d)); QB.reset(played);
+  }
   while(NEWSCHED.length<=day-LEGACY_DAYS){
+    const d=LEGACY_DAYS+NEWSCHED.length, r=mulberry32(9001*d+17);
     const recent=new Set(); for(let k=1;k<=3;k++){const prev=NEWSCHED[NEWSCHED.length-k]; if(prev) prev.forEach(i=>recent.add(baseOf(i)));}
-    let pick=[], bases=new Set();
-    for(let pass=0;pass<2&&pick.length<7;pass++){
-      for(const i of NS_order){ if(pick.length>=7) break;
-        if(NS_used.has(i)||bases.has(baseOf(i))||(pass===0&&recent.has(baseOf(i)))) continue;
-        pick.push(i); bases.add(baseOf(i)); }
-      if(pick.length<7&&pass===1){ const keep=[...pick]; NEWSCHED.slice(-60).forEach(d=>keep.push(...d)); nsReset(keep); pass=-1; }   // every prompt used: start a new cycle, skipping the last 60 days
-    }
-    pick.forEach(i=>NS_used.add(i));
+    const today=new Set(), nL=letterCount(r);
+    const regular=QB.take(7-nL,null,recent,today), letters=QL.take(nL,null,recent,today);
+    const pick=[...regular,...letters];
+    for(let i=pick.length-1;i>0;i--){const j=Math.floor(r()*(i+1)); [pick[i],pick[j]]=[pick[j],pick[i]];}   // mix the letter prompt in among the others
     NEWSCHED.push(pick);
   }
   return NEWSCHED[day-LEGACY_DAYS];
@@ -6581,7 +6597,9 @@ function resumeRun(r){
   if(G.qi<NQ) ask(); else finish();
 }
 function newGame(mode, day, num){
-  const set = mode==="free" ? (()=>{const out=[], seen=new Set(); for(const i of shuffled(PROMPTS.length,(Math.random()*1e9)|0)){ if(seen.has(baseOf(i))) continue; seen.add(baseOf(i)); out.push(i); if(out.length>=NQ) break;} return out;})() : dailyCats(day);
+  const set = mode==="free" ? (()=>{const nL=letterCount(Math.random), out=[], seen=new Set();
+      const pickFrom=(want,n)=>{for(const i of shuffled(PROMPTS.length,(Math.random()*1e9)|0)){ if(n<=0) break; const isL=PROMPTS[i].baseIdx!==undefined; if(isL!==want||seen.has(baseOf(i))) continue; seen.add(baseOf(i)); out.push(i); n--; }};
+      pickFrom(false,NQ-nL); pickFrom(true,nL); return shuffled(out.length,(Math.random()*1e9)|0).map(k=>out[k]);})() : dailyCats(day);
   G={mode, day, set, qi:0, total:0, res:[], num};
   sparks=[]; pops=[]; rings=[]; embers=[]; erupt=0; squashT=0; camF=0.2;   // clean start at the bottom
   setDepth(altOf(0),true); updateHud();
