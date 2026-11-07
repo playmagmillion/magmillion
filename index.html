@@ -342,6 +342,18 @@ button.sm:hover{border-color:#ffb347;color:#fff3e0}
 @keyframes kin{from{transform:translateY(14px);opacity:.4}to{transform:none;opacity:1}}
 @media (max-width:760px){.ktitle{-webkit-text-stroke:1.5px #fff3e0;text-shadow:-3px 0 #ff4d2b,3px 0 #ffd166}.kgap{height:22vh}.ksub{letter-spacing:.32em}.krow{justify-content:center}.kstat{width:100%;text-align:center}body.home button.big-btn{letter-spacing:.06em;font-size:24px}}
 @media (prefers-reduced-motion:reduce){.ktitle span,.panel>section:not(.hidden){animation:none}}
+
+#riseHud{position:fixed;left:0;right:0;top:11vh;z-index:6;text-align:center;pointer-events:none;display:none;font-family:var(--pixel)}
+body.drilling #riseHud{display:block}
+#rhKm{display:block;font-weight:400;font-size:clamp(56px,9vw,112px);line-height:1;color:#fff3e0;text-shadow:3px 0 #140806,-3px 0 #140806,0 3px #140806,0 -3px #140806,-6px 0 #ff4d2b,6px 0 #ffd166}
+#rhZone{display:inline-block;margin-top:8px;font-size:clamp(18px,2.4vw,28px);letter-spacing:.38em;color:#ffb347;text-shadow:2px 0 #140806,-2px 0 #140806,0 2px #140806,0 -2px #140806}
+#rhZone.pop{animation:zpop .45s steps(5,end)}
+@keyframes zpop{0%{transform:scale(1.7);color:#ffffff}55%{transform:scale(.92)}100%{transform:scale(1)}}
+@media (prefers-reduced-motion:reduce){#rhZone.pop{animation:none}}
+
+body.drilling .hud .pods,body.drilling .hud .hud-dots{visibility:hidden}
+body.landed #riseHud{display:none}
+@media (max-width:760px){#riseHud{top:15vh}#rhZone{letter-spacing:.14em;font-size:17px}#rhKm{font-size:60px}}
 </style>
 </head>
 <body class="home">
@@ -350,6 +362,7 @@ button.sm:hover{border-color:#ffb347;color:#fff3e0}
 <div class="heat" aria-hidden="true"></div>
 <div id="notes" aria-hidden="true"></div>
 <div id="flash" aria-hidden="true"></div>
+<div id="riseHud" aria-hidden="true"><b id="rhKm">-8.0 km</b><span id="rhZone">MAGMA CHAMBER</span></div>
 <div id="strikeBanner" aria-live="polite"><img id="sbImg" alt=""><b id="sbName"></b><span id="sbPts"></span></div>
 
 <div class="hud">
@@ -6091,7 +6104,7 @@ const BAYER=[[0,8,2,10],[12,4,14,6],[3,11,1,9],[15,7,13,5]];
 const dith=(x,y,t)=>t*16>BAYER[y&3][x&3];
 let S=3,W=400,H=260,PXP=1.6,BOT=90,TOPM=160,WORLD_H=1800,world=null,mobile=false,tick=0;
 let moleText="pop!";
-let camF=0.46, pops=[], squashT=0, bubbles=[], drillY=0,targetY=0,curKm=-8,sparks=[],embers=[],smoke=[],shakeT=0,twinkle=[],lavaPx=[],chamberPx=[],meteors=[],moleSay=0;
+let camF=0.46, pops=[], squashT=0, punch=0, sal=[], FAR=[], lastZone="", rhKmEl=null, rhZoneEl=null, bubbles=[], drillY=0,targetY=0,curKm=-8,sparks=[],embers=[],smoke=[],shakeT=0,twinkle=[],lavaPx=[],chamberPx=[],meteors=[],moleSay=0;
 function hash(x,y){let h=x*374761393+y*668265263;h=(h^(h>>>13))*1274126177;return((h^(h>>>16))>>>0)/4294967296;}
 function hex(c){return [parseInt(c.slice(1,3),16),parseInt(c.slice(3,5),16),parseInt(c.slice(5,7),16)];}
 const U_LAVA=6.5, U_SKY=3;                                 // screen units (1 unit = 100*PXP px)
@@ -6193,6 +6206,8 @@ function resize(){
   PXP=Math.max(1.5,H*0.5/100); BOT=Math.round(H*0.84); TOPM=Math.round(H*0.75);
   WORLD_H=Math.round(BOT+(U_LAVA+U_SKY)*100*PXP+TOPM);
   world=buildWorld(); buildNotes();
+  FAR=[]; {const r=mulberry32(77); const span=Math.round(WORLD_H*0.55+H); for(let i=0;i<Math.round(span/70);i++){const w=18+Math.floor(r()*46), h=10+Math.floor(r()*26), x=Math.floor(r()*W)-w/2, y=Math.floor(r()*span); const rows=[];
+    for(let dy=0;dy<h;dy++){const k=1-Math.pow((dy-h/2)/(h/2),2); const half=Math.round(w/2*Math.sqrt(Math.max(0,k))*(0.85+0.15*Math.sin(dy*1.7+i))); if(half>0) rows.push([Math.round(w/2-half),dy,half*2]);} FAR.push({x:Math.round(x),y,h,rows});}}
   targetY=kmToY(curKm); drillY=targetY;
 }
 /* Height notes along the eruption, like a field guide */
@@ -6235,7 +6250,7 @@ function placeNotes(camY){
   if(plTick--<=0||document.body.classList.contains("drilling")){const pn=document.querySelector(".panel"); const r=pn?pn.getBoundingClientRect():null; panelLeft=(r&&!mobile&&!document.body.classList.contains("drilling"))?r.left:innerWidth; plTick=30;}
   for(const [el,wy] of noteEls){
     const y=(wy-camY)*S;
-    if(y<84||y>innerHeight+40){el.style.display="none";continue;}
+    if(y<(document.body.classList.contains("drilling")&&!document.body.classList.contains("landed")?innerHeight*0.34:84)||y>innerHeight+40){el.style.display="none";continue;}
     el.style.display="";
     if(el.classList.contains("L")){el.style.right=(innerWidth-xs+22)+"px"; el.style.left=""; el.style.maxWidth=Math.max(80,xs-30)+"px";}
     else {el.style.left=(xs+22)+"px"; el.style.right=""; el.style.maxWidth=Math.max(80,innerWidth-xs-40)+"px";}
@@ -6248,6 +6263,9 @@ const ROCKP={p:{a:"#b4ada5",b:"#8a827a",c:"#615a53",d:"#2a2420",e:"#ffffff",k:"#
 const ROCK_UP={p:ROCKP.p,m:["...dddd...","..dabekdd.",".dabkkbbcd","dabbbbekcd","dbbbbbkkcd","dbbbbbbbcd","dcbbobbccd",".dcboycccd","..dcccccd.","...ddddd.."]};
 function spriteS(spr,cxp,cyp,sx,sy){const w=spr.m[0].length, h=spr.m.length; const x0=cxp-w*sx/2, y0=cyp-h*sy/2+ (sy<1?h*(1-sy)/2:0);
   spr.m.forEach((row,j)=>{for(let i=0;i<w;i++){const ch=row[i]; if(ch==="."||!spr.p[ch]) continue; cx.fillStyle=spr.p[ch]; cx.fillRect(Math.round(x0+i*sx),Math.round(y0+j*sy),Math.ceil(sx),Math.ceil(sy));}});}
+const SAL1={p:{d:"#2a0a06",y:"#ffcf5a",e:"#ffffff"},m:["......dd....","dddddddddedd","..dydddyddd.","...d.....d..","............"]};
+const SAL2={p:SAL1.p,m:["............","dddddddddedd","d.dydddyddd.","....d...d...","............"]};
+function spriteF(spr,x,y,flip){spr.m.forEach((row,j)=>{for(let i=0;i<row.length;i++){const ch=row[flip?row.length-1-i:i]; if(ch==="."||!spr.p[ch]) continue; cx.fillStyle=spr.p[ch]; cx.fillRect(x+i,y+j,1,1);}});}
 function sprite(spr,x,y,flip){spr.m.forEach((row,j)=>{for(let i=0;i<row.length;i++){const ch=row[flip?row.length-1-i:i]; if(ch==="."||!spr.p[ch]) continue; cx.fillStyle=spr.p[ch]; cx.fillRect(x+i,y+j,1,1);}});}
 const DIG={"+":["...",".a.","aaa",".a.","..."],"0":["aaa","a.a","a.a","a.a","aaa"],"1":[".a.","aa.",".a.",".a.","aaa"],"2":["aaa","..a","aaa","a..","aaa"],"3":["aaa","..a",".aa","..a","aaa"],"4":["a.a","a.a","aaa","..a","..a"],"5":["aaa","a..","aaa","..a","aaa"],"6":["aaa","a..","aaa","a.a","aaa"],"7":["aaa","..a",".a.",".a.",".a."],"8":["aaa","a.a","aaa","a.a","aaa"],"9":["aaa","a.a","aaa","..a","aaa"]};
 function pixText(t,x,y,z,col){let ox=x; for(const ch of t){const g=DIG[ch]; if(g){for(let j=0;j<5;j++) for(let i=0;i<3;i++) if(g[j][i]==="a"){cx.fillStyle="#05070f"; cx.fillRect(ox+i*z+1,y+j*z+1,z,z);} for(let j=0;j<5;j++) for(let i=0;i<3;i++) if(g[j][i]==="a"){cx.fillStyle=col; cx.fillRect(ox+i*z,y+j*z,z,z);}} ox+=4*z;}}
@@ -6262,15 +6280,20 @@ function frame(){
   tick++;
   const moving=Math.abs(targetY-drillY)>0.4;
   if(DESC){
-    const pr=Math.min(1,(performance.now()-DESC.t0)/DESC.dur), e=1-Math.pow(1-pr,3);
+    const pr=Math.min(1,(performance.now()-DESC.t0)/DESC.dur), e=pr<.5?4*pr*pr*pr:1-Math.pow(-2*pr+2,3)/2;
     drillY=DESC.from+(DESC.to-DESC.from)*e; targetY=drillY;
     const t=DESC.tier;
     if(!reduced&&pr<1){ // lava trail grows with rarity
-      const n=t>=6?6:t>=5?4:t>=4?3:t>=2?2:1;
+      const n=t>=6?3:t>=5?2:t>=4?2:1;
       const col=[["#c94a1a"],["#ff7a3d","#c94a1a"],["#ff9a3d","#ffd166"],["#ffb347","#ffd166"],["#ffd166","#fff0bd"],["#ff7a3d","#ffb347","#fff0bd"],["#6fe3d2","#ffffff","#ffd166","#ff6b8a"]][t];
-      if(tick%(t>=4?1:2)===0) for(let i=0;i<n;i++) if(drillY>yOfPts(CRATER_PTS)) bubbles.push({x:drillX()+(Math.random()-.5)*6,y:drillY+7,v:.15+Math.random()*.3,s:Math.random()<.3?2:1,ph:Math.random()*6}); else sparks.push({x:drillX()+(Math.random()-.5)*5,y:drillY+6,vx:(Math.random()-.5)*(t>=5?1.6:.9),vy:.4+Math.random()*.8,l:(t>=5?22:15)+Math.random()*10|0,c:col[i%col.length],s:t>=5&&Math.random()<.3?2:1,g:.05});
+      if(tick%2===0) for(let i=0;i<n;i++) if(drillY>yOfPts(CRATER_PTS)) bubbles.push({x:drillX()+(Math.random()-.5)*8,y:drillY+7,v:.15+Math.random()*.3,s:Math.random()<.15?2:1,ph:Math.random()*6}); else sparks.push({x:drillX()+(Math.random()-.5)*5,y:drillY+6,vx:(Math.random()-.5)*(t>=5?1.6:.9),vy:.4+Math.random()*.8,l:(t>=5?22:15)+Math.random()*10|0,c:col[i%col.length],s:t>=5&&Math.random()<.3?2:1,g:.05});
       if(t>=4) shakeT=Math.max(shakeT,t>=6?4:2);
     }
+    if(!rhKmEl){rhKmEl=document.getElementById("rhKm"); rhZoneEl=document.getElementById("rhZone");}
+    const altNow=altOf(ptsOfY(drillY)), z=layerAt(altNow);
+    rhKmEl.textContent=fmtKm(altNow);
+    if(z!==lastZone){ const first=!lastZone; lastZone=z; rhZoneEl.textContent=(first?"":"ENTERING ")+z.toUpperCase();
+      if(!first){rhZoneEl.classList.remove("pop"); void rhZoneEl.offsetWidth; rhZoneEl.classList.add("pop"); SFX.zone(); quake(4);} }
     if(pr>=1&&!DESC.fx){DESC.fx=true; DESC.landed=performance.now(); impact(t);}
   } else drillY+=(targetY-drillY)*0.08;
   const X=drillX(), rising=!!DESC&&!DESC.fx;
@@ -6278,8 +6301,21 @@ function frame(){
   camF+=(want-camF)*(reduced?1:0.14);
   const camY=Math.max(0,Math.min(WORLD_H-H,Math.round(drillY-H*camF)));
   let ox=0,oy=0; if(shakeT>0){shakeT--; ox=(tick%2?1:-1)*(shakeT>6?2:1); oy=(tick%3)-1;}
-  cx.setTransform(1,0,0,1,ox,oy);
+  const zm=1+punch*0.07, fy=drillY-camY; if(punch>0){punch*=0.86; if(punch<0.02) punch=0;}
+  cx.setTransform(zm,0,0,zm,ox-(zm-1)*X,oy-(zm-1)*fy);
   cx.drawImage(world,0,camY,W,H,0,0,W,H);
+  const ySurf=yOfPts(CRATER_PTS);
+  if(!reduced){ // heat shimmer: rows of lava sway a pixel side to side
+    for(let y=Math.max(0,ySurf-camY+8);y<H;y+=2){const wy=camY+y, off=Math.round(Math.sin(wy*0.11+tick*0.09)*1.3); if(off) cx.drawImage(world,0,wy,W,2,off,y,W,2);}
+    // a far layer of dark rock drifting slower than the camera, for depth
+    cx.fillStyle="rgba(70,14,6,0.22)";
+    for(const f of FAR){const sy=Math.round(f.y-camY*0.55); if(sy<-f.h||sy>H+f.h) continue; if(sy+camY<ySurf+10) continue;
+      for(const [dx,dy,len] of f.rows){const yy=sy+dy; if(yy+camY<ySurf+8) continue; cx.fillRect(f.x+dx,yy,len,1);}}
+    // salamanders, the lava lizards of legend, swimming by
+    if(sal.length<3&&Math.random()<.012&&camY+H>ySurf+20){const dir=Math.random()<.5?1:-1; const wy=Math.max(ySurf+20,camY)+Math.random()*(H-20); sal.push({x:dir>0?-14:W+14,y:wy,dir,v:.35+Math.random()*.4});}
+    sal=sal.filter(q=>q.x>-20&&q.x<W+20&&q.y>camY-30&&q.y<camY+H+30);
+    for(const q of sal){q.x+=q.dir*q.v; q.y+=Math.sin((q.x+tick)*.05)*.15; spriteF((tick>>3)%2?SAL1:SAL2,Math.round(q.x)-6,Math.round(q.y-camY)-2,q.dir<0);}
+  }
   // twinkling stars
   if(!reduced) for(const [sx,sy,ph] of twinkle){const y=sy-camY; if(y<0||y>H) continue; if(((tick>>3)+Math.floor(ph*40))%29<2){cx.fillStyle="#ffffff"; cx.fillRect(sx,y,1,1); cx.fillStyle="#8a90b8"; cx.fillRect(sx-1,y,1,1); cx.fillRect(sx+1,y,1,1); cx.fillRect(sx,y-1,1,1); cx.fillRect(sx,y+1,1,1);}}
   // meteors burning up high in the sky
@@ -6400,6 +6436,7 @@ const SFX=(()=>{
     get muted(){return muted;},
     toggle(){muted=!muted; try{localStorage.setItem("magmillion:muted",muted?"1":"0");}catch(e){} if(ctx()){master.gain.setTargetAtTime(muted?0:0.55,now(),0.05);} if(muted) ambient(false); else {wake(); ambient(true); this.click();} return muted;},
     key(){tone(1800+Math.random()*400,0.03,{type:"square",vol:0.025});},
+    zone(){tone(660,0.07,{type:"square",vol:0.045}); tone(990,0.1,{type:"square",vol:0.04,at:0.06});},
     click(){tone(660,0.05,{vol:0.07}); tone(990,0.06,{vol:0.05,at:0.04});},
     start(){arp([60,64,67,72,76],0.07,{type:"square",vol:0.08}); noise(0.6,{freq:300,fto:80,vol:0.12,at:0.3});},
     ask(){tone(N(72),0.09,{vol:0.08}); tone(N(79),0.14,{vol:0.08,at:0.09});},
@@ -6890,7 +6927,7 @@ const IMPACT=[
   {hold:580,quake:13,flash:"#ffd166",fo:.3},{hold:760,quake:18,flash:"#ff7a3d",fo:.45},{hold:1080,quake:26,flash:"#ffffff",fo:.9}];
 function impact(t){
   const fx=IMPACT[t];
-  SFX.impact(t); SFX.depth(curKm); squashT=8; if(TIERS[t].pts) pops.push({t:"+"+TIERS[t].pts,y:drillY-12,l:46,c:["#ffffff","#d9c2a8","#e8b48a","#d8d2cc","#ffd166","#ff9a3d","#6fe3d2"][t]});
+  SFX.impact(t); SFX.depth(curKm); squashT=8; punch=t>=5?1:t>=3?0.6:0.35; document.body.classList.add("landed");
   quake(fx.quake);
   if(t===0){spray(16,["#6b625a","#4a4642","#8a8079"],{v:.8,life:20,grav:.05}); moleSay=70; moleText="hm.";}
   if(t===1) spray(22,["#8a6a4f","#5a4330","#a07d5e"],{v:1.2,size:1});
@@ -6919,9 +6956,9 @@ addEventListener("pointerdown",()=>{if(document.body.classList.contains("drillin
 addEventListener("keydown",e=>{if(document.body.classList.contains("drilling")&&(e.key===" "||e.key==="Enter"||e.key==="Escape")){e.preventDefault(); e.stopImmediatePropagation(); skipFx();}},true);
 function startDescent(km,t,done){
   const from=drillY, to=kmToY(km), dist=Math.abs(to-from);
-  DESC={from,to,t0:performance.now(),dur:reduced?200:(dist<1?240:Math.min(980,300+dist*1.25+t*55)),tier:t,done,fx:false};
+  DESC={from,to,t0:performance.now(),dur:reduced?200:(dist<1?320:Math.min(2400,620+dist*0.9+t*115)),tier:t,done,fx:false}; lastZone="";
   if(dist>=1) SFX.drill(DESC.dur/1000,t);
-  document.body.classList.add("drilling");
+  document.body.classList.add("drilling"); document.body.classList.remove("landed");
 }
 function floatPts(n){
   const b=$("ansInput").getBoundingClientRect(), d=document.createElement("div");
